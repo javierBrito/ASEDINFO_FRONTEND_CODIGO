@@ -97,4 +97,12 @@ export class Persona implements Ipersona {
     set socio(value: any) {
         set(this, 'data.socio', value);
     }
+
+    get participante(): any {
+        return get(this, 'data.participante');
+    }
+    set participante(value: any) {
+        set(this, 'data.participante', value);
+    }
+
 }

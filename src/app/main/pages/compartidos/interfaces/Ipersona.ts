@@ -12,5 +12,6 @@ export interface Ipersona {
 
     cliente: any;
     usuario: any;
-    socio: any;    
+    socio: any;  
+    participante: any;  
 }
