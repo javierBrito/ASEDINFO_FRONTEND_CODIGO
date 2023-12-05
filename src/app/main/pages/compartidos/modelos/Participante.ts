@@ -36,11 +36,31 @@ export class Participante implements Iparticipante {
         set(this, 'data.codPersona', value);
     }
 
+    get nombrePersona(): string {
+        return get(this, 'data.nombrePersona');
+    }
+    set nombrePersona(value: string) {
+        set(this, 'data.nombrePersona', value);
+    }
+
     get persona(): any {
         return get(this, 'data.persona');
     }
     set persona(value: any) {
         set(this, 'data.persona', value);
+    }
+    get desSubcategoria(): string {
+        return get(this, 'data.desSubcategoria');
+    }
+    set desSubcategoria(value: string) {
+        set(this, 'data.desSubcategoria', value);
+    }
+    
+    get codSubcategoria(): number {
+        return get(this, 'data.codSubcategoria');
+    }
+    set codSubcategoria(value: number) {
+        set(this, 'data.codSubcategoria', value);
     }
 
 }

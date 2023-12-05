@@ -2,47 +2,48 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
 import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model';
-import { Transaccion } from 'app/main/pages/compartidos/modelos/Transaccion';
+import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import axios from 'axios';
+import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TransaccionService {
+export class PuntajeService {
 
   constructor(private http: HttpClient) { }
   /*SERVICIOS INTERNOS*/
-  eliminarTransaccionPorId(codigo: number): Observable<any> {
-    return this.http.delete<any>(`${environment.url_seguridad}/catalogo/eliminarTransaccionPorId/${codigo}`);
+  eliminarPuntajePorId(codigo: number): Observable<any> {
+    return this.http.delete<any>(`${environment.url_seguridad}/catalogo/eliminarPuntajePorId/${codigo}`);
   }
-  listarTransaccionPorSede(codigoSede: number) {
-    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorSede/${codigoSede}`);
+  listarPuntajePorSede(codigoSede: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePorSede/${codigoSede}`);
   }
-  listarTransaccionPorDescripcion(descripcion: string) {
-    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorDescripcion/${descripcion}`);
+  listarPuntajePorDescripcion(descripcion: string) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePorDescripcion/${descripcion}`);
   }
-  listarTransaccionACaducarse(numDias: number) {
-    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionACaducarse/${numDias}`);
+  listarPuntajePorSubcategoria(codSubcategoria: number, codInstancia: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoria/${codSubcategoria}/${codInstancia}`);
   }
-  listarTransaccionPorRangoFechas(fechaInicio: string, fechaFin: string) {
-    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorRangoFechas/${fechaInicio}/${fechaFin}`);
+  listarPuntajePorRangoFechas(fechaInicio: string, fechaFin: string) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePorRangoFechas/${fechaInicio}/${fechaFin}`);
   }
-  listarTodosTransaccion(): Observable<any> | undefined {
-    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarTodosTransaccion`);
+  listarTodosPuntaje(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarTodosPuntaje`);
   }
-  listarTransaccionActivo(nemonicoModulo: string): Observable<any> | undefined {
-    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarTransaccionActivo/${nemonicoModulo}`);
+  listarPuntajeActivo(nemonicoModulo: string): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarPuntajeActivo/${nemonicoModulo}`);
   }
-  listarTransaccionPadre(codigoAplicacion: number) {
-    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPadre/${codigoAplicacion}`);
+  listarPuntajePadre(codigoAplicacion: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePadre/${codigoAplicacion}`);
   }
-  buscarTransaccionPorCodigo(codigo: number) {
-    return this.http.get<Transaccion>(`${environment.url_seguridad}/catalogo/buscarTransaccionPorCodigo/${codigo}`);
+  buscarPuntajePorCodigo(codigo: number) {
+    return this.http.get<Puntaje>(`${environment.url_seguridad}/catalogo/buscarPuntajePorCodigo/${codigo}`);
   }
-  guardarTransaccion(transaccion) {
-    return this.http.post<Transaccion>(`${environment.url_seguridad}/catalogo/guardarTransaccion`, transaccion);
+  guardarPuntaje(puntaje) {
+    return this.http.post<Puntaje>(`${environment.url_seguridad}/catalogo/guardarPuntaje`, puntaje);
   }
   // Enviar Correo con Archivo PDF
   enviarCorreo(reporteDTO: ReporteDTO): Observable<any> {
@@ -51,13 +52,13 @@ export class TransaccionService {
 
   // Servicios de Modulo
   buscarModuloPorCodigo(codigo: number) {
-    return this.http.get<Producto>(`${environment.url_seguridad}/catalogo/buscarModuloPorCodigo/${codigo}`);
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarModuloPorCodigo/${codigo}`);
   }
   listarModuloActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarModuloActivo`);
   }
   buscarModuloPorNemonico(nemonico: string) {
-    return this.http.get<Producto>(`${environment.url_seguridad}/catalogo/buscarModuloPorNemonico/${nemonico}`);
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarModuloPorNemonico/${nemonico}`);
   }
 
   // Servicios de Parametro
@@ -68,18 +69,59 @@ export class TransaccionService {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarParametroActivo`);
   }
   buscarParametroPorNemonico(nemonico: string) {
-    return this.http.get<Producto>(`${environment.url_seguridad}/catalogo/buscarParametroPorNemonico/${nemonico}`);
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarParametroPorNemonico/${nemonico}`);
   }
 
   // Servicios de Operacion
   buscarOperacionPorCodigo(codigo: number) {
-    return this.http.get<Producto>(`${environment.url_seguridad}/catalogo/buscarOperacionPorCodigo/${codigo}`);
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarOperacionPorCodigo/${codigo}`);
   }
   listarOperacionActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarOperacionActivo`);
   }
   buscarOperacionPorNemonico(nemonico: string) {
-    return this.http.get<Producto>(`${environment.url_seguridad}/catalogo/buscarOperacionPorNemonico/${nemonico}`);
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarOperacionPorNemonico/${nemonico}`);
+  }
+  // Servicios de Categoria
+  buscarCategoriaPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarCategoriaPorCodigo/${codigo}`);
+  }
+  listarCategoriaActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarCategoriaActivo`);
+  }
+  // Servicios de Subcategoria
+  buscarSubcategoriaPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarSubcategoriaPorCodigo/${codigo}`);
+  }
+  listarSubcategoriaActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSubcategoriaActivo`);
+  }
+  listarSubcategoriaPorCategoria(codCategoria: number): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSubcategoriaPorCategoria/${codCategoria}`);
+  }
+  // Servicios de Instancia
+  buscarInstanciaPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarInstanciaPorCodigo/${codigo}`);
+  }
+  listarInstanciaActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarInstanciaActivo`);
+  }
+  // Servicios de Modelo Puntaje
+  buscarModeloPuntajePorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarModeloPuntajePorCodigo/${codigo}`);
+  }
+  listarModeloPuntajeActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarModeloPuntajeActivo`);
+  }
+  // Servicios de Modelo Participante
+  buscarParticipantejePorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarParticipantejePorCodigo/${codigo}`);
+  }
+  listarParticipanteActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarParticipanteActivo`);
+  }
+  listarParticipantePorSubcategoria(codSubcategoria: number) {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoria/${codSubcategoria}`);
   }
 
   /*SERVICIOS EXTERNOS*/

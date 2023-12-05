@@ -14,20 +14,20 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { TableModule } from 'primeng/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DetailComponent } from '../componentes/detail/detail.component';
-import { RUTA_TRANSACCION } from '../rutas/transaccion-routing';
-import { TransaccionPrincipalComponent } from '../componentes/transaccion-principal/transaccion-principal.component';
-import { FormTransaccionComponent } from '../componentes/transaccion-principal/form-transaccion/form-transaccion.component';
+import { RUTA_PUNTAJE } from '../rutas/puntaje-routing';
+import { PuntajePrincipalComponent } from '../componentes/puntaje-principal/puntaje-principal.component';
+import { FormPuntajeComponent } from '../componentes/puntaje-principal/form-puntaje/form-puntaje.component';
 
 @NgModule({
   declarations: [
-    TransaccionPrincipalComponent,
-    FormTransaccionComponent,
+    PuntajePrincipalComponent,
+    FormPuntajeComponent,
     DetailComponent
     
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(RUTA_TRANSACCION),
+    RouterModule.forChild(RUTA_PUNTAJE),
     CoreCommonModule,
     ContentHeaderModule,
     NgxPaginationModule,
@@ -49,4 +49,4 @@ import { FormTransaccionComponent } from '../componentes/transaccion-principal/f
     NO_ERRORS_SCHEMA
   ]
 })
-export class TransaccionModule { }
+export class PuntajeModule { }

@@ -28,6 +28,7 @@ import { PersonaModule } from './catalogo/persona/modulos/persona.module';
 import { ProductoModule } from './catalogo/producto/modulos/producto.module';
 import { TransaccionModule } from './venta/transaccion/modulos/transaccion.module';
 import { ParticipanteModule } from './competencia/participante/modulos/participante.module';
+import { PuntajeModule } from './competencia/puntaje/modulos/puntaje.module';
 
 
 @NgModule({
@@ -63,7 +64,8 @@ import { ParticipanteModule } from './competencia/participante/modulos/participa
     SocioModule,
     ProductoModule,
     TransaccionModule,
-    ParticipanteModule
+    ParticipanteModule,
+    PuntajeModule
   ],
   providers: []
 })

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TransaccionPrincipalComponent } from './transaccion-principal.component';
+import { PuntajePrincipalComponent } from './puntaje-principal.component';
 
-describe('TransaccionPrincipalComponent', () => {
-  let component: TransaccionPrincipalComponent;
-  let fixture: ComponentFixture<TransaccionPrincipalComponent>;
+describe('PuntajePrincipalComponent', () => {
+  let component: PuntajePrincipalComponent;
+  let fixture: ComponentFixture<PuntajePrincipalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TransaccionPrincipalComponent ]
+      declarations: [ PuntajePrincipalComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TransaccionPrincipalComponent);
+    fixture = TestBed.createComponent(PuntajePrincipalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

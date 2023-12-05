@@ -2,10 +2,9 @@ import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { LoginAplicacion } from 'app/auth/models/loginAplicacion';
 import { Sede } from 'app/auth/models/sede';
-import { Transaccion } from 'app/main/pages/compartidos/modelos/Transaccion';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import Swal from 'sweetalert2';
-import { TransaccionService } from '../../servicios/transaccion.service';
+import { PuntajeService } from '../../servicios/puntaje.service';
 import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
 import dayjs from "dayjs";
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
@@ -13,21 +12,22 @@ import { ProductoService } from 'app/main/pages/catalogo/producto/servicios/prod
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { Cliente } from 'app/main/pages/compartidos/modelos/Cliente';
 import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
-import { ClienteService } from '../../../cliente/servicios/cliente.service';
 import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model';
 import { ajax } from 'jquery';
 import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
+import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
+import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 
 @Component({
-  selector: 'app-transaccion-principal',
-  templateUrl: './transaccion-principal.component.html',
-  styleUrls: ['./transaccion-principal.component.scss']
+  selector: 'app-puntaje-principal',
+  templateUrl: './puntaje-principal.component.html',
+  styleUrls: ['./puntaje-principal.component.scss']
 })
-export class TransaccionPrincipalComponent implements OnInit {
+export class PuntajePrincipalComponent implements OnInit {
   /*INPUT RECIBEN*/
-  @Input() listaTransaccionChild: any;
+  @Input() listaPuntajeChild: any;
 
   /*MODALES*/
   @ViewChild("modal_confirm_delete", { static: false }) modal_confirm_delete: TemplateRef<any>;
@@ -37,7 +37,6 @@ export class TransaccionPrincipalComponent implements OnInit {
   /*VARIABLES*/
   public codigo: number;
   public institucion: any;
-  public descripcion: string;
   public colorFila: string;
   public nemonicoModulo: string = 'VEN';
   public nemonicoOperacion: string = 'CRE';
@@ -55,12 +54,26 @@ export class TransaccionPrincipalComponent implements OnInit {
   public respuestaEnvioWhatsapp: string;
   public token: string;
   public celular: string;
+  public codCategoria: number;
+  public codSubcategoria: number;
+  public codInstancia: number;
+  public idInput = '';
+  public indexSelec = '';
+  public datosEditar: any;
+  public activarInput = false;
+  public continuarGuardarPendiente: boolean;
 
   /*LISTAS*/
-  public listaTransaccion: Transaccion[] = [];
-  public listaTransaccionAux: Transaccion[] = [];
+  public listaPuntaje: Puntaje[] = [];
+  public listaPuntajeAux: Puntaje[] = [];
   public listaAplicacion: Aplicacion[] = [];
   public listaPeriodoRegAniLec: any[];
+  public listaCategoria: any[];
+  public listaSubcategoria: any[];
+  public listaInstancia: any[];
+  public listaModeloPuntaje: any[];
+  public listaParticipante: any[];
+  public listaParticipantePresentacion: any[] = [];
 
   /*TABS*/
   public selectedTab: number;
@@ -75,7 +88,8 @@ export class TransaccionPrincipalComponent implements OnInit {
   public parametro: Parametro;
   public operacion: Operacion;
   public reporteDTO: ReporteDTO;
-  public transaccion: Transaccion;
+  public puntajeAux: Puntaje;
+  public participante: Participante;
 
   /*DETAIL*/
   public showDetail: boolean;
@@ -85,17 +99,16 @@ export class TransaccionPrincipalComponent implements OnInit {
   public itemsRegistros: number;
 
   /*OBJETOS*/
-  public transaccionSeleccionado: Transaccion;
+  public puntajeSeleccionado: Puntaje;
 
   /*FORMULARIOS*/
-  public formTransaccion: FormGroup;
-  public formTransaccionDescripcion: FormGroup;
+  public formPuntaje: FormGroup;
+  public formPuntajeParametro: FormGroup;
 
   /*CONSTRUCTOR */
   constructor(
     /*Servicios*/
-    private readonly transaccionService: TransaccionService,
-    private readonly clienteService: ClienteService,
+    private readonly puntajeService: PuntajeService,
     private readonly personaService: PersonaService,
     private readonly productoService: ProductoService,
     private mensajeService: MensajeService,
@@ -111,40 +124,64 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.buscarModuloPorNemonico();
-    this.buscarOperacionPorNemonico();
+    //this.buscarModuloPorNemonico();
+    //this.buscarOperacionPorNemonico();
     this.colorFila = "green";
-    if (this.listaTransaccionChild != null) {
-      this.listaTransaccion = this.listaTransaccionChild;
+    if (this.listaPuntajeChild != null) {
+      this.listaPuntaje = this.listaPuntajeChild;
     }
-    this.formTransaccionDescripcion = this.formBuilder.group({
-      descripcion: new FormControl('', Validators.required),
-      fechaInicio: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
-      fechaFin: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
+    this.formPuntajeParametro = this.formBuilder.group({
+      codCategoria: new FormControl('', Validators.required),
+      codSubcategoria: new FormControl('', Validators.required),
+      codInstancia: new FormControl('', Validators.required),
     });
-    this.obtenerParametros();
-    this.obtenerTransaccionACaducarse();
+    this.listarModeloPuntajeActivo();
+    this.listarCategoriaActivo();
+    this.listarInstanciaActivo();
   }
 
-  obtenerParametros() {
-    // Obtener el token para envio whatsapp
-    this.transaccionService.buscarParametroPorNemonico('token').subscribe(
+  listarModeloPuntajeActivo() {
+    this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
-        this.parametro = respuesta['objeto'];
-        this.token = this.parametro?.valorCadena;
+        this.listaModeloPuntaje = respuesta['listado'];
+        console.log("this.listaModeloPuntaje = ", this.listaModeloPuntaje);
       }
     )
-    // Obtener el celular para envio whatsapp
-    this.transaccionService.buscarParametroPorNemonico('celular').subscribe(
+  }
+
+  listarCategoriaActivo() {
+    this.puntajeService.listarCategoriaActivo().subscribe(
       (respuesta) => {
-        this.parametro = respuesta['objeto'];
-        this.celular = this.parametro?.valorCadena;
+        this.listaCategoria = respuesta['listado'];
+        console.log("this.listaCategoria = ", this.listaCategoria);
+      }
+    )
+  }
+
+  listarInstanciaActivo() {
+    this.puntajeService.listarInstanciaActivo().subscribe(
+      (respuesta) => {
+        this.listaInstancia = respuesta['listado'];
+        console.log("this.listaInstancia = ", this.listaInstancia);
+      }
+    )
+  }
+
+  listarSubcategoriaPorCategoria() {
+    console.log("JB");
+    // Receptar la descripción de formPuntajeParametro.value
+    let puntajeParametroTemp = this.formPuntajeParametro.value;
+    this.codCategoria = puntajeParametroTemp?.codCategoria;
+    this.puntajeService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
+      (respuesta) => {
+        this.listaSubcategoria = respuesta['listado'];
+        console.log("this.listaSubcategoria = ", this.listaSubcategoria);
       }
     )
   }
 
   buscarModuloPorNemonico() {
-    this.transaccionService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
+    this.puntajeService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
       (respuesta) => {
         this.modulo = respuesta['objeto'];
       }
@@ -152,78 +189,57 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   buscarOperacionPorNemonico() {
-    this.transaccionService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
+    this.puntajeService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
       (respuesta) => {
         this.operacion = respuesta['objeto'];
       }
     )
   }
 
-  obtenerTransaccionACaducarse = async () => {
+  listarParticipantePorSubcategoria1() {
+    console.log("listarParticipante()");
     this.enviarNotificacion = false;
-    await this.confirmarEnviarNotificacion();
-  }
-
-  listarTransaccionACaducarse() {
-    return new Promise((resolve, rejects) => {
-      this.transaccionService.listarTransaccionACaducarse(5).subscribe({
-        next: (respuesta) => {
-          this.listaTransaccion = respuesta['listado'];
-          if (this.listaTransaccion?.length > 0) {
-            this.mostrarListaTransaccion();
-          }
-          resolve(respuesta);
-        }, error: (error) => {
-          rejects("Error");
-          console.log("Error =", error);
+    this.listaPuntaje = [];
+    // Receptar la descripción de formPuntajeParametro.value
+    let puntajeParametroTemp = this.formPuntajeParametro.value;
+    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
+    this.codInstancia = puntajeParametroTemp?.codInstancia;
+    console.log("this.codSubcategoria = ", this.codSubcategoria);
+    this.puntajeService.listarParticipantePorSubcategoria(this.codSubcategoria).subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        console.log("this.listaParticipante = ", this.listaParticipante);
+        if (this.listaParticipante?.length > 0) {
+          this.mostrarListaPuntaje();
         }
-      })
-    })
-  }
-
-  listarTransaccion() {
-    this.enviarNotificacion = false;
-    this.listaTransaccion = [];
-    // Receptar la descripción de formTransaccionDescripcion.value
-    let transaccionDescripcionTemp = this.formTransaccionDescripcion.value;
-    this.fechaInicio = transaccionDescripcionTemp?.fechaInicio;
-    this.fechaFin = transaccionDescripcionTemp?.fechaFin;
-    this.descripcion = transaccionDescripcionTemp?.descripcion;
-    if (this.descripcion?.length != 0) {
-      this.transaccionService.listarTransaccionPorDescripcion(this.descripcion).subscribe(
-        (respuesta) => {
-          this.listaTransaccion = respuesta['listado'];
-          if (this.listaTransaccion?.length > 0) {
-            this.mostrarListaTransaccion();
-          }
-        }
-      )
-    } else {
-      if (this.fechaInicio?.length != 0 && this.fechaFin?.length != 0) {
-        this.transaccionService.listarTransaccionPorRangoFechas('2023-09-21', this.fechaFin).subscribe(
-          (respuesta) => {
-            this.listaTransaccion = respuesta['listado'];
-            if (this.listaTransaccion?.length > 0) {
-              this.mostrarListaTransaccion();
-            }
-          }
-        )
-      } else {
-        this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
-          (respuesta) => {
-            this.listaTransaccion = respuesta['listado'];
-            if (this.listaTransaccion?.length > 0) {
-              this.mostrarListaTransaccion();
-            }
-          }
-        )
       }
-    };
+    )
   }
 
-  mostrarListaTransaccion = async () => {
-    for (const ele of this.listaTransaccion) {
-      ele.colorFila = "green";
+  listarPuntaje() {
+    console.log("listarPuntaje()");
+    this.enviarNotificacion = false;
+    this.listaPuntaje = [];
+    // Receptar la descripción de formPuntajeParametro.value
+    let puntajeParametroTemp = this.formPuntajeParametro.value;
+    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
+    this.codInstancia = puntajeParametroTemp?.codInstancia;
+    console.log("this.codSubcategoria = ", this.codSubcategoria);
+    this.puntajeService.listarPuntajePorSubcategoria(this.codSubcategoria, this.codInstancia).subscribe(
+      (respuesta) => {
+        this.listaPuntaje = respuesta['listado'];
+        console.log("this.listaPuntaje = ", this.listaPuntaje);
+        if (this.listaPuntaje?.length > 0) {
+          this.mostrarListaPuntaje();
+        }
+      }
+    )
+  }
+
+  mostrarListaPuntaje = async () => {
+    for (const ele of this.listaPuntaje) {
+      //ele.colorFila = "green";
+      /*
       ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
       ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
       this.fechaFinMensaje = dayjs(ele.fechaFin).format("YYYY-MM-DD");
@@ -241,6 +257,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       if (this.enviarNotificacion) {
         this.enviarWhatsappApi(ele);
       }
+      */
     }
 
     if (this.enviarNotificacion) {
@@ -252,20 +269,229 @@ export class TransaccionPrincipalComponent implements OnInit {
     }
   }
 
-  listaTransaccionActualizada(event) {
-    this.listaTransaccion = event;
+  listaPuntajeActualizada(event) {
+    this.listaPuntaje = event;
   }
 
   openDetail(codjornada) {
     this.showDetail = true;
   }
 
-  openEditarDetail(transaccion: Transaccion) {
-    this.transaccionSeleccionado = transaccion;
+  openEditarDetail(puntaje: Puntaje) {
+    this.puntajeSeleccionado = puntaje;
     this.showDetail = true;
   }
 
-  openRemoverDetail(transaccion: Transaccion) {
+  async guardarNotas(participante, indexSelec) {
+    if (this.idInput === null) {
+      // Guardar el primer registro en la misma fila
+      this.guardarNota(participante, indexSelec);
+      this.datosEditar = null;
+      return;
+    }
+    if (this.idInput != indexSelec) {
+      await this.verificarGuardarPendiente();
+      if (this.continuarGuardarPendiente) {
+        // Primero guardar los campos anteriores
+        this.guardarNota(participante, indexSelec);
+        // Reseteamos variables
+        this.idInput = null;
+        this.datosEditar = null;
+        this.activarInput = false;
+      }
+    } else {
+      this.guardarNota(participante, indexSelec);
+      this.idInput = null;
+      this.datosEditar = null;
+      this.activarInput = false;
+    }
+  }
+
+  async guardarNota(participante, indexSelec) {
+    let puntajeTotal = 0;
+    let notaGuardada = 0;
+    let errorGuardar = 0;
+    for (const puntajeAux of participante.listaNotas) {
+      if (puntajeAux.proValor >= puntajeAux.mprDesde &&
+        puntajeAux.proValor <= puntajeAux.mprHasta &&
+        puntajeAux.proValor != 0) {
+        puntajeTotal = puntajeTotal + (puntajeAux.proPorcentaje / 100) * Number(puntajeAux ? puntajeAux.proValor : 0);
+        await new Promise((resolve, rejects) => {
+          let puntaje = new Puntaje;
+          puntaje = this.moverDatosPuntaje(puntajeAux);
+          this.puntajeService.guardarPuntaje(puntaje).subscribe({
+            next: (respuesta) => {
+              puntaje.codigo = respuesta['objeto'].codigo;
+              notaGuardada = notaGuardada + 1;
+              //this.mensajeService.mensajeCorrecto('Se ha guardado el registro correctamente...');
+              resolve("OK");
+            }, error: (error) => {
+              this.mensajeService.mensajeError('Ha habido un problema al guardar el registro...' + error);
+              rejects("Error");
+            }
+          });
+        });
+      } else {
+        errorGuardar = errorGuardar + 1;
+        this.controlarRangoNotas(puntajeAux);
+      }
+    }
+    if (errorGuardar == 0) {
+      this.mensajeService.mensajeCorrecto('Se ha guardado las notas correctamente...');
+    }
+    participante.puntaje = puntajeTotal;
+  }
+
+  moverDatosPuntaje(puntajeAux: Puntaje): Puntaje {
+    let puntaje = new Puntaje();
+    puntaje = {
+      codigo: puntajeAux?.codigo,
+      estado: puntajeAux?.estado,
+      puntaje: puntajeAux?.puntaje,
+      codParticipante: puntajeAux?.codParticipante,
+      codModeloPuntaje: puntajeAux?.codModeloPuntaje,
+      codSubcategoria: puntajeAux?.codSubcategoria,
+      codInstancia: puntajeAux?.codInstancia,
+    }
+
+    return puntaje;
+  }
+
+  controlarRangoNotas(puntajeAux: Puntaje) {
+    if (puntajeAux.puntaje != 0) {
+      this.mensajeService.mensajeAdvertencia("La nota " + puntajeAux.puntaje + " no se encuentra en el rango de " + ", vuelva a ingresar...  ");
+      if (puntajeAux.puntaje == 0) {
+        puntajeAux.puntaje = 0;
+      } else {
+        this.activarInput = false;
+        this.listarParticipantePorSubcategoria();
+      }
+    }
+  }
+
+  editarNota = async (participante, indexSelec) => {
+    this.participante = participante;
+    this.indexSelec = indexSelec;
+    if (!this.datosEditar) { this.datosEditar = participante; }
+    if (this.activarInput && this.idInput != indexSelec) {
+      await this.verificarGuardarPendiente();
+      if (this.continuarGuardarPendiente) {
+        // Hicieron click en "Sí, Guardar"
+        this.guardarNota(this.datosEditar, indexSelec);
+        this.idInput = indexSelec;
+        this.activarInput = false;
+        this.datosEditar = null;
+      } else {
+        this.activarInput = false;
+        this.listarParticipantePorSubcategoria();
+      }
+    } else {
+      this.idInput = indexSelec;
+      this.activarInput = true;
+    }
+  }
+
+  async verificarGuardarPendiente() {
+    this.continuarGuardarPendiente = false;
+    await new Promise((resolve, rejects) => {
+      Swal
+        .fire({
+          title: "Actualizar Registro",
+          text: "¿Aun tiene registros por guardar?'",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: "Sí, guardar",
+          cancelButtonText: "Cancelar",
+        })
+        .then(async resultado => {
+          if (resultado.value) {
+            // Hicieron click en "Sí, Guardar"
+            this.continuarGuardarPendiente = true;
+          } else {
+            // Hicieron click en "Cancelar"
+            console.log("*Se cancela el proceso...*");
+          }
+          resolve(resultado);
+        });
+    })
+  }
+
+  capturarInputs(datosParticipante) {
+    this.datosEditar = datosParticipante;
+  }
+
+  async listarParticipantePorSubcategoria() {
+    // Receptar la descripción de formPuntajeParametro.value
+    let puntajeParametroTemp = this.formPuntajeParametro.value;
+    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
+    this.codInstancia = puntajeParametroTemp?.codInstancia;
+    console.log("this.codSubcategoria = ", this.codSubcategoria);
+    console.log("listarParticipantePorSubcategoria() 1 = ", this.activarInput);
+    if (this.activarInput) {
+      this.editarNota(this.participante, " ");
+      return;
+    }
+
+    this.idInput = '';
+    this.activarInput = false;
+    console.log("listarParticipantePorSubcategoria() 2 = ", this.codSubcategoria);
+
+    await new Promise((resolve, rejects) => {
+      this.puntajeService.listarParticipantePorSubcategoria(this.codSubcategoria).subscribe({
+        next: async (respuesta) => {
+          this.listaParticipantePresentacion = respuesta['listado'];
+          console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion);
+          for (const est of this.listaParticipantePresentacion) {
+            await new Promise((resolve, rejects) => {
+              this.puntajeService.listarPuntajePorSubcategoria(est.codSubcategoria, this.codInstancia).subscribe({
+                next: (respuesta) => {
+                  let listNotas: Puntaje[] = [];
+                  let listNotasConsulta: Puntaje[] = respuesta['listado'];
+                  console.log("listNotasConsulta = ", listNotasConsulta);
+                  for (const modelo of this.listaModeloPuntaje) {
+                    let auxBusqueda = listNotasConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
+                    if (auxBusqueda) {
+                      //auxBusqueda.mprDesde = modelo.mprDesde;
+                      //auxBusqueda.mprHasta = modelo.mprHasta;
+                      listNotas.push(auxBusqueda)
+                    } else {
+                      let nuevoPuntajeAux = new Puntaje();
+                      nuevoPuntajeAux = {
+                        codigo: 0,
+                        estado: 'A',
+                        puntaje: 0,
+                        codParticipante: est.codigo,
+                        codInstancia: this.codInstancia,
+                        codSubcategoria: this.codSubcategoria,
+                        codModeloPuntaje: modelo.codigo,
+                      }
+                      listNotas.push(nuevoPuntajeAux)
+                    }
+                  }
+                  est.listaNotas = listNotas;
+                  let puntajeTotal = 0;
+                  for (const nota of est.listaNotas) {
+                    puntajeTotal = puntajeTotal + (nota.proPorcentaje / 100) * Number(nota ? nota.proValor : 0);
+                  }
+                  est.puntaje = puntajeTotal;
+                  resolve("OK");
+                }, error: (error) => {
+                  console.log(error);
+                  rejects("Error");
+                }
+              });
+            });
+          }
+          resolve("OK");
+        }, error: (error) => {
+          console.log(error);
+          rejects("Error");
+        }
+      });
+    });
+  }
+
+  openRemoverDetail(puntaje: Puntaje) {
     Swal
       .fire({
         title: "Eliminar Registro",
@@ -278,9 +504,9 @@ export class TransaccionPrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, eliminar"
-          this.transaccionService.eliminarTransaccionPorId(transaccion.codigo).subscribe({
+          this.puntajeService.eliminarPuntajePorId(puntaje.codigo).subscribe({
             next: (response) => {
-              this.listarTransaccion();
+              this.listarPuntaje();
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
             },
             error: (error) => {
@@ -294,13 +520,20 @@ export class TransaccionPrincipalComponent implements OnInit {
       });
   }
 
-  compararAplicacion(o1, o2) {
+  compararCategoria(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
 
+  compararSubcategoria(o1, o2) {
+    return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
+  }
+
+  compararInstancia(o1, o2) {
+    return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
+  }
   closeDetail($event) {
     this.showDetail = $event;
-    this.transaccionSeleccionado = null;
+    this.puntajeSeleccionado = null;
   }
 
   // Contar los caracteres de la cedula para activar boton <Buscar>
@@ -308,12 +541,12 @@ export class TransaccionPrincipalComponent implements OnInit {
     if (event.target.value.length != 10) {
       this.resetTheForm();
     } else {
-      this.listarTransaccion();
+      this.listarPuntaje();
     }
   }
 
   resetTheForm(): void {
-    this.listaTransaccion = null;
+    this.listaPuntaje = null;
   }
 
   validateFormat(event) {
@@ -349,7 +582,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       .then(async resultado => {
         if (resultado.isConfirmed) {
           this.enviarNotificacion = true;
-          this.listarTransaccionACaducarse();
+          //this.listarPuntajeACaducarse();
         } else if (resultado.isDismissed) {
           console.log("No envia notificaciones");
         }
@@ -369,7 +602,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       //to: "javier.brito@educacion.gob.ec"      
       to: "vjbritoa@hotmail.com",
     });
-    this.transaccionService.enviarCorreo(this.reporteDTO['data']).subscribe({
+    this.puntajeService.enviarCorreo(this.reporteDTO['data']).subscribe({
       next: (respuesta) => {
         if (respuesta['codigoRespuesta'] == "Ok") {
           this.mensajeService.mensajeCorrecto('Se a enviado el correo a ' + this.reporteDTO['data'].to);
@@ -383,10 +616,10 @@ export class TransaccionPrincipalComponent implements OnInit {
     })
   }
 
-  async enviarWhatsapp(ele: Transaccion) {
+  async enviarWhatsapp(ele: Puntaje) {
     this.seEnvioWhatsapp = true;
-    this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
-    this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
+    //this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
+    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
     var api = "https://script.google.com/macros/s/AKfycbyoBhxuklU5D3LTguTcYAS85klwFINHxxd-FroauC4CmFVvS0ua/exec";
     var payload = {
       "op": "registermessage", "token_qr": this.token, "mensajes": [
@@ -411,13 +644,13 @@ export class TransaccionPrincipalComponent implements OnInit {
     });
   }
 
-  async enviarWhatsappApi(ele: Transaccion) {
+  async enviarWhatsappApi(ele: Puntaje) {
     this.seEnvioWhatsapp = true;
-    this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
-    this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
+    //this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
+    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
     console.log("celular = ", this.celularEnvioWhatsapp);
-    
-    this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
+
+    this.puntajeService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {
         console.log("response = ", response);
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
@@ -430,14 +663,14 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   /* Variables del html, para receptar datos y validaciones*/
-  get descripcionField() {
-    return this.formTransaccionDescripcion.get('descripcion');
+  get codCategoriaField() {
+    return this.formPuntajeParametro.get('codCategoria');
   }
-  get fechaInicioField() {
-    return this.formTransaccionDescripcion.get('fechaInicio');
+  get codSubcategoriaField() {
+    return this.formPuntajeParametro.get('codSubcategoria');
   }
-  get fechaFinField() {
-    return this.formTransaccionDescripcion.get('fechaFin');
+  get codInstanciaField() {
+    return this.formPuntajeParametro.get('codInstancia');
   }
 
 }

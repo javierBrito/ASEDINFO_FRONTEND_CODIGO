@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Sede } from 'app/auth/models/sede';
-import { Transaccion } from 'app/main/pages/compartidos/modelos/Transaccion';
+import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
-import { DetailComponent } from 'app/main/pages/venta/transaccion/componentes/detail/detail.component';
-import { TransaccionService } from '../../../servicios/transaccion.service';
+import { DetailComponent } from 'app/main/pages/competencia/puntaje/componentes/detail/detail.component';
+import { PuntajeService } from '../../../servicios/puntaje.service';
 import { SedeService } from 'app/main/pages/seguridad/sede/servicios/sede.service';
 import dayjs from "dayjs";
-import { ClienteService } from 'app/main/pages/venta/cliente/servicios/cliente.service';
+import { ParticipanteService } from 'app/main/pages/competencia/participante/servicios/participante.service';
 import { ProductoService } from 'app/main/pages/catalogo/producto/servicios/producto.service';
-import { Cliente } from 'app/main/pages/compartidos/modelos/Cliente';
+import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
@@ -17,21 +17,21 @@ import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 
 @Component({
-  selector: 'app-form-transaccion',
-  templateUrl: './form-transaccion.component.html',
-  styleUrls: ['./form-transaccion.component.scss']
+  selector: 'app-form-puntaje',
+  templateUrl: './form-puntaje.component.html',
+  styleUrls: ['./form-puntaje.component.scss']
 })
-export class FormTransaccionComponent implements OnInit {
+export class FormPuntajeComponent implements OnInit {
   /*SPINNER*/
   public load_btn: boolean;
 
   /*OUTPUT ENVIAN*/
   @Output() close: EventEmitter<boolean>;
-  @Output() listaTransaccion: EventEmitter<any>;
+  @Output() listaPuntaje: EventEmitter<any>;
 
   /*INPUT RECIBEN*/
-  @Input() listaTransaccionChild: any;
-  @Input() transaccionEditar: Transaccion;
+  @Input() listaPuntajeChild: any;
+  @Input() puntajeEditar: Puntaje;
   @Input() codigoChild: number;
   @Input() descripcionChild: string;
 
@@ -51,17 +51,17 @@ export class FormTransaccionComponent implements OnInit {
   public fechaHoy: string = dayjs(new Date).format("YYYY-MM-DD");
 
   /*FORMULARIOS*/
-  public formTransaccion: FormGroup;
+  public formPuntaje: FormGroup;
 
   /*OBJETOS*/
-  public transaccion: Transaccion;
+  public puntaje: Puntaje;
   public persona: Persona;
   public producto: Producto;
   public modulo: Modulo;
   public operacion: Operacion;
-  public cliente: Cliente;
+  public participante: Participante;
   public listaSede: Sede[];
-  public listaCliente: Cliente[];
+  public listaParticipante: Participante[];
   public listaProducto: Producto[];
   public listaRespuesta = [
     { valor: "SI" },
@@ -70,11 +70,11 @@ export class FormTransaccionComponent implements OnInit {
 
   /*CONSTRUCTOR*/
   constructor(
-    private transaccionService: TransaccionService,
+    private puntajeService: PuntajeService,
     private sedeService: SedeService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
-    private clienteService: ClienteService,
+    private participanteService: ParticipanteService,
     private productoService: ProductoService,
     private personaService: PersonaService,
   ) {
@@ -83,10 +83,10 @@ export class FormTransaccionComponent implements OnInit {
     //this.sede = this.currentUser.sede;
     //this.amieRegex = this.patternAmie(this.sede.nombre);
     this.close = new EventEmitter<boolean>();
-    this.listaTransaccion = new EventEmitter<any>();
+    this.listaPuntaje = new EventEmitter<any>();
     this.showDetail = true;
     /*LISTAS*/
-    this.listarCliente();
+    this.listarParticipante();
     this.listarProducto();
   }
 
@@ -94,23 +94,25 @@ export class FormTransaccionComponent implements OnInit {
     this.listarSedeActivo();
     this.buscarModuloPorNemonico();
     this.buscarOperacionPorNemonico();
-    if (this.transaccionEditar) {
-      this.codProducto = this.transaccionEditar?.producto?.codigo;
-      this.formTransaccion = this.formBuilder.group({
-        codCliente: new FormControl(this.transaccionEditar.codCliente, Validators.required),
-        producto: new FormControl(this.transaccionEditar.producto, Validators.required),
-        descripcion: new FormControl(this.transaccionEditar.descripcion, Validators.required),
-        precio: new FormControl(this.transaccionEditar.precio, Validators.required),
-        fechaInicio: new FormControl(dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
-        fechaFin: new FormControl(dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
-        numProducto: new FormControl(this.transaccionEditar.numProducto, Validators.required),
-        numExistenciaActual: new FormControl(this.transaccionEditar.numExistenciaActual),
-        numMes: new FormControl(this.transaccionEditar.numMes),
+    if (this.puntajeEditar) {
+      //this.codProducto = this.puntajeEditar?.producto?.codigo;
+      this.formPuntaje = this.formBuilder.group({
+        codParticipante: new FormControl(this.puntajeEditar.codParticipante, Validators.required),
+        /*
+        producto: new FormControl(this.puntajeEditar.producto, Validators.required),
+        descripcion: new FormControl(this.puntajeEditar.descripcion, Validators.required),
+        precio: new FormControl(this.puntajeEditar.precio, Validators.required),
+        fechaInicio: new FormControl(dayjs(this.puntajeEditar.fechaInicio).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
+        fechaFin: new FormControl(dayjs(this.puntajeEditar.fechaFin).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
+        numProducto: new FormControl(this.puntajeEditar.numProducto, Validators.required),
+        numExistenciaActual: new FormControl(this.puntajeEditar.numExistenciaActual),
+        numMes: new FormControl(this.puntajeEditar.numMes),
+        */
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
-      this.formTransaccion = this.formBuilder.group({
-        codCliente: new FormControl('', Validators.required),
+      this.formPuntaje = this.formBuilder.group({
+        codParticipante: new FormControl('', Validators.required),
         producto: new FormControl('', Validators.required),
         descripcion: new FormControl('', Validators.required),
         precio: new FormControl('', Validators.required),
@@ -124,7 +126,7 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   buscarModuloPorNemonico() {
-    this.transaccionService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
+    this.puntajeService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
       (respuesta) => {
         this.modulo = respuesta['objeto'];
       }
@@ -132,18 +134,18 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   buscarOperacionPorNemonico() {
-    this.transaccionService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
+    this.puntajeService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
       (respuesta) => {
         this.operacion = respuesta['objeto'];
       }
     )
   }
 
-  listarCliente() {
-    this.clienteService.listarClienteActivo().subscribe(
+  listarParticipante() {
+    this.participanteService.listarParticipanteActivo().subscribe(
       (respuesta) => {
-        this.listaCliente = respuesta['listado'];
-        for (const ele of this.listaCliente) {
+        this.listaParticipante = respuesta['listado'];
+        for (const ele of this.listaParticipante) {
           // Obtener persona
           this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
             (respuesta) => {
@@ -175,47 +177,47 @@ export class FormTransaccionComponent implements OnInit {
     });
   }
 
-  async listarTransaccionPorDescripcion() {
+  async listarPuntajePorDescripcion() {
     if (this.descripcionChild?.length != 0) {
-      this.transaccionService.listarTransaccionPorDescripcion(this.descripcionChild).subscribe(
+      this.puntajeService.listarPuntajePorDescripcion(this.descripcionChild).subscribe(
         (respuesta) => {
-          this.listaTransaccionChild = respuesta['listado'];
-          if (this.listaTransaccionChild?.length > 0) {
-            this.mostrarListaTransaccion();
+          this.listaPuntajeChild = respuesta['listado'];
+          if (this.listaPuntajeChild?.length > 0) {
+            this.mostrarListaPuntaje();
           }
         }
       )
     } else {
-      this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
+      this.puntajeService.listarPuntajeActivo(this.modulo?.nemonico).subscribe(
         (respuesta) => {
-          this.listaTransaccionChild = respuesta['listado'];
-          if (this.listaTransaccionChild?.length > 0) {
-            this.mostrarListaTransaccion();
+          this.listaPuntajeChild = respuesta['listado'];
+          if (this.listaPuntajeChild?.length > 0) {
+            this.mostrarListaPuntaje();
           }
         }
       )
     };
-    this.listaTransaccion.emit(this.listaTransaccionChild);
+    this.listaPuntaje.emit(this.listaPuntajeChild);
   }
 
-  mostrarListaTransaccion() {
-    for (const ele of this.listaTransaccionChild) {
+  mostrarListaPuntaje() {
+    for (const ele of this.listaPuntajeChild) {
       ele.colorFila = "green";
       ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
       ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
       if (ele.fechaFin <= this.fechaHoy) {
         ele.colorFila = "red";
       }
-      // Obtener cliente
-      this.clienteService.buscarClientePorCodigo(ele.codCliente).subscribe(
+      // Obtener participante
+      this.participanteService.buscarParticipantePorCodigo(ele.codParticipante).subscribe(
         (respuesta) => {
-          this.cliente = respuesta['objeto'];
-          ele.cliente = this.cliente;
+          this.participante = respuesta['objeto'];
+          ele.participante = this.participante;
           // Obtener persona
-          this.personaService.buscarPersonaPorCodigo(ele.cliente.codPersona).subscribe(
+          this.personaService.buscarPersonaPorCodigo(ele.participante.codPersona).subscribe(
             (respuesta) => {
               this.persona = respuesta['objeto'];
-              ele.cliente.persona = this.persona;
+              ele.participante.persona = this.persona;
             }
           )
         }
@@ -231,11 +233,11 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   obtenerProducto() {
-    // Receptar el codAplicacion de formTransaccion.value
-    let formTransaccionTemp = this.formTransaccion.value;
-    this.codProducto = formTransaccionTemp?.producto?.codigo;
-    this.formTransaccion.controls.precio.setValue(formTransaccionTemp?.producto?.precioCosto);
-    this.formTransaccion.controls.numExistenciaActual.setValue(formTransaccionTemp?.producto?.numExistenciaActual);
+    // Receptar el codAplicacion de formPuntaje.value
+    let formPuntajeTemp = this.formPuntaje.value;
+    this.codProducto = formPuntajeTemp?.producto?.codigo;
+    this.formPuntaje.controls.precio.setValue(formPuntajeTemp?.producto?.precioCosto);
+    this.formPuntaje.controls.numExistenciaActual.setValue(formPuntajeTemp?.producto?.numExistenciaActual);
   }
 
   patternAmie(amie: string) {
@@ -246,41 +248,42 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   addRegistro() {
-    if (this.formTransaccion?.valid) {
-      let transaccionTemp = this.formTransaccion.value;
+    if (this.formPuntaje?.valid) {
+      let puntajeTemp = this.formPuntaje.value;
       let fechaFinDate = new Date();
-      let fechaFinString = dayjs(transaccionTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS");
-      if (transaccionTemp?.numMes != "" && transaccionTemp?.numMes != 0) {
-        this.numMes = transaccionTemp?.numMes;
+      let fechaFinString = dayjs(puntajeTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS");
+      if (puntajeTemp?.numMes != "" && puntajeTemp?.numMes != 0) {
+        this.numMes = puntajeTemp?.numMes;
         fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes)
         fechaFinString = fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate();
       }
-      console.log("cod cliente = ", transaccionTemp?.codCliente);
+      console.log("cod participante = ", puntajeTemp?.codParticipante);
       console.log("cod producto = ", this.codProducto);
-  
-      this.transaccion = new Transaccion({
+      /*
+      this.puntaje = new Puntaje({
         codigo: 0,
-        codCliente: transaccionTemp?.codCliente,
+        codParticipante: puntajeTemp?.codParticipante,
         codProducto: this.codProducto,
         codModulo: this.modulo?.codigo,
         codOperacion: this.operacion?.codigo,
-        descripcion: transaccionTemp?.descripcion,
-        precio: transaccionTemp?.precio,
-        numProducto: transaccionTemp?.numProducto,
+        descripcion: puntajeTemp?.descripcion,
+        precio: puntajeTemp?.precio,
+        numProducto: puntajeTemp?.numProducto,
         numMes: this.numMes,
-        fechaInicio: dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        fechaInicio: dayjs(puntajeTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaFin: dayjs(fechaFinString).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaRegistra: dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS"),
         estado: 'A',
       });
+      */
     }
-    if (this.transaccionEditar) {
-      this.transaccion['data'].codigo = this.transaccionEditar.codigo;
-      //this.transaccion['data'].descripcion = this.descripcionChild;
-      //this.descripcionChild = this.transaccion['data'].descripcion;
-      this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
+    if (this.puntajeEditar) {
+      this.puntaje['data'].codigo = this.puntajeEditar.codigo;
+      //this.puntaje['data'].descripcion = this.descripcionChild;
+      //this.descripcionChild = this.puntaje['data'].descripcion;
+      this.puntajeService.guardarPuntaje(this.puntaje['data']).subscribe({
         next: (response) => {
-          this.listarTransaccionPorDescripcion();
+          this.listarPuntajePorDescripcion();
           this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
           this.parentDetail.closeDetail();
         },
@@ -290,9 +293,9 @@ export class FormTransaccionComponent implements OnInit {
         }
       });
     } else {
-      this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
+      this.puntajeService.guardarPuntaje(this.puntaje['data']).subscribe({
         next: async (response) => {
-          this.listarTransaccionPorDescripcion();
+          this.listarPuntajePorDescripcion();
           this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
           this.parentDetail.closeDetail();
         },
@@ -343,39 +346,39 @@ export class FormTransaccionComponent implements OnInit {
       this.numMes = Number(event.target.value);
       fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
       fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
-      this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+      this.formPuntaje.controls.fechaFin.setValue(fechaFinString);
     }
   }
 
   get descripcionField() {
-    return this.formTransaccion.get('descripcion');
+    return this.formPuntaje.get('descripcion');
   }
   get precioField() {
-    return this.formTransaccion.get('precio');
+    return this.formPuntaje.get('precio');
   }
   get numProductoField() {
-    return this.formTransaccion.get('numProducto');
+    return this.formPuntaje.get('numProducto');
   }
   get numExistenciaActualField() {
-    return this.formTransaccion.get('numExistenciaActual');
+    return this.formPuntaje.get('numExistenciaActual');
   }
   get fechaRegistraField() {
-    return this.formTransaccion.get('fechaRegistra');
+    return this.formPuntaje.get('fechaRegistra');
   }
   get fechaInicioField() {
-    return this.formTransaccion.get('fechaInicio');
+    return this.formPuntaje.get('fechaInicio');
   }
   get fechaFinField() {
-    return this.formTransaccion.get('fechaFin');
+    return this.formPuntaje.get('fechaFin');
   }
-  get codClienteField() {
-    return this.formTransaccion.get('codCliente');
+  get codParticipanteField() {
+    return this.formPuntaje.get('codParticipante');
   }
   get productoField() {
-    return this.formTransaccion.get('producto');
+    return this.formPuntaje.get('producto');
   }
   get numMesField() {
-    return this.formTransaccion.get('numMes');
+    return this.formPuntaje.get('numMes');
   }
 
 }

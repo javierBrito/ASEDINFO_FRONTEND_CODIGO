@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { TransaccionPrincipalComponent } from '../componentes/transaccion-principal/transaccion-principal.component';
+import { PuntajePrincipalComponent } from '../componentes/puntaje-principal/puntaje-principal.component';
 
-export const RUTA_TRANSACCION: Routes = [
+export const RUTA_PUNTAJE: Routes = [
   {
-    path: 'venta/transaccion',
-    component: TransaccionPrincipalComponent,
+    path: 'competencia/puntaje',
+    component: PuntajePrincipalComponent,
     //canActivate: [AuthGuard],
   }
 ];

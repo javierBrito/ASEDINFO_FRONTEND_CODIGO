@@ -1,6 +1,6 @@
 <app-detail (close)="closeDetail($event)">
-    <h1 detail-title><strong>{{transaccionEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
-    <form detail-content [formGroup]="formTransaccion" (ngSubmit)="addRegistro()">
+    <h1 detail-title><strong>{{puntajeEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
+    <form detail-content [formGroup]="formPuntaje" (ngSubmit)="addRegistro()">
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
                 <div class="col-12">
@@ -11,12 +11,12 @@
             </div>
             <div class="row form-group">
                 <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
-                    <label for="codCliente"><b>{{'Cliente(*): '}}</b></label>
-                    <select name="codCliente" formControlName="codCliente" required placeholder="Seleccione Cliente..."
-                        class="form-control mr-sm-2" id="codCliente">
-                        <option [value]="" selected>Seleccionar Cliente</option>
-                        <option *ngFor="let cliente  of listaCliente" [value]="cliente.codigo">
-                            <span>{{cliente?.persona?.nombres}}</span>
+                    <label for="codParticipante"><b>{{'Participante(*): '}}</b></label>
+                    <select name="codParticipante" formControlName="codParticipante" required placeholder="Seleccione Participante..."
+                        class="form-control mr-sm-2" id="codParticipante">
+                        <option [value]="" selected>Seleccionar Participante</option>
+                        <option *ngFor="let participante  of listaParticipante" [value]="participante.codigo">
+                            <span>{{participante?.persona?.nombres}}</span>
                         </option>
                     </select>
                     <div class="valid-feedback"></div>
@@ -128,8 +128,8 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-block btn-primary" [disabled]="formTransaccion?.invalid">
-                        {{transaccionEditar?'GUARDAR':'GUARDAR'}}</button>
+                    <button type="submit" class="btn btn-block btn-primary" [disabled]="formPuntaje?.invalid">
+                        {{puntajeEditar?'GUARDAR':'GUARDAR'}}</button>
                 </div>
             </div>
         </div>
@@ -143,7 +143,7 @@
         </button>
     </div>
     <div class="modal-body">
-        {{transaccionEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro
+        {{puntajeEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro
         correctamente.'}}
     </div>
 </ng-template>
@@ -155,7 +155,7 @@
         </button>
     </div>
     <div class="modal-body">
-        {{transaccionEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
+        {{puntajeEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
         registro.'}}
     </div>
 </ng-template>
