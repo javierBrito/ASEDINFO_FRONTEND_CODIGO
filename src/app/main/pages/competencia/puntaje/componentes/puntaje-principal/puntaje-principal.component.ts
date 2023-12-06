@@ -153,24 +153,23 @@ export class PuntajePrincipalComponent implements OnInit {
     )
   }
 
-  listarInstanciaActivo() {
-    this.puntajeService.listarInstanciaActivo().subscribe(
-      (respuesta) => {
-        this.listaInstancia = respuesta['listado'];
-        console.log("this.listaInstancia = ", this.listaInstancia);
-      }
-    )
-  }
-
   listarSubcategoriaPorCategoria() {
-    console.log("JB");
+    this.listaParticipantePresentacion = [];
     // Receptar la descripción de formPuntajeParametro.value
     let puntajeParametroTemp = this.formPuntajeParametro.value;
     this.codCategoria = puntajeParametroTemp?.codCategoria;
     this.puntajeService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
         this.listaSubcategoria = respuesta['listado'];
-        console.log("this.listaSubcategoria = ", this.listaSubcategoria);
+      }
+    )
+  }
+
+  listarInstanciaActivo() {
+    this.listaParticipantePresentacion = [];
+    this.puntajeService.listarInstanciaActivo().subscribe(
+      (respuesta) => {
+        this.listaInstancia = respuesta['listado'];
       }
     )
   }
@@ -218,7 +217,6 @@ export class PuntajePrincipalComponent implements OnInit {
     let notaGuardada = 0;
     let errorGuardar = 0;
     for (const puntajeAux of participante.listaNotas) {
-      console.log("puntajeAux = ", puntajeAux);
       if (puntajeAux.puntaje > 0 &&
         puntajeAux.puntaje < 10 &&
         puntajeAux.puntaje != 0) {
@@ -271,7 +269,7 @@ export class PuntajePrincipalComponent implements OnInit {
         puntajeAux.puntaje = 0;
       } else {
         this.activarInput = false;
-        this.listarParticipantePorSubcategoria();
+        this.listarPuntajePorParticipante();
       }
     }
   }
@@ -290,7 +288,7 @@ export class PuntajePrincipalComponent implements OnInit {
         this.datosEditar = null;
       } else {
         this.activarInput = false;
-        this.listarParticipantePorSubcategoria();
+        this.listarPuntajePorParticipante();
       }
     } else {
       this.idInput = indexSelec;
@@ -327,13 +325,12 @@ export class PuntajePrincipalComponent implements OnInit {
     this.datosEditar = datosParticipante;
   }
 
-  async listarParticipantePorSubcategoria() {
+  async listarPuntajePorParticipante() {
+    this.listaParticipantePresentacion = [];
     // Receptar la descripción de formPuntajeParametro.value
     let puntajeParametroTemp = this.formPuntajeParametro.value;
     this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
     this.codInstancia = puntajeParametroTemp?.codInstancia;
-    console.log("this.codSubcategoria = ", this.codSubcategoria);
-    console.log("listarParticipantePorSubcategoria() 1 = ", this.activarInput);
     if (this.activarInput) {
       this.editarNota(this.participante, " ");
       return;
@@ -341,20 +338,17 @@ export class PuntajePrincipalComponent implements OnInit {
 
     this.idInput = '';
     this.activarInput = false;
-    console.log("listarParticipantePorSubcategoria() 2 = ", this.codSubcategoria);
 
     await new Promise((resolve, rejects) => {
-      this.puntajeService.listarParticipantePorSubcategoria(this.codSubcategoria).subscribe({
+      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
-          console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion);
           for (const est of this.listaParticipantePresentacion) {
             await new Promise((resolve, rejects) => {
               this.puntajeService.listarPuntajePorParticipante(est.codigo, this.codInstancia).subscribe({
                 next: (respuesta) => {
                   let listNotas: Puntaje[] = [];
                   let listNotasConsulta: Puntaje[] = respuesta['listado'];
-                  console.log("listNotasConsulta = ", listNotasConsulta);
                   for (const modelo of this.listaModeloPuntaje) {
                     let auxBusqueda = listNotasConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
                     if (auxBusqueda) {

@@ -2,6 +2,7 @@ export interface Iparticipante {
     codigo?: number;
     codPersona?: number;
     codSubcategoria?: number;
+    codInstancia?: number;
     dateRegistered?: string;
     username?: string;
 
@@ -12,6 +13,7 @@ export interface Iparticipante {
     email: string;
     
     desSubcategoria: string;
+    desInstancia: string;
     
     persona: any;
     nombrePersona: string;

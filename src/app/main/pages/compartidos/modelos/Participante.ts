@@ -93,5 +93,16 @@ export class Participante implements Iparticipante {
     set email(value: string) {
         set(this, 'data.email', value);
     }
-
+    get codInstancia(): number {
+        return get(this, 'data.codInstancia');
+    }
+    set codInstancia(value: number) {
+        set(this, 'data.codInstancia', value);
+    }
+    get desInstancia(): string {
+        return get(this, 'data.desInstancia');
+    }
+    set desInstancia(value: string) {
+        set(this, 'data.desInstancia', value);
+    }
 }

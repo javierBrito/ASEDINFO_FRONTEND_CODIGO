@@ -8,7 +8,7 @@
                     </div>
                 </div>
                 <form detail-content [formGroup]="formPuntajeParametro"
-                    (ngSubmit)="listarParticipantePorSubcategoria()">
+                    (ngSubmit)="listarPuntajePorParticipante()">
                     <div class="row form-group">
                         <div class="col-3">
                             <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
@@ -28,7 +28,8 @@
                             <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
-                                class="form-control mr-sm-2 custom-select" id="codSubcategoria">
+                                class="form-control mr-sm-2 custom-select" id="codSubcategoria"
+                                (change)="listarInstanciaActivo()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
                                     <span><b>{{subcategoria?.denominacion}}</b></span>
@@ -41,7 +42,8 @@
                             <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
-                                class="form-control mr-sm-2 custom-select" id="codInstancia">
+                                class="form-control mr-sm-2 custom-select" id="codInstancia"
+                                (change)="listarPuntajePorParticipante()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>

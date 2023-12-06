@@ -126,6 +126,9 @@ export class PuntajeService {
   listarParticipantePorSubcategoria(codSubcategoria: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoria/${codSubcategoria}`);
   }
+  listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number) {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}`);
+  }
 
   /*SERVICIOS EXTERNOS*/
   public loadScriptAnt() {
