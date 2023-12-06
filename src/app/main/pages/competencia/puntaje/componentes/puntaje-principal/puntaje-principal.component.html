@@ -7,12 +7,14 @@
                         <h5>Parámetros busqueda :</h5>
                     </div>
                 </div>
-                <form detail-content [formGroup]="formPuntajeParametro" (ngSubmit)="listarParticipantePorSubcategoria()">
+                <form detail-content [formGroup]="formPuntajeParametro"
+                    (ngSubmit)="listarParticipantePorSubcategoria()">
                     <div class="row form-group">
                         <div class="col-3">
                             <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
-                            <select name="codCategoria" formControlName="codCategoria" required [compareWith]="compararCategoria"
-                                placeholder="Seleccione categoría..." class="form-control mr-sm-2" id="codCategoria"
+                            <select name="codCategoria" formControlName="codCategoria" required
+                                [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
+                                class="form-control mr-sm-2" id="codCategoria"
                                 (change)="listarSubcategoriaPorCategoria()">
                                 <option [value]="''" selected>Seleccionar categoría</option>
                                 <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
@@ -24,9 +26,9 @@
                         </div>
                         <div class="col-3">
                             <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
-                            <select name="codSubcategoria" formControlName="codSubcategoria" required required [compareWith]="compararSubcategoria"
-                                placeholder="Seleccione subcategoría..." class="form-control mr-sm-2 custom-select"
-                                id="codSubcategoria">
+                            <select name="codSubcategoria" formControlName="codSubcategoria" required required
+                                [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
+                                class="form-control mr-sm-2 custom-select" id="codSubcategoria">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
                                     <span><b>{{subcategoria?.denominacion}}</b></span>
@@ -37,9 +39,9 @@
                         </div>
                         <div class="col-3">
                             <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
-                            <select name="codInstancia" formControlName="codInstancia" required required [compareWith]="compararInstancia"
-                                placeholder="Seleccione instancia..." class="form-control mr-sm-2 custom-select"
-                                id="codInstancia">
+                            <select name="codInstancia" formControlName="codInstancia" required required
+                                [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
+                                class="form-control mr-sm-2 custom-select" id="codInstancia">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>
@@ -88,7 +90,8 @@
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                                 {{'Agregar Puntaje'}}
                                             </button>
-                                            <table class="table" *ngIf="listaParticipantePresentacion?.length > 0" id="tablaPuntaje">
+                                            <table class="table" *ngIf="listaParticipantePresentacion?.length > 0"
+                                                id="tablaPuntaje">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
@@ -102,7 +105,7 @@
                                                     <tr [ngStyle]="{'color': puntaje?.colorFila}"
                                                         *ngFor="let participante of listaParticipantePresentacion | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{participante?.username}}</td>
+                                                        <td>{{participante?.nombrePersona}}</td>
                                                         <td *ngFor="let nota of participante?.listaNotas" scope="col">
                                                             <input style="width: 50px; text-align:center"
                                                                 [(ngModel)]="nota.puntaje"
@@ -114,16 +117,13 @@
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
-                                                                <button (click)="openEditarDetail(puntaje)"
-                                                                    matTooltip="Editar Puntaje" type=" button"
-                                                                    class="btn btn-primary" rippleEffect round><i
-                                                                        class="fa fa-pencil"
-                                                                        (click)="openEditarDetail(puntaje)"></i></button>
-                                                                <button (click)="openRemoverDetail(puntaje)"
-                                                                    matTooltip="Eliminar Puntaje" type="button"
-                                                                    class="btn btn-danger" rippleEffect><i
-                                                                        class="fa fa-trash"
-                                                                        (click)="openRemoverDetail(puntaje)"></i></button>
+                                                                <button [disabled]="idInput!='curso_'+index"
+                                                                    (click)="guardarNotas(participante, 'curso_'+index)"
+                                                                    type="button" class="btn btn-success"
+                                                                    rippleEffect><i class="fa fa-floppy-o"></i></button>
+                                                                <button (click)="editarNota(participante, 'curso_'+index)"
+                                                                    type=" button" class="btn btn-primary" rippleEffect
+                                                                    round><i class="fa fa-pencil"></i></button>
                                                             </div>
                                                         </td>
                                                     </tr>

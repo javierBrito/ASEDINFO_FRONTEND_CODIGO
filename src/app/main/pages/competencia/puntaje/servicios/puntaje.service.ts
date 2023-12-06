@@ -27,6 +27,9 @@ export class PuntajeService {
   listarPuntajePorSubcategoria(codSubcategoria: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoria/${codSubcategoria}/${codInstancia}`);
   }
+  listarPuntajePorParticipante(codParticipante: number, codInstancia: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipante/${codParticipante}/${codInstancia}`);
+  }
   listarPuntajePorRangoFechas(fechaInicio: string, fechaFin: string) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePorRangoFechas/${fechaInicio}/${fechaFin}`);
   }
@@ -43,7 +46,7 @@ export class PuntajeService {
     return this.http.get<Puntaje>(`${environment.url_seguridad}/catalogo/buscarPuntajePorCodigo/${codigo}`);
   }
   guardarPuntaje(puntaje) {
-    return this.http.post<Puntaje>(`${environment.url_seguridad}/catalogo/guardarPuntaje`, puntaje);
+    return this.http.post<Puntaje>(`${environment.url_seguridad}/competencia/guardarPuntaje`, puntaje);
   }
   // Enviar Correo con Archivo PDF
   enviarCorreo(reporteDTO: ReporteDTO): Observable<any> {

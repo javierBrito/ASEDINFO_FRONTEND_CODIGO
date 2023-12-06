@@ -124,9 +124,6 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.buscarModuloPorNemonico();
-    //this.buscarOperacionPorNemonico();
-    this.colorFila = "green";
     if (this.listaPuntajeChild != null) {
       this.listaPuntaje = this.listaPuntajeChild;
     }
@@ -144,7 +141,6 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
         this.listaModeloPuntaje = respuesta['listado'];
-        console.log("this.listaModeloPuntaje = ", this.listaModeloPuntaje);
       }
     )
   }
@@ -153,7 +149,6 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.listarCategoriaActivo().subscribe(
       (respuesta) => {
         this.listaCategoria = respuesta['listado'];
-        console.log("this.listaCategoria = ", this.listaCategoria);
       }
     )
   }
@@ -179,96 +174,7 @@ export class PuntajePrincipalComponent implements OnInit {
       }
     )
   }
-
-  buscarModuloPorNemonico() {
-    this.puntajeService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
-      (respuesta) => {
-        this.modulo = respuesta['objeto'];
-      }
-    )
-  }
-
-  buscarOperacionPorNemonico() {
-    this.puntajeService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
-      (respuesta) => {
-        this.operacion = respuesta['objeto'];
-      }
-    )
-  }
-
-  listarParticipantePorSubcategoria1() {
-    console.log("listarParticipante()");
-    this.enviarNotificacion = false;
-    this.listaPuntaje = [];
-    // Receptar la descripción de formPuntajeParametro.value
-    let puntajeParametroTemp = this.formPuntajeParametro.value;
-    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
-    this.codInstancia = puntajeParametroTemp?.codInstancia;
-    console.log("this.codSubcategoria = ", this.codSubcategoria);
-    this.puntajeService.listarParticipantePorSubcategoria(this.codSubcategoria).subscribe(
-      (respuesta) => {
-        this.listaParticipante = respuesta['listado'];
-        console.log("this.listaParticipante = ", this.listaParticipante);
-        if (this.listaParticipante?.length > 0) {
-          this.mostrarListaPuntaje();
-        }
-      }
-    )
-  }
-
-  listarPuntaje() {
-    console.log("listarPuntaje()");
-    this.enviarNotificacion = false;
-    this.listaPuntaje = [];
-    // Receptar la descripción de formPuntajeParametro.value
-    let puntajeParametroTemp = this.formPuntajeParametro.value;
-    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
-    this.codInstancia = puntajeParametroTemp?.codInstancia;
-    console.log("this.codSubcategoria = ", this.codSubcategoria);
-    this.puntajeService.listarPuntajePorSubcategoria(this.codSubcategoria, this.codInstancia).subscribe(
-      (respuesta) => {
-        this.listaPuntaje = respuesta['listado'];
-        console.log("this.listaPuntaje = ", this.listaPuntaje);
-        if (this.listaPuntaje?.length > 0) {
-          this.mostrarListaPuntaje();
-        }
-      }
-    )
-  }
-
-  mostrarListaPuntaje = async () => {
-    for (const ele of this.listaPuntaje) {
-      //ele.colorFila = "green";
-      /*
-      ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
-      ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
-      this.fechaFinMensaje = dayjs(ele.fechaFin).format("YYYY-MM-DD");
-
-      // Calcular la diferencia en días de la fecha actual y final de la transacción
-      var diff = new Date(ele.fechaFin).getTime() - new Date(this.fechaHoy).getTime();
-      var numDias = diff / (1000 * 60 * 60 * 24);
-
-      // ele.fechaFin <= this.fechaHoy
-      if (!(numDias > 0 && numDias > 5)) {
-        ele.colorFila = "red";
-      }
-
-      // Confirmar si se envia o no las Notificaciones
-      if (this.enviarNotificacion) {
-        this.enviarWhatsappApi(ele);
-      }
-      */
-    }
-
-    if (this.enviarNotificacion) {
-      if (this.seEnvioWhatsapp) {
-        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
-      } else {
-        this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
-      }
-    }
-  }
-
+  
   listaPuntajeActualizada(event) {
     this.listaPuntaje = event;
   }
@@ -312,9 +218,10 @@ export class PuntajePrincipalComponent implements OnInit {
     let notaGuardada = 0;
     let errorGuardar = 0;
     for (const puntajeAux of participante.listaNotas) {
-      if (puntajeAux.proValor >= puntajeAux.mprDesde &&
-        puntajeAux.proValor <= puntajeAux.mprHasta &&
-        puntajeAux.proValor != 0) {
+      console.log("puntajeAux = ", puntajeAux);
+      if (puntajeAux.puntaje > 0 &&
+        puntajeAux.puntaje < 10 &&
+        puntajeAux.puntaje != 0) {
         puntajeTotal = puntajeTotal + (puntajeAux.proPorcentaje / 100) * Number(puntajeAux ? puntajeAux.proValor : 0);
         await new Promise((resolve, rejects) => {
           let puntaje = new Puntaje;
@@ -333,7 +240,7 @@ export class PuntajePrincipalComponent implements OnInit {
         });
       } else {
         errorGuardar = errorGuardar + 1;
-        this.controlarRangoNotas(puntajeAux);
+        //this.controlarRangoNotas(puntajeAux);
       }
     }
     if (errorGuardar == 0) {
@@ -443,7 +350,7 @@ export class PuntajePrincipalComponent implements OnInit {
           console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion);
           for (const est of this.listaParticipantePresentacion) {
             await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorSubcategoria(est.codSubcategoria, this.codInstancia).subscribe({
+              this.puntajeService.listarPuntajePorParticipante(est.codigo, this.codInstancia).subscribe({
                 next: (respuesta) => {
                   let listNotas: Puntaje[] = [];
                   let listNotasConsulta: Puntaje[] = respuesta['listado'];
@@ -454,6 +361,7 @@ export class PuntajePrincipalComponent implements OnInit {
                       //auxBusqueda.mprDesde = modelo.mprDesde;
                       //auxBusqueda.mprHasta = modelo.mprHasta;
                       listNotas.push(auxBusqueda)
+                      console.log("auxBusqueda= ", auxBusqueda);
                     } else {
                       let nuevoPuntajeAux = new Puntaje();
                       nuevoPuntajeAux = {
@@ -465,15 +373,19 @@ export class PuntajePrincipalComponent implements OnInit {
                         codSubcategoria: this.codSubcategoria,
                         codModeloPuntaje: modelo.codigo,
                       }
+                      console.log("nuevoPuntajeAux= ", nuevoPuntajeAux);
                       listNotas.push(nuevoPuntajeAux)
                     }
                   }
                   est.listaNotas = listNotas;
+                  console.log("est.listaNotas = ", est.listaNotas);
+                  /*
                   let puntajeTotal = 0;
                   for (const nota of est.listaNotas) {
                     puntajeTotal = puntajeTotal + (nota.proPorcentaje / 100) * Number(nota ? nota.proValor : 0);
                   }
                   est.puntaje = puntajeTotal;
+                  */
                   resolve("OK");
                 }, error: (error) => {
                   console.log(error);
@@ -491,35 +403,6 @@ export class PuntajePrincipalComponent implements OnInit {
     });
   }
 
-  openRemoverDetail(puntaje: Puntaje) {
-    Swal
-      .fire({
-        title: "Eliminar Registro",
-        text: "¿Quieres borrar el registro?'",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-      })
-      .then(resultado => {
-        if (resultado.value) {
-          // Hicieron click en "Sí, eliminar"
-          this.puntajeService.eliminarPuntajePorId(puntaje.codigo).subscribe({
-            next: (response) => {
-              this.listarPuntaje();
-              this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
-            },
-            error: (error) => {
-              this.mensajeService.mensajeError('Ha habido un problema al borrar el registro...');
-            }
-          });
-        } else {
-          // Hicieron click en "Cancelar"
-          console.log("*Se cancela el proceso...*");
-        }
-      });
-  }
-
   compararCategoria(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
@@ -534,15 +417,6 @@ export class PuntajePrincipalComponent implements OnInit {
   closeDetail($event) {
     this.showDetail = $event;
     this.puntajeSeleccionado = null;
-  }
-
-  // Contar los caracteres de la cedula para activar boton <Buscar>
-  onKey(event) {
-    if (event.target.value.length != 10) {
-      this.resetTheForm();
-    } else {
-      this.listarPuntaje();
-    }
   }
 
   resetTheForm(): void {

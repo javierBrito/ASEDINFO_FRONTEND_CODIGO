@@ -62,5 +62,36 @@ export class Participante implements Iparticipante {
     set codSubcategoria(value: number) {
         set(this, 'data.codSubcategoria', value);
     }
+    
+    get customerId(): number {
+        return get(this, 'data.customerId');
+    }
+    set customerId(value: number) {
+        set(this, 'data.customerId', value);
+    }
+    get userId(): number {
+        return get(this, 'data.userId');
+    }
+    set userId(value: number) {
+        set(this, 'data.userId', value);
+    }
+    get firstName(): string {
+        return get(this, 'data.firstName');
+    }
+    set firstName(value: string) {
+        set(this, 'data.firstName', value);
+    }
+    get lastName(): string {
+        return get(this, 'data.lastName');
+    }
+    set lastName(value: string) {
+        set(this, 'data.lastName', value);
+    }
+    get email(): string {
+        return get(this, 'data.email');
+    }
+    set email(value: string) {
+        set(this, 'data.email', value);
+    }
 
 }

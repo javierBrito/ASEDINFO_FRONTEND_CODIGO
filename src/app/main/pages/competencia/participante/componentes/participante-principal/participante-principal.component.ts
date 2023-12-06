@@ -109,7 +109,7 @@ export class ParticipantePrincipalComponent implements OnInit {
                 this.listaParticipante = respuesta['listado'];                                                            
                 ele.participante = this.listaParticipante[0];
                 if (ele?.participante != undefined) {
-                  ele.participante.fechaInicio = dayjs(ele.participante.fechaInicio).format("YYYY-MM-DD")
+                  ele.participante.dateRegistered = dayjs(ele.participante.dateRegistered).format("YYYY-MM-DD")
                 }
               }
             )

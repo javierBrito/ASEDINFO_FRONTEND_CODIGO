@@ -12,31 +12,31 @@ export class ParticipanteService {
   constructor(private http: HttpClient) { }
   /*SERVICIOS EXTERNOS*/
   eliminarParticipantePorId(codigo: number): Observable<any> {
-    return this.http.delete<any>(`${environment.url_seguridad}/venta/eliminarParticipantePorId/${codigo}`);
+    return this.http.delete<any>(`${environment.url_seguridad}/competencia/eliminarParticipantePorId/${codigo}`);
   }
   listarParticipantePorSede(codigoSede: number) {
-    return this.http.get<Participante[]>(`${environment.url_seguridad}/venta/listarParticipantePorSede/${codigoSede}`);
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSede/${codigoSede}`);
   }
   listarParticipantePorIdentificacion(identificacion: string) {
-    return this.http.get<Participante[]>(`${environment.url_seguridad}/venta/listarParticipantePorIdentificacion/${identificacion}`);
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorIdentificacion/${identificacion}`);
   }
   listarParticipantePorPersona(codPersona: number) {
-    return this.http.get<Participante[]>(`${environment.url_seguridad}/venta/listarParticipantePorPersona/${codPersona}`);
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorPersona/${codPersona}`);
   }
   listarTodosParticipante(): Observable<any> | undefined {
-    return this.http.get<any[]>(`${environment.url_seguridad}/venta/listarTodosParticipante`);
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarTodosParticipante`);
   }
   listarParticipanteActivo(): Observable<any> | undefined {
-    return this.http.get<any[]>(`${environment.url_seguridad}/venta/listarParticipanteActivo`);
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipanteActivo`);
   }
   listarParticipantePadre(codigoAplicacion: number) {
-    return this.http.get<Participante[]>(`${environment.url_seguridad}/venta/listarParticipantePadre/${codigoAplicacion}`);
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePadre/${codigoAplicacion}`);
   }
   buscarParticipantePorCodigo(codigo: number) {
-    return this.http.get<Participante>(`${environment.url_seguridad}/venta/buscarParticipantePorCodigo/${codigo}`);
+    return this.http.get<Participante>(`${environment.url_seguridad}/competencia/buscarParticipantePorCodigo/${codigo}`);
   }
   guardarParticipante(participante) {
-    return this.http.post<Participante>(`${environment.url_seguridad}/venta/guardarParticipante`, participante);
+    return this.http.post<Participante>(`${environment.url_seguridad}/competencia/guardarParticipante`, participante);
   }
 
 }

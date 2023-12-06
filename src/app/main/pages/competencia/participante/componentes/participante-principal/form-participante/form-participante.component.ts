@@ -85,8 +85,8 @@ export class FormParticipanteComponent implements OnInit {
         direccion: new FormControl(this.personaEditar?.direccion),
         celular: new FormControl(this.personaEditar?.celular, Validators.required),
         correo: new FormControl(this.personaEditar?.correo, Validators.required),
-        fechaInicio: new FormControl(dayjs(this.personaEditar?.participante?.fechaInicio).format("YYYY-MM-DD")),
-        tipoParticipante: new FormControl(this.personaEditar?.participante?.tipoParticipante),
+        dateRegistered: new FormControl(dayjs(this.personaEditar?.participante?.fechaInicio).format("YYYY-MM-DD")),
+        username: new FormControl(this.personaEditar?.participante?.username),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
@@ -104,8 +104,8 @@ export class FormParticipanteComponent implements OnInit {
         direccion: new FormControl(''),
         celular: new FormControl('', Validators.required),
         correo: new FormControl('', Validators.required),
-        fechaInicio: new FormControl(dayjs(new Date()).format("YYYY-MM-DD")),
-        tipoParticipante: new FormControl(''),
+        dateRegistered: new FormControl(dayjs(new Date()).format("YYYY-MM-DD")),
+        username: new FormControl(''),
       })
     }
   }
@@ -121,7 +121,7 @@ export class FormParticipanteComponent implements OnInit {
               (respuesta) => {
                 this.listaParticipante = respuesta['listado'];
                 ele.participante = this.listaParticipante[0];
-                ele.participante.fechaInicio = dayjs(ele.participante.fechaInicio).format("YYYY-MM-DD")
+                ele.participante.dateRegistered = dayjs(ele.participante.dateRegistered).format("YYYY-MM-DD")
               }
             )
           }
@@ -152,9 +152,9 @@ export class FormParticipanteComponent implements OnInit {
               this.listaParticipante = respuesta['listado'];
               this.persona.participante = this.listaParticipante[0];
               if (this.persona.participante != undefined) {
-                this.persona.participante.fechaInicio = dayjs(this.persona.participante.fechaInicio).format("YYYY-MM-DD");
-                this.formParticipante.controls.fechaInicio.setValue(dayjs(this.persona.participante?.fechaInicio).format("YYYY-MM-DD"));
-                this.formParticipante.controls.tipoParticipante.setValue(this.persona.participante?.tipoParticipante);
+                this.persona.participante.dateRegistered = dayjs(this.persona.participante.dateRegistered).format("YYYY-MM-DD");
+                this.formParticipante.controls.dateRegistered.setValue(dayjs(this.persona.participante?.dateRegistered).format("YYYY-MM-DD"));
+                this.formParticipante.controls.username.setValue(this.persona.participante?.username);
                 }
             }
           )
@@ -223,8 +223,8 @@ export class FormParticipanteComponent implements OnInit {
       this.participante = new Participante({
         codigo: 0,
         codPersona: this.persona?.codigo,
-        tipoParticipante: participanteTemp.tipoParticipante,
-        fechaInicio: dayjs(participanteTemp.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        username: participanteTemp.username,
+        dateRegistered: dayjs(participanteTemp.dateRegistered).format("YYYY-MM-DD HH:mm:ss.SSS"),
         estado: 'A',
       });
     }
@@ -242,6 +242,12 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     } else {
+      // Si es nuevo el participante, movemos datos de la persona
+      this.participante['data'].customerId = 0;
+      this.participante['data'].userId = 0;
+      this.participante['data'].firstname = this.personaEditar?.nombres;
+      this.participante['data'].lastname = this.personaEditar?.apellidos;
+      this.participante['data'].email = this.personaEditar?.correo;
       this.participanteService.guardarParticipante(this.participante['data']).subscribe({
         next: async (response) => {
           this.listarParticipantePorIdentificacion();
