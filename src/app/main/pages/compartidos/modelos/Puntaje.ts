@@ -43,5 +43,4 @@ export class Puntaje implements Ipuntaje {
     set estado(value: string) {
         set(this, 'data.estado', value);
     }
-
 }

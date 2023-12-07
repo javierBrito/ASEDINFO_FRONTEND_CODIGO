@@ -2,7 +2,6 @@
 import { get, set } from 'lodash-es';
 import { Isubcategoria } from '../interfaces/Isubcategoria';
 export class Subcategoria implements Isubcategoria {
-
     constructor(data) {
         set(this, 'data', data);
     }
@@ -24,6 +23,24 @@ export class Subcategoria implements Isubcategoria {
     }
     set estado(value: string) {
         set(this, 'data.estado', value);
+    }
+    get codCategoria(): number {
+        return get(this, 'data.codCategoria');
+    }
+    set codCategoria(value: number) {
+        set(this, 'data.codCategoria', value);
+    }
+    get desCategoria(): string {
+        return get(this, 'data.desCategoria');
+    }
+    set desCategoria(value: string) {
+        set(this, 'data.desCategoria', value);
+    }
+    get categoria(): any {
+        return get(this, 'data.categoria');
+    }
+    set categoria(value: any) {
+        set(this, 'data.categoria', value);
     }
 
 }

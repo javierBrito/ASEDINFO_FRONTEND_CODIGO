@@ -415,7 +415,6 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.seEnvioWhatsapp = true;
     this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    console.log("celular = ", this.celularEnvioWhatsapp);
     
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {

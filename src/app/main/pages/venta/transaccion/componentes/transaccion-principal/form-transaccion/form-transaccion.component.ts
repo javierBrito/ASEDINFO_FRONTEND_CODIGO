@@ -255,8 +255,6 @@ export class FormTransaccionComponent implements OnInit {
         fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes)
         fechaFinString = fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate();
       }
-      console.log("cod cliente = ", transaccionTemp?.codCliente);
-      console.log("cod producto = ", this.codProducto);
   
       this.transaccion = new Transaccion({
         codigo: 0,

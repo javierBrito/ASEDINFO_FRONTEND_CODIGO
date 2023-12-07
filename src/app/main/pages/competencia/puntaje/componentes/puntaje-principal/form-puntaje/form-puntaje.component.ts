@@ -257,25 +257,6 @@ export class FormPuntajeComponent implements OnInit {
         fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes)
         fechaFinString = fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate();
       }
-      console.log("cod participante = ", puntajeTemp?.codParticipante);
-      console.log("cod producto = ", this.codProducto);
-      /*
-      this.puntaje = new Puntaje({
-        codigo: 0,
-        codParticipante: puntajeTemp?.codParticipante,
-        codProducto: this.codProducto,
-        codModulo: this.modulo?.codigo,
-        codOperacion: this.operacion?.codigo,
-        descripcion: puntajeTemp?.descripcion,
-        precio: puntajeTemp?.precio,
-        numProducto: puntajeTemp?.numProducto,
-        numMes: this.numMes,
-        fechaInicio: dayjs(puntajeTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        fechaFin: dayjs(fechaFinString).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        fechaRegistra: dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        estado: 'A',
-      });
-      */
     }
     if (this.puntajeEditar) {
       this.puntaje['data'].codigo = this.puntajeEditar.codigo;

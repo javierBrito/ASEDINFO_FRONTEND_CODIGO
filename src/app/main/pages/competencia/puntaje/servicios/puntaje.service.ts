@@ -30,6 +30,9 @@ export class PuntajeService {
   listarPuntajePorParticipante(codParticipante: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipante/${codParticipante}/${codInstancia}`);
   }
+  listarPuntajePorParticipanteRegTotal(codParticipante: number, codInstancia: number, codModeloPuntaje: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteRegTotal/${codParticipante}/${codInstancia}/${codModeloPuntaje}`);
+  }
   listarPuntajePorRangoFechas(fechaInicio: string, fechaFin: string) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePorRangoFechas/${fechaInicio}/${fechaFin}`);
   }
@@ -132,7 +135,6 @@ export class PuntajeService {
 
   /*SERVICIOS EXTERNOS*/
   public loadScriptAnt() {
-    console.log('preparing to load...')
     let node = document.createElement('script');
     node.src = 'assets/js/bot-whatsapp.js';
     node.type = 'text/javascript';
@@ -167,7 +169,6 @@ export class PuntajeService {
   }
 
   enviarMensajeWhatsappQR(celular: string, mensaje: string) {
-    console.log("JBBB")
     return this.http.get(`${environment.url_externo}/auth/getqr`);
   }
 

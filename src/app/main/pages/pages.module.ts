@@ -30,6 +30,8 @@ import { TransaccionModule } from './venta/transaccion/modulos/transaccion.modul
 import { ParticipanteModule } from './competencia/participante/modulos/participante.module';
 import { PuntajeModule } from './competencia/puntaje/modulos/puntaje.module';
 import { CategoriaModule } from './catalogo/categoria/modulos/categoria.module';
+import { SubcategoriaModule } from './catalogo/subcategoria/modulos/subcategoria.module';
+import { ParametroModule } from './catalogo/parametro/modulos/parametro.module';
 
 
 @NgModule({
@@ -67,7 +69,9 @@ import { CategoriaModule } from './catalogo/categoria/modulos/categoria.module';
     TransaccionModule,
     ParticipanteModule,
     PuntajeModule,
-    CategoriaModule
+    CategoriaModule,
+    SubcategoriaModule,
+    ParametroModule
   ],
   providers: []
 })

@@ -2,7 +2,6 @@
 import { get, set } from 'lodash-es';
 import { Iparametro } from '../interfaces/Iparametro';
 export class Parametro implements Iparametro {
-
     constructor(data) {
         set(this, 'data', data);
     }
@@ -31,11 +30,16 @@ export class Parametro implements Iparametro {
     set estado(value: string) {
         set(this, 'data.estado', value);
     }
+    get valor(): number {
+        return get(this, 'data.valor');
+    }
+    set valor(value: number) {
+        set(this, 'data.valor', value);
+    }
     get valorCadena(): string {
         return get(this, 'data.valorCadena');
     }
     set valorCadena(value: string) {
         set(this, 'data.valorCadena', value);
     }
-
 }

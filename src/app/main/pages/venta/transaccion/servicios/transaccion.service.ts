@@ -84,7 +84,6 @@ export class TransaccionService {
 
   /*SERVICIOS EXTERNOS*/
   public loadScriptAnt() {
-    console.log('preparing to load...')
     let node = document.createElement('script');
     node.src = 'assets/js/bot-whatsapp.js';
     node.type = 'text/javascript';
@@ -119,7 +118,6 @@ export class TransaccionService {
   }
 
   enviarMensajeWhatsappQR(celular: string, mensaje: string) {
-    console.log("JBBB")
     return this.http.get(`${environment.url_externo}/auth/getqr`);
   }
 

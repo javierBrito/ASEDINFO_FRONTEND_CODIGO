@@ -43,35 +43,12 @@ export class PuntajeAux implements IpuntajeAux {
     set estado(value: string) {
         set(this, 'data.estado', value);
     }
-    get colorFila(): string {
-        return get(this, 'data.colorFila');
+
+    get porcentaje(): number {
+        return get(this, 'data.porcentaje');
     }
-    set colorFila(value: string) {
-        set(this, 'data.colorFila', value);
-    }
-    get desModeloPuntaje(): string {
-        return get(this, 'data.desModeloPuntaje');
-    }
-    set desModeloPuntaje(value: string) {
-        set(this, 'data.desModeloPuntaje', value);
-    }
-    get desInstancia(): string {
-        return get(this, 'data.desInstancia');
-    }
-    set desInstancia(value: string) {
-        set(this, 'data.desInstancia', value);
-    }
-    get nombreParticipante(): string {
-        return get(this, 'data.nombreParticipante');
-    }
-    set nombreParticipante(value: string) {
-        set(this, 'data.nombreParticipante', value);
-    }
-    get desSubcategoria(): string {
-        return get(this, 'data.desSubcategoria');
-    }
-    set desSubcategoria(value: string) {
-        set(this, 'data.desSubcategoria', value);
+    set porcentaje(value: number) {
+        set(this, 'data.porcentaje', value);
     }
 
 }

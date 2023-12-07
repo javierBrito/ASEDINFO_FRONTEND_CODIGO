@@ -1,0 +1,147 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card box-shadow-sm">
+            <div class="card-footer">
+                <div class="row form-group">
+                    <div class="col-12">
+                        <h5>Datos Subcategoria :</h5>
+                    </div>
+                </div>
+                <form detail-content [formGroup]="formSubcategoria" (ngSubmit)="listarSubcategoria()">
+                    <div class="row form-group">
+                        <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
+                            <label for="categoria">{{'Categoría (*):'}}</label>
+                            <select [compareWith]="compararCategoria" class="custom-select" (change)="listarSubcategoria()"
+                                formControlName="categoria" name="categoria" id="categoria">
+                                <option [value]="''" selected>Seleccionar categoría</option>
+                                <option *ngFor="let categoria of listaCategoria" [ngValue]="categoria">
+                                    {{categoria.denominacion}}</option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-12">
+                        <ng-container>
+                            <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
+                                [(selectedIndex)]="selectedTab">
+                                <mat-tab>
+                                    <section class="tab-container">
+                                        <div>
+                                            {{'Lista Subcategoria'}}
+                                            <button type="submit" (click)="openDetail(1)"
+                                                [disabled]="formSubcategoria?.invalid" matTooltip="Agregar Nuevo Subcategoria"
+                                                class="btn btn-block btn-primary form-control mt-2">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                {{'Agregar Subcategoria'}}
+                                            </button>
+                                            <table class="table" *ngIf="listaSubcategoria.length > 0" id="tablaSubcategoria">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Categoría</th>
+                                                        <th scope="col">Denominación</th>
+                                                        <th scope="col">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        *ngFor="let subcategoria of listaSubcategoria | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        <td>{{index+1}}</td>
+                                                        <td><span
+                                                                *ngIf="subcategoria.categoria">{{subcategoria?.categoria?.denominacion}}</span>
+                                                        </td>
+                                                        <td>{{subcategoria?.denominacion}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group"
+                                                                aria-label="Basic example">
+                                                                <button (click)="openEditarDetail(subcategoria)"
+                                                                    matTooltip="Editar Subcategoría" type=" button"
+                                                                    class="btn btn-primary" rippleEffect round><i
+                                                                        class="fa fa-pencil"
+                                                                        (click)="openEditarDetail(subcategoria)"></i></button>
+                                                                <button (click)="openRemoverDetail(subcategoria)"
+                                                                    matTooltip="Eliminar Subcategoria" type="button"
+                                                                    class="btn btn-danger" rippleEffect><i
+                                                                        class="fa fa-trash"
+                                                                        (click)="openRemoverDetail(subcategoria)"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="row mt-5" *ngIf="listaSubcategoria.length > itemsRegistros">
+                                                <div class="col-12 text-center">
+                                                    <pagination-controls id="paginacionMatutino" class="paginacion"
+                                                        [responsive]="true" [autoHide]="true" previousLabel="Anterior"
+                                                        nextLabel="Siguiente" (pageChange)="page = $event"
+                                                        screenReaderCurrentLabel="Tú estas en la página:">
+                                                    </pagination-controls>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngIf="listaSubcategoria.length === 0">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>No hay datos disponibles</p>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </section>
+                                </mat-tab>
+                            </mat-tab-group>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-form-subcategoria [subcategoriaEditar]="subcategoriaSeleccionado" [codigoChild]="codigo"
+    [codCategoriaChild]="codCategoria" [listaSubcategoriaChild]="listaSubcategoria"
+    (listaSubcategoria)="listaSubcategoriaActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail">
+</app-form-subcategoria>
+
+<ng-template #modal_confirm_delete let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Confirmar borrado.'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close('no')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'¿Quieres borrar el registro?'}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('yes')">{{'Si'}}</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('no')">{{'No'}}</button>
+    </div>
+</ng-template>
+
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Exito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'El registro ha sido borrada con éxito'}}
+    </div>
+
+</ng-template>
+
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'Ha habido un problema al borrar el registro'}}
+    </div>
+</ng-template>

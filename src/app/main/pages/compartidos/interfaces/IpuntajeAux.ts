@@ -7,10 +7,5 @@ export interface IpuntajeAux {
     puntaje: number,
     estado: string,
 
-    desModeloPuntaje: string,
-    desInstancia: string,
-    nombreParticipante: string,
-    desSubcategoria: string,
-
-    colorFila: string
+    porcentaje: number
 }
