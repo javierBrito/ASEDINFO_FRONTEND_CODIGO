@@ -32,7 +32,7 @@ import { PuntajeModule } from './competencia/puntaje/modulos/puntaje.module';
 import { CategoriaModule } from './catalogo/categoria/modulos/categoria.module';
 import { SubcategoriaModule } from './catalogo/subcategoria/modulos/subcategoria.module';
 import { ParametroModule } from './catalogo/parametro/modulos/parametro.module';
-
+import { ResultadoModule } from './competencia/resultado/modulos/resultado.module';
 
 @NgModule({
   declarations: [
@@ -71,7 +71,8 @@ import { ParametroModule } from './catalogo/parametro/modulos/parametro.module';
     PuntajeModule,
     CategoriaModule,
     SubcategoriaModule,
-    ParametroModule
+    ParametroModule,
+    ResultadoModule
   ],
   providers: []
 })

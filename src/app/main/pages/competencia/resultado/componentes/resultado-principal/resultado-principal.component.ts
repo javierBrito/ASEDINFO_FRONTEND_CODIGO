@@ -4,7 +4,7 @@ import { LoginAplicacion } from 'app/auth/models/loginAplicacion';
 import { Sede } from 'app/auth/models/sede';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import Swal from 'sweetalert2';
-import { PuntajeService } from '../../servicios/puntaje.service';
+import { ResultadoService } from '../../servicios/resultado.service';
 import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
 import dayjs from "dayjs";
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
@@ -17,18 +17,18 @@ import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model';
 import { ajax } from 'jquery';
 import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
-import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
+import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { PuntajeAux } from 'app/main/pages/compartidos/modelos/PuntajeAux';
 
 @Component({
-  selector: 'app-puntaje-principal',
-  templateUrl: './puntaje-principal.component.html',
-  styleUrls: ['./puntaje-principal.component.scss']
+  selector: 'app-resultado-principal',
+  templateUrl: './resultado-principal.component.html',
+  styleUrls: ['./resultado-principal.component.scss']
 })
-export class PuntajePrincipalComponent implements OnInit {
+export class ResultadoPrincipalComponent implements OnInit {
   /*INPUT RECIBEN*/
-  @Input() listaPuntajeChild: any;
+  @Input() listaResultadoChild: any;
 
   /*MODALES*/
   @ViewChild("modal_confirm_delete", { static: false }) modal_confirm_delete: TemplateRef<any>;
@@ -66,8 +66,9 @@ export class PuntajePrincipalComponent implements OnInit {
   public codPuntaje: number = 0;
 
   /*LISTAS*/
-  public listaPuntaje: Puntaje[] = [];
+  public listaResultado: Puntaje[] = [];
   public listaPuntajeAux: Puntaje[] = [];
+  public listaPuntajeTotal: Puntaje[] = [];
   public listaAplicacion: Aplicacion[] = [];
   public listaPeriodoRegAniLec: any[];
   public listaCategoria: any[];
@@ -105,13 +106,13 @@ export class PuntajePrincipalComponent implements OnInit {
   public puntajeSeleccionado: Puntaje;
 
   /*FORMULARIOS*/
-  public formPuntaje: FormGroup;
-  public formPuntajeParametro: FormGroup;
+  public formResultado: FormGroup;
+  public formResultadoParametro: FormGroup;
 
   /*CONSTRUCTOR */
   constructor(
     /*Servicios*/
-    private readonly puntajeService: PuntajeService,
+    private readonly resultadoService: ResultadoService,
     private readonly personaService: PersonaService,
     private readonly productoService: ProductoService,
     private mensajeService: MensajeService,
@@ -127,10 +128,10 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.listaPuntajeChild != null) {
-      this.listaPuntaje = this.listaPuntajeChild;
+    if (this.listaResultadoChild != null) {
+      this.listaResultado = this.listaResultadoChild;
     }
-    this.formPuntajeParametro = this.formBuilder.group({
+    this.formResultadoParametro = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
       codInstancia: new FormControl('', Validators.required),
@@ -141,7 +142,7 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   listarModeloPuntajeActivo() {
-    this.puntajeService.listarModeloPuntajeActivo().subscribe(
+    this.resultadoService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
         this.listaModeloPuntaje = respuesta['listado'];
       }
@@ -149,7 +150,7 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   listarCategoriaActivo() {
-    this.puntajeService.listarCategoriaActivo().subscribe(
+    this.resultadoService.listarCategoriaActivo().subscribe(
       (respuesta) => {
         this.listaCategoria = respuesta['listado'];
       }
@@ -158,10 +159,10 @@ export class PuntajePrincipalComponent implements OnInit {
 
   listarSubcategoriaPorCategoria() {
     this.listaParticipantePresentacion = [];
-    // Receptar la descripción de formPuntajeParametro.value
-    let puntajeParametroTemp = this.formPuntajeParametro.value;
-    this.codCategoria = puntajeParametroTemp?.codCategoria;
-    this.puntajeService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
+    // Receptar la descripción de formResultadoParametro.value
+    let resultadoParametroTemp = this.formResultadoParametro.value;
+    this.codCategoria = resultadoParametroTemp?.codCategoria;
+    this.resultadoService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
         this.listaSubcategoria = respuesta['listado'];
       }
@@ -170,15 +171,15 @@ export class PuntajePrincipalComponent implements OnInit {
 
   listarInstanciaActivo() {
     this.listaParticipantePresentacion = [];
-    this.puntajeService.listarInstanciaActivo().subscribe(
+    this.resultadoService.listarInstanciaActivo().subscribe(
       (respuesta) => {
         this.listaInstancia = respuesta['listado'];
       }
     )
   }
 
-  listaPuntajeActualizada(event) {
-    this.listaPuntaje = event;
+  listaResultadoActualizada(event) {
+    this.listaResultado = event;
   }
 
   openDetail(codjornada) {
@@ -227,11 +228,12 @@ export class PuntajePrincipalComponent implements OnInit {
         puntajeTotal = puntajeTotal + (puntajeAux.porcentaje / 100) * Number(puntajeAux ? puntajeAux.puntaje : 0);
         await new Promise((resolve, rejects) => {
           let puntaje = new Puntaje;
-          puntaje = this.moverDatosPuntaje(puntajeAux);
-          this.puntajeService.guardarPuntaje(puntaje).subscribe({
+          puntaje = this.moverDatosResultado(puntajeAux);
+          this.resultadoService.guardarPuntaje(puntaje).subscribe({
             next: (respuesta) => {
               puntaje.codigo = respuesta['objeto'].codigo;
               notaGuardada = notaGuardada + 1;
+              //this.mensajeService.mensajeCorrecto('Se ha guardado el registro correctamente...');
               resolve("OK");
             }, error: (error) => {
               this.mensajeService.mensajeError('Ha habido un problema al guardar el registro...' + error);
@@ -244,42 +246,40 @@ export class PuntajePrincipalComponent implements OnInit {
         errorGuardar = errorGuardar + 1;
         this.mensajeService.mensajeAdvertencia("El puntaje " + puntajeAux.puntaje + " no se encuentra en el rango de 1 a 10, vuelva a ingresar...  ");
         //this.controlarRangoNotas(puntajeAux);
-        this.activarInput = false;
         break;
       }
     }
     if (errorGuardar == 0) {
       this.mensajeService.mensajeCorrecto('Se ha guardado las notas correctamente...');
-
-      // Guardar el puntaje total de cada participante
+      // Guardar el resultado total de cada participante
       if (puntajeTotal > 0 && this.puntajeAuxTotal != null) {
-        // Verificar si ya existe el total por participante, instancia y modelo puntaje = 99
+        // Verificar si ya existe el total por participante, instancia y modelo resultado = 99
         await this.verificarExistenciaRegistroTotal();
-
+        //participante.resultado = puntajeTotal;
         this.puntajeAuxTotal.codigo = this.codPuntaje;
         this.puntajeAuxTotal.codModeloPuntaje = 99;
         this.puntajeAuxTotal.puntaje = puntajeTotal;
 
         let puntajeTotalEntidad = new Puntaje;
-        puntajeTotalEntidad = this.moverDatosPuntaje(this.puntajeAuxTotal);
-        this.puntajeService.guardarPuntaje(puntajeTotalEntidad).subscribe({
+        puntajeTotalEntidad = this.moverDatosResultado(this.puntajeAuxTotal);
+        this.resultadoService.guardarPuntaje(puntajeTotalEntidad).subscribe({
           next: (response) => {
-            this.mensajeService.mensajeCorrecto('Se ha actualizado el registro de totales correctamente...');
+            this.mensajeService.mensajeCorrecto('Se ha actualizado el registro de correctamente...');
           },
           error: (error) => {
-            this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro de totales...');
+            this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
           }
         });
         this.activarInput = false;
       }
     }
-    this.listarPuntajePorParticipante();
+    this.listarPuntajeTotalPorParticipante();
   }
 
   async verificarExistenciaRegistroTotal() {
     this.codPuntaje = 0;
     return new Promise((resolve, rejects) => {
-      this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal.codParticipante, this.puntajeAuxTotal.codInstancia, 99).subscribe({
+      this.resultadoService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal.codParticipante, this.puntajeAuxTotal.codInstancia, 99).subscribe({
         next: (respuesta) => {
           this.listaPuntajeAux = respuesta['listado'];
           if (this.listaPuntajeAux.length > 0) {
@@ -294,7 +294,7 @@ export class PuntajePrincipalComponent implements OnInit {
     })
   }
 
-  moverDatosPuntaje(puntajeAux: PuntajeAux): Puntaje {
+  moverDatosResultado(puntajeAux: PuntajeAux): Puntaje {
     let puntaje = new Puntaje();
     puntaje = {
       codigo: puntajeAux?.codigo,
@@ -317,7 +317,7 @@ export class PuntajePrincipalComponent implements OnInit {
         puntajeAux.puntaje = 0;
       } else {
         this.activarInput = false;
-        this.listarPuntajePorParticipante();
+        this.listarPuntajeTotalPorParticipante();
       }
     }
   }
@@ -336,7 +336,7 @@ export class PuntajePrincipalComponent implements OnInit {
         this.datosEditar = null;
       } else {
         this.activarInput = false;
-        this.listarPuntajePorParticipante();
+        this.listarPuntajeTotalPorParticipante();
       }
     } else {
       this.idInput = indexSelec;
@@ -373,12 +373,12 @@ export class PuntajePrincipalComponent implements OnInit {
     this.datosEditar = datosParticipante;
   }
 
-  async listarPuntajePorParticipante() {
+  async listarPuntajeTotalPorParticipante() {
     this.listaParticipantePresentacion = [];
-    // Receptar la descripción de formPuntajeParametro.value
-    let puntajeParametroTemp = this.formPuntajeParametro.value;
-    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
-    this.codInstancia = puntajeParametroTemp?.codInstancia;
+    // Receptar la descripción de formResultadoParametro.value
+    let resultadoParametroTemp = this.formResultadoParametro.value;
+    this.codSubcategoria = resultadoParametroTemp?.codSubcategoria;
+    this.codInstancia = resultadoParametroTemp?.codInstancia;
     if (this.activarInput) {
       this.editarNota(this.participante, " ");
       return;
@@ -388,46 +388,12 @@ export class PuntajePrincipalComponent implements OnInit {
     this.activarInput = false;
 
     await new Promise((resolve, rejects) => {
-      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia).subscribe({
+      this.resultadoService.listarPuntajePorSubcategoriaRegTotal(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
-          this.listaParticipantePresentacion = respuesta['listado'];
-          for (const est of this.listaParticipantePresentacion) {
-            await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorParticipante(est.codigo, this.codInstancia).subscribe({
-                next: (respuesta) => {
-                  let listNotas: PuntajeAux[] = [];
-                  let listNotasConsulta: PuntajeAux[] = respuesta['listado'];
-                  for (const modelo of this.listaModeloPuntaje) {
-                    let auxBusqueda = listNotasConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
-                    if (auxBusqueda) {
-                      //auxBusqueda.mprDesde = modelo.mprDesde;
-                      auxBusqueda.porcentaje = modelo.porcentaje;
-                      listNotas.push(auxBusqueda)
-                    } else {
-                      let nuevoPuntajeAux = new PuntajeAux();
-                      nuevoPuntajeAux = {
-                        codigo: 0,
-                        estado: 'A',
-                        puntaje: 0,
-                        codParticipante: est?.codigo,
-                        codInstancia: this.codInstancia,
-                        codSubcategoria: this.codSubcategoria,
-                        codModeloPuntaje: modelo?.codigo,
-                        porcentaje: modelo?.porcentaje,
-                        nombreParticipante: est?.nombreParticipante,
-                      }
-                      listNotas.push(nuevoPuntajeAux)
-                    }
-                  }
-                  est.listaNotas = listNotas;
-                  resolve("OK");
-                }, error: (error) => {
-                  console.log(error);
-                  rejects("Error");
-                }
-              });
-            });
-          }
+          this.listaPuntajeTotal = respuesta['listado'];
+          console.log("listaPuntajeTotal = ", this.listaPuntajeTotal);
+          // Ordenar lista por puntaje
+          this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
           resolve("OK");
         }, error: (error) => {
           console.log(error);
@@ -454,7 +420,7 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   resetTheForm(): void {
-    this.listaPuntaje = null;
+    this.listaResultado = null;
   }
 
   validateFormat(event) {
@@ -510,7 +476,7 @@ export class PuntajePrincipalComponent implements OnInit {
       //to: "javier.brito@educacion.gob.ec"      
       to: "vjbritoa@hotmail.com",
     });
-    this.puntajeService.enviarCorreo(this.reporteDTO['data']).subscribe({
+    this.resultadoService.enviarCorreo(this.reporteDTO['data']).subscribe({
       next: (respuesta) => {
         if (respuesta['codigoRespuesta'] == "Ok") {
           this.mensajeService.mensajeCorrecto('Se a enviado el correo a ' + this.reporteDTO['data'].to);
@@ -557,7 +523,7 @@ export class PuntajePrincipalComponent implements OnInit {
     //this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
     //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
 
-    this.puntajeService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
+    this.resultadoService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {
         console.log("response = ", response);
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
@@ -571,13 +537,13 @@ export class PuntajePrincipalComponent implements OnInit {
 
   /* Variables del html, para receptar datos y validaciones*/
   get codCategoriaField() {
-    return this.formPuntajeParametro.get('codCategoria');
+    return this.formResultadoParametro.get('codCategoria');
   }
   get codSubcategoriaField() {
-    return this.formPuntajeParametro.get('codSubcategoria');
+    return this.formResultadoParametro.get('codSubcategoria');
   }
   get codInstanciaField() {
-    return this.formPuntajeParametro.get('codInstancia');
+    return this.formResultadoParametro.get('codInstancia');
   }
 
 }

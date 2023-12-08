@@ -6,4 +6,6 @@ export interface Ipuntaje {
     codSubcategoria: number,
     puntaje: number,
     estado: string,
+
+    nombreParticipante: string;
 }

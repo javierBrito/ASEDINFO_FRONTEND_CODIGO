@@ -1,0 +1,200 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card box-shadow-sm">
+            <div class="card-footer">
+                <div class="row form-group">
+                    <div class="col-12">
+                        <h5>Parámetros busqueda :</h5>
+                    </div>
+                </div>
+                <form detail-content [formGroup]="formResultadoParametro"
+                    (ngSubmit)="listarPuntajeTotalPorParticipante()">
+                    <div class="row form-group">
+                        <div class="col-3">
+                            <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
+                            <select name="codCategoria" formControlName="codCategoria" required
+                                [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
+                                class="form-control mr-sm-2" id="codCategoria"
+                                (change)="listarSubcategoriaPorCategoria()">
+                                <option [value]="''" selected>Seleccionar categoría</option>
+                                <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
+                                    <span><b>{{categoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
+                            <select name="codSubcategoria" formControlName="codSubcategoria" required required
+                                [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
+                                class="form-control mr-sm-2 custom-select" id="codSubcategoria"
+                                (change)="listarInstanciaActivo()">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
+                                    <span><b>{{subcategoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
+                            <select name="codInstancia" formControlName="codInstancia" required required
+                                [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
+                                class="form-control mr-sm-2 custom-select" id="codInstancia"
+                                (change)="listarPuntajeTotalPorParticipante()">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
+                                    <span><b>{{instancia?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-md-2 col-3 form-group">
+                            <div class="my-2 text-left table-responsive">
+                                <button type="submit" [disabled]="formResultadoParametro.invalid"
+                                    class="btn btn-info btn-rounded">
+                                    <b>{{ "Buscar"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                            <!--
+                            <div class="col-12 form-group">
+                                <button [disabled]=""
+                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="enviarCorreo()">
+                                    <b>{{ "Enviar Correo"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-envelope" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
+                            -->
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-12">
+                        <ng-container>
+                            <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
+                                [(selectedIndex)]="selectedTab">
+                                <mat-tab>
+                                    <section class="tab-container">
+                                        <div>
+                                            <b>{{'Lista Resultado'}}</b>
+                                            <button type="submit" (click)="openDetail(1)"
+                                                matTooltip="Agregar Nuevo Resultado"
+                                                class="btn btn-block btn-primary form-control mt-2">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                {{'Agregar Resultado'}}
+                                            </button>
+                                            <table class="table" *ngIf="listaPuntajeTotal?.length > 0"
+                                                id="tablaResultado">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Participante</th>
+                                                        <th scope="col">Puntaje Total</th>
+                                                        <!--
+                                                        <th *ngFor="let modeloResultado of this.listaModeloResultado; let index=index"
+                                                            scope="col">{{modeloResultado?.denominacion}}</th>
+                                                        -->
+                                                        <th scope="col">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr [ngStyle]="{'color': puntaje?.colorFila}"
+                                                        *ngFor="let puntaje of listaPuntajeTotal | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        <td>{{index+1}}</td>
+                                                        <td>{{puntaje?.nombreParticipante}}</td>
+                                                        <td><div class="text-center">{{puntaje?.puntaje}}</div></td>
+                                                        <td>
+                                                            <div class="btn-group" role="group"
+                                                                aria-label="Basic example">
+                                                                <button [disabled]="idInput!='curso_'+index"
+                                                                    (click)="guardarNotas(participante, 'curso_'+index)"
+                                                                    type="button" class="btn btn-success"
+                                                                    rippleEffect><i class="fa fa-floppy-o"></i></button>
+                                                                <button (click)="editarNota(participante, 'curso_'+index)"
+                                                                    type=" button" class="btn btn-primary" rippleEffect
+                                                                    round><i class="fa fa-pencil"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="row mt-5" *ngIf="listaResultado?.length > itemsRegistros">
+                                                <div class="col-12 text-center">
+                                                    <pagination-controls id="paginacionMatutino" class="paginacion"
+                                                        [responsive]="true" [autoHide]="true" previousLabel="Anterior"
+                                                        nextLabel="Siguiente" (pageChange)="page = $event"
+                                                        screenReaderCurrentLabel="Tú estas en la página:">
+                                                    </pagination-controls>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngIf="listaResultado.length === 0">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>No hay datos disponibles</p>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </section>
+                                </mat-tab>
+                            </mat-tab-group>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-form-resultado [resultadoEditar]="resultadoSeleccionado" [codigoChild]="codigo" [descripcionChild]="descripcion"
+    [listaResultadoChild]="listaResultado" (listaResultado)="listaResultadoActualizada($event)" (close)="closeDetail($event)"
+    *ngIf="showDetail">
+</app-form-resultado>
+
+<ng-template #modal_confirm_delete let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Confirmar borrado.'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close('no')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'¿Quieres borrar el registro?'}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('yes')">{{'Si'}}</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('no')">{{'No'}}</button>
+    </div>
+</ng-template>
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Exito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'El registro ha sido borrada con éxito'}}
+    </div>
+</ng-template>
+
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'Ha habido un problema al borrar el registro'}}
+    </div>
+</ng-template>

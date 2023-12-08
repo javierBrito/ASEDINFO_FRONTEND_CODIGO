@@ -43,12 +43,16 @@ export class PuntajeAux implements IpuntajeAux {
     set estado(value: string) {
         set(this, 'data.estado', value);
     }
-
     get porcentaje(): number {
         return get(this, 'data.porcentaje');
     }
     set porcentaje(value: number) {
         set(this, 'data.porcentaje', value);
     }
-
+    get nombreParticipante(): string {
+        return get(this, 'data.nombreParticipante');
+    }
+    set nombreParticipante(value: string) {
+        set(this, 'data.nombreParticipante', value);
+    }
 }

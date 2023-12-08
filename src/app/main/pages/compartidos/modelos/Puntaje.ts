@@ -43,4 +43,10 @@ export class Puntaje implements Ipuntaje {
     set estado(value: string) {
         set(this, 'data.estado', value);
     }
+    get nombreParticipante(): string {
+        return get(this, 'data.nombreParticipante');
+    }
+    set nombreParticipante(value: string) {
+        set(this, 'data.nombreParticipante', value);
+    }
 }

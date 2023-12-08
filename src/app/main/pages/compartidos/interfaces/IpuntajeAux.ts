@@ -8,4 +8,5 @@ export interface IpuntajeAux {
     estado: string,
 
     porcentaje: number
+    nombreParticipante: string;
 }
