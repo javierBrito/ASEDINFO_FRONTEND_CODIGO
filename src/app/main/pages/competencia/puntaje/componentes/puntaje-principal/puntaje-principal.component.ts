@@ -7,11 +7,6 @@ import Swal from 'sweetalert2';
 import { PuntajeService } from '../../servicios/puntaje.service';
 import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
 import dayjs from "dayjs";
-import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
-import { ProductoService } from 'app/main/pages/catalogo/producto/servicios/producto.service';
-import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
-import { Cliente } from 'app/main/pages/compartidos/modelos/Cliente';
-import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
 import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model';
@@ -64,6 +59,10 @@ export class PuntajePrincipalComponent implements OnInit {
   public activarInput = false;
   public continuarGuardarPendiente: boolean;
   public codPuntaje: number = 0;
+  public displayNone: string = '';
+  public desCategoria: string;
+  public desSubcategoria: string;
+  public desInstancia: string;
 
   /*LISTAS*/
   public listaPuntaje: Puntaje[] = [];
@@ -83,9 +82,6 @@ export class PuntajePrincipalComponent implements OnInit {
   /*OBJETOS*/
   private currentUser: LoginAplicacion;
   private sede: Sede;
-  private persona: Persona;
-  private cliente: Cliente;
-  private producto: Producto;
   public modulo: Modulo;
   public parametro: Parametro;
   public operacion: Operacion;
@@ -112,8 +108,6 @@ export class PuntajePrincipalComponent implements OnInit {
   constructor(
     /*Servicios*/
     private readonly puntajeService: PuntajeService,
-    private readonly personaService: PersonaService,
-    private readonly productoService: ProductoService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder
   ) {
@@ -126,7 +120,8 @@ export class PuntajePrincipalComponent implements OnInit {
     this.sede = this.currentUser.sede;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    console.log("this.currentUser.cedula = ", this.currentUser.cedula);
     if (this.listaPuntajeChild != null) {
       this.listaPuntaje = this.listaPuntajeChild;
     }
@@ -137,7 +132,28 @@ export class PuntajePrincipalComponent implements OnInit {
     });
     this.listarModeloPuntajeActivo();
     this.listarCategoriaActivo();
-    this.listarInstanciaActivo();
+    if (this.currentUser.cedula == 'JUEZ') {
+      this.displayNone = 'none';
+      this.obtenerParametros();
+    }
+  }
+
+  obtenerParametros() {
+    // Obtener codSubcategoria para obtener el participante
+    this.puntajeService.buscarParametroPorNemonico('SUBCATEGORIA').subscribe(
+      (respuesta) => {
+        this.parametro = respuesta['objeto'];
+        this.codSubcategoria = this.parametro?.valor;
+        // Obtener codInstancia para obtener el participante
+        this.puntajeService.buscarParametroPorNemonico('INSTANCIA').subscribe(
+          (respuesta) => {
+            this.parametro = respuesta['objeto'];
+            this.codInstancia = this.parametro?.valor;
+            this.listarPuntajePorParticipante();
+          }
+        )
+      }
+    )
   }
 
   listarModeloPuntajeActivo() {
@@ -158,9 +174,10 @@ export class PuntajePrincipalComponent implements OnInit {
 
   listarSubcategoriaPorCategoria() {
     this.listaParticipantePresentacion = [];
-    // Receptar la descripción de formPuntajeParametro.value
+    // Receptar codCategoria de formPuntajeParametro.value
     let puntajeParametroTemp = this.formPuntajeParametro.value;
     this.codCategoria = puntajeParametroTemp?.codCategoria;
+    this.buscarCategoriaPorCodigo();
     this.puntajeService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
         this.listaSubcategoria = respuesta['listado'];
@@ -168,13 +185,109 @@ export class PuntajePrincipalComponent implements OnInit {
     )
   }
 
+  buscarCategoriaPorCodigo() {
+    this.puntajeService.buscarCategoriaPorCodigo(this.codCategoria).subscribe(
+      (respuesta) => {
+        this.desCategoria = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
+  buscarSubcategoriaPorCodigo() {
+    this.puntajeService.buscarSubcategoriaPorCodigo(this.codSubcategoria).subscribe(
+      (respuesta) => {
+        this.desSubcategoria = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
+  buscarInstanciaPorCodigo() {
+    this.puntajeService.buscarInstanciaPorCodigo(this.codInstancia).subscribe(
+      (respuesta) => {
+        this.desInstancia = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
   listarInstanciaActivo() {
+    // Receptar codCategoria de formPuntajeParametro.value
+    let puntajeParametroTemp = this.formPuntajeParametro.value;
+    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
+    this.buscarSubcategoriaPorCodigo();
     this.listaParticipantePresentacion = [];
     this.puntajeService.listarInstanciaActivo().subscribe(
       (respuesta) => {
         this.listaInstancia = respuesta['listado'];
       }
     )
+  }
+
+  async listarPuntajePorParticipante() {
+    this.listaParticipantePresentacion = [];
+    if (this.currentUser.cedula != 'JUEZ') {
+      // Receptar codCategoria, codSubcategoria y codInstancia de formPuntajeParametro.value
+      let puntajeParametroTemp = this.formPuntajeParametro.value;
+      this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
+      this.codInstancia = puntajeParametroTemp?.codInstancia;
+      this.buscarInstanciaPorCodigo();
+    }
+
+    if (this.activarInput) {
+      this.editarNota(this.participante, " ");
+      return;
+    }
+
+    this.idInput = '';
+    this.activarInput = false;
+
+    await new Promise((resolve, rejects) => {
+      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia).subscribe({
+        next: async (respuesta) => {
+          this.listaParticipantePresentacion = respuesta['listado'];
+          for (const est of this.listaParticipantePresentacion) {
+            await new Promise((resolve, rejects) => {
+              this.puntajeService.listarPuntajePorParticipante(est.codigo, this.codInstancia).subscribe({
+                next: (respuesta) => {
+                  let listNotas: PuntajeAux[] = [];
+                  let listNotasConsulta: PuntajeAux[] = respuesta['listado'];
+                  for (const modelo of this.listaModeloPuntaje) {
+                    let auxBusqueda = listNotasConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
+                    if (auxBusqueda) {
+                      //auxBusqueda.mprDesde = modelo.mprDesde;
+                      auxBusqueda.porcentaje = modelo.porcentaje;
+                      listNotas.push(auxBusqueda)
+                    } else {
+                      let nuevoPuntajeAux = new PuntajeAux();
+                      nuevoPuntajeAux = {
+                        codigo: 0,
+                        estado: 'A',
+                        puntaje: 0,
+                        codParticipante: est?.codigo,
+                        codInstancia: this.codInstancia,
+                        codSubcategoria: this.codSubcategoria,
+                        codModeloPuntaje: modelo?.codigo,
+                        porcentaje: modelo?.porcentaje,
+                        nombreParticipante: est?.nombreParticipante,
+                      }
+                      listNotas.push(nuevoPuntajeAux)
+                    }
+                  }
+                  est.listaNotas = listNotas;
+                  resolve("OK");
+                }, error: (error) => {
+                  console.log(error);
+                  rejects("Error");
+                }
+              });
+            });
+          }
+          resolve("OK");
+        }, error: (error) => {
+          console.log(error);
+          rejects("Error");
+        }
+      });
+    });
   }
 
   listaPuntajeActualizada(event) {
@@ -202,6 +315,7 @@ export class PuntajePrincipalComponent implements OnInit {
       if (this.continuarGuardarPendiente) {
         // Primero guardar los campos anteriores
         this.guardarNota(participante, indexSelec);
+
         // Reseteamos variables
         this.idInput = null;
         this.datosEditar = null;
@@ -243,7 +357,6 @@ export class PuntajePrincipalComponent implements OnInit {
       } else {
         errorGuardar = errorGuardar + 1;
         this.mensajeService.mensajeAdvertencia("El puntaje " + puntajeAux.puntaje + " no se encuentra en el rango de 1 a 10, vuelva a ingresar...  ");
-        //this.controlarRangoNotas(puntajeAux);
         this.activarInput = false;
         break;
       }
@@ -310,18 +423,6 @@ export class PuntajePrincipalComponent implements OnInit {
     return puntaje;
   }
 
-  controlarRangoNotas(puntajeAux: Puntaje) {
-    if (puntajeAux.puntaje != 0) {
-      this.mensajeService.mensajeAdvertencia("La nota " + puntajeAux.puntaje + " no se encuentra en el rango de " + ", vuelva a ingresar...  ");
-      if (puntajeAux.puntaje == 0) {
-        puntajeAux.puntaje = 0;
-      } else {
-        this.activarInput = false;
-        this.listarPuntajePorParticipante();
-      }
-    }
-  }
-
   editarNota = async (participante, indexSelec) => {
     this.participante = participante;
     this.indexSelec = indexSelec;
@@ -373,70 +474,6 @@ export class PuntajePrincipalComponent implements OnInit {
     this.datosEditar = datosParticipante;
   }
 
-  async listarPuntajePorParticipante() {
-    this.listaParticipantePresentacion = [];
-    // Receptar la descripción de formPuntajeParametro.value
-    let puntajeParametroTemp = this.formPuntajeParametro.value;
-    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
-    this.codInstancia = puntajeParametroTemp?.codInstancia;
-    if (this.activarInput) {
-      this.editarNota(this.participante, " ");
-      return;
-    }
-
-    this.idInput = '';
-    this.activarInput = false;
-
-    await new Promise((resolve, rejects) => {
-      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia).subscribe({
-        next: async (respuesta) => {
-          this.listaParticipantePresentacion = respuesta['listado'];
-          for (const est of this.listaParticipantePresentacion) {
-            await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorParticipante(est.codigo, this.codInstancia).subscribe({
-                next: (respuesta) => {
-                  let listNotas: PuntajeAux[] = [];
-                  let listNotasConsulta: PuntajeAux[] = respuesta['listado'];
-                  for (const modelo of this.listaModeloPuntaje) {
-                    let auxBusqueda = listNotasConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
-                    if (auxBusqueda) {
-                      //auxBusqueda.mprDesde = modelo.mprDesde;
-                      auxBusqueda.porcentaje = modelo.porcentaje;
-                      listNotas.push(auxBusqueda)
-                    } else {
-                      let nuevoPuntajeAux = new PuntajeAux();
-                      nuevoPuntajeAux = {
-                        codigo: 0,
-                        estado: 'A',
-                        puntaje: 0,
-                        codParticipante: est?.codigo,
-                        codInstancia: this.codInstancia,
-                        codSubcategoria: this.codSubcategoria,
-                        codModeloPuntaje: modelo?.codigo,
-                        porcentaje: modelo?.porcentaje,
-                        nombreParticipante: est?.nombreParticipante,
-                      }
-                      listNotas.push(nuevoPuntajeAux)
-                    }
-                  }
-                  est.listaNotas = listNotas;
-                  resolve("OK");
-                }, error: (error) => {
-                  console.log(error);
-                  rejects("Error");
-                }
-              });
-            });
-          }
-          resolve("OK");
-        }, error: (error) => {
-          console.log(error);
-          rejects("Error");
-        }
-      });
-    });
-  }
-
   compararCategoria(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
@@ -448,6 +485,7 @@ export class PuntajePrincipalComponent implements OnInit {
   compararInstancia(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
+
   closeDetail($event) {
     this.showDetail = $event;
     this.puntajeSeleccionado = null;

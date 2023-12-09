@@ -17,7 +17,9 @@ export class ParametroService {
   }
   buscarParametroPorCodigo(codigo: number) {
     return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarParametroPorCodigo/${codigo}`);
-
+  }
+  buscarParametroPorNemonico(nemonico: string) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarParametroPorNemonico/${nemonico}`);
   }
   guardarParametro(parametro) {
     return this.http.post<Parametro>(`${environment.url_seguridad}/catalogo/guardarParametro`, parametro);

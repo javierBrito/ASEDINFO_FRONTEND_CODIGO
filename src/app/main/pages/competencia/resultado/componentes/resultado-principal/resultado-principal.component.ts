@@ -64,6 +64,9 @@ export class ResultadoPrincipalComponent implements OnInit {
   public activarInput = false;
   public continuarGuardarPendiente: boolean;
   public codPuntaje: number = 0;
+  public desCategoria: string;
+  public desSubcategoria: string;
+  public desInstancia: string;
 
   /*LISTAS*/
   public listaResultado: Puntaje[] = [];
@@ -138,7 +141,6 @@ export class ResultadoPrincipalComponent implements OnInit {
     });
     this.listarModeloPuntajeActivo();
     this.listarCategoriaActivo();
-    this.listarInstanciaActivo();
   }
 
   listarModeloPuntajeActivo() {
@@ -159,9 +161,10 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   listarSubcategoriaPorCategoria() {
     this.listaParticipantePresentacion = [];
-    // Receptar la descripción de formResultadoParametro.value
+    // Receptar codCategoria, codSubcategoria y codInstancia de formResultadoParametro.value
     let resultadoParametroTemp = this.formResultadoParametro.value;
     this.codCategoria = resultadoParametroTemp?.codCategoria;
+    this.buscarCategoriaPorCodigo();
     this.resultadoService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
         this.listaSubcategoria = respuesta['listado'];
@@ -169,13 +172,72 @@ export class ResultadoPrincipalComponent implements OnInit {
     )
   }
 
+  buscarCategoriaPorCodigo() {
+    this.resultadoService.buscarCategoriaPorCodigo(this.codCategoria).subscribe(
+      (respuesta) => {
+        this.desCategoria = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
+  buscarSubcategoriaPorCodigo() {
+    this.resultadoService.buscarSubcategoriaPorCodigo(this.codSubcategoria).subscribe(
+      (respuesta) => {
+        this.desSubcategoria = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
+  buscarInstanciaPorCodigo() {
+    this.resultadoService.buscarInstanciaPorCodigo(this.codInstancia).subscribe(
+      (respuesta) => {
+        this.desInstancia = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
   listarInstanciaActivo() {
+    // Receptar codCategoria de formResultadoParametro.value
+    let puntajeParametroTemp = this.formResultadoParametro.value;
+    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
+    this.buscarSubcategoriaPorCodigo();
     this.listaParticipantePresentacion = [];
     this.resultadoService.listarInstanciaActivo().subscribe(
       (respuesta) => {
         this.listaInstancia = respuesta['listado'];
       }
     )
+  }
+
+  async listarPuntajeTotalPorParticipante() {
+    this.listaParticipantePresentacion = [];
+    // Receptar la descripción de formResultadoParametro.value
+    let resultadoParametroTemp = this.formResultadoParametro.value;
+    this.codSubcategoria = resultadoParametroTemp?.codSubcategoria;
+    this.codInstancia = resultadoParametroTemp?.codInstancia;
+    this.buscarInstanciaPorCodigo();
+
+    if (this.activarInput) {
+      this.editarNota(this.participante, " ");
+      return;
+    }
+
+    this.idInput = '';
+    this.activarInput = false;
+
+    await new Promise((resolve, rejects) => {
+      this.resultadoService.listarPuntajePorSubcategoriaRegTotal(this.codSubcategoria, this.codInstancia).subscribe({
+        next: async (respuesta) => {
+          this.listaPuntajeTotal = respuesta['listado'];
+          // Ordenar lista por puntaje
+          this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
+          resolve("OK");
+        }, error: (error) => {
+          console.log(error);
+          rejects("Error");
+        }
+      });
+    });
   }
 
   listaResultadoActualizada(event) {
@@ -371,36 +433,6 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   capturarInputs(datosParticipante) {
     this.datosEditar = datosParticipante;
-  }
-
-  async listarPuntajeTotalPorParticipante() {
-    this.listaParticipantePresentacion = [];
-    // Receptar la descripción de formResultadoParametro.value
-    let resultadoParametroTemp = this.formResultadoParametro.value;
-    this.codSubcategoria = resultadoParametroTemp?.codSubcategoria;
-    this.codInstancia = resultadoParametroTemp?.codInstancia;
-    if (this.activarInput) {
-      this.editarNota(this.participante, " ");
-      return;
-    }
-
-    this.idInput = '';
-    this.activarInput = false;
-
-    await new Promise((resolve, rejects) => {
-      this.resultadoService.listarPuntajePorSubcategoriaRegTotal(this.codSubcategoria, this.codInstancia).subscribe({
-        next: async (respuesta) => {
-          this.listaPuntajeTotal = respuesta['listado'];
-          console.log("listaPuntajeTotal = ", this.listaPuntajeTotal);
-          // Ordenar lista por puntaje
-          this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
-          resolve("OK");
-        }, error: (error) => {
-          console.log(error);
-          rejects("Error");
-        }
-      });
-    });
   }
 
   compararCategoria(o1, o2) {

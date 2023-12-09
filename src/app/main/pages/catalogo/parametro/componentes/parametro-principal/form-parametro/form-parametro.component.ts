@@ -106,7 +106,6 @@ export class FormParametroComponent implements OnInit {
         estado: 'A',
       });
     }
-
     if (this.parametroEditar) {
       this.parametro['data'].codigo = this.parametroEditar.codigo;
       this.parametroService.guardarParametro(this.parametro['data']).subscribe({

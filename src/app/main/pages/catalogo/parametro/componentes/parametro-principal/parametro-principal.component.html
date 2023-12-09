@@ -2,6 +2,80 @@
     <div class="col-12">
         <div class="card box-shadow-sm">
             <div class="card-footer">
+                <div class="row form-group">
+                    <div class="col-12">
+                        <h3><b>Parámetros busqueda :</b></h3>
+                    </div>
+                </div>
+                <form detail-content [formGroup]="formParametroParametro"
+                    (ngSubmit)="guardarParametros()">
+                    <div class="row form-group">
+                        <div class="col-3">
+                            <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
+                            <select name="codCategoria" formControlName="codCategoria" required
+                                [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
+                                class="form-control mr-sm-2" id="codCategoria"
+                                (change)="listarSubcategoriaPorCategoria()">
+                                <option [value]="''" selected>Seleccionar categoría</option>
+                                <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
+                                    <span><b>{{categoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
+                            <select name="codSubcategoria" formControlName="codSubcategoria" required required
+                                [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
+                                class="form-control mr-sm-2 custom-select" id="codSubcategoria"
+                                (change)="listarInstanciaActivo()">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
+                                    <span><b>{{subcategoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
+                            <select name="codInstancia" formControlName="codInstancia" required required
+                                [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
+                                class="form-control mr-sm-2 custom-select" id="codInstancia">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
+                                    <span><h3><b>{{instancia?.denominacion}}</b></h3></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-md-2 col-3 form-group">
+                            <div class="my-2 text-left table-responsive">
+                                <button type="submit" [disabled]="formParametroParametro.invalid"
+                                    class="btn btn-info btn-rounded">
+                                    <b>{{ "Actualizar"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                            <!--
+                            <div class="col-12 form-group">
+                                <button [disabled]=""
+                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="enviarCorreo()">
+                                    <b>{{ "Enviar Correo"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-envelope" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
+                            -->
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                    </div>
+                </form>
                 <div class="row">
                     <div class="col-12">
                         <ng-container>
@@ -9,8 +83,8 @@
                                 [(selectedIndex)]="selectedTab">
                                 <mat-tab>
                                     <section class="tab-container">
-                                        <div >
-                                            {{'Lista Parámetro'}}
+                                        <div><h3><b>
+                                            {{'Lista Parámetro'}}</b></h3>
                                             <button type="submit" (click)="openDetail()" matTooltip="Agregar Nuevo Parametro"
                                                 class="btn btn-block btn-primary form-control mt-2">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>

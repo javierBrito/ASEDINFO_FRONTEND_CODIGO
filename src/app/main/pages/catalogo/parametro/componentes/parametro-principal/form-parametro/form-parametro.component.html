@@ -3,7 +3,7 @@
     <form detail-content [formGroup]="formParametro" (ngSubmit)="addRegistro()">
         <div class="row form-group">
             <div class="col-12">
-                <label for="descripcion">{{'Descripción(*): '}}</label>
+                <label for="descripcion"><h4><b>{{'Descripción(*): '}}</b></h4></label>
                 <input type="text" name="descripcion" formControlName="descripcion" class="form-control"
                     id="descripcion" oninput="descripcion.value = descripcion.value.toUpperCase()"
                     [ngClass]="{'is-valid': descripcionField?.dirty && !descripcionField?.invalid && !descripcionField?.errors,'is-invalid': descripcionField?.dirty && descripcionField?.invalid && descripcionField?.errors}">
@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="col-12">
-                <label for="nemonico">{{'Nemónico(*): '}}</label>
+                <label for="nemonico"><h4><b>{{'Nemónico(*): '}}</b></h4></label>
                 <input type="text" name="nemonico" formControlName="nemonico" class="form-control"
                     id="nemonico" oninput="nemonico.value = nemonico.value.toUpperCase()"
                     [ngClass]="{'is-valid': nemonicoField?.dirty && !nemonicoField?.invalid && !nemonicoField?.errors,'is-invalid': nemonicoField?.dirty && nemonicoField?.invalid && nemonicoField?.errors}">
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="col-12">
-                <label for="valor">{{'Valor(*): '}}</label>
+                <label for="valor"><h4><b>{{'Valor(*): '}}</b></h4></label>
                 <input type="number" name="valor" formControlName="valor" class="form-control"
                     id="valor" oninput="valor.value = valor.value.toUpperCase()"
                     [ngClass]="{'is-valid': valorField?.dirty && !valorField?.invalid && !valorField?.errors,'is-invalid': valorField?.dirty && valorField?.invalid && valorField?.errors}">
@@ -41,7 +41,7 @@
                 -->
             </div>
             <div class="col-12">
-                <label for="valorCadena">{{'ValorCadena(*): '}}</label>
+                <label for="valorCadena"><h4><b>{{'ValorCadena(*): '}}</b></h4></label>
                 <input type="text" name="valorCadena" formControlName="valorCadena" class="form-control"
                     id="valorCadena" oninput="valorCadena.value = valorCadena.value.toLowerCase()"
                     [ngClass]="{'is-valid': valorCadenaField?.dirty && !valorCadenaField?.invalid && !valorCadenaField?.errors,'is-invalid': valorCadenaField?.dirty && valorCadenaField?.invalid && valorCadenaField?.errors}">
