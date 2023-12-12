@@ -3,7 +3,6 @@ import { get, set } from 'lodash-es';
 import { Iparticipante } from '../interfaces/Iparticipante';
 
 export class Participante implements Iparticipante {
-
     constructor(data) {
         set(this, 'data', data);
     }
@@ -29,6 +28,12 @@ export class Participante implements Iparticipante {
         set(this, 'data.dateRegistered', value);
     }
 
+    get dateLastActive(): string {
+        return get(this, 'data.dateLastActive');
+    }
+    set dateLastActive(value: string) {
+        set(this, 'data.dateLastActive', value);
+    }
     get codPersona(): number {
         return get(this, 'data.codPersona');
     }
@@ -104,5 +109,32 @@ export class Participante implements Iparticipante {
     }
     set desInstancia(value: string) {
         set(this, 'data.desInstancia', value);
+    }
+    get celular(): string {
+        return get(this, 'data.celular');
+    }
+    set celular(value: string) {
+        set(this, 'data.celular', value);
+    }
+
+    get codEstadoCompetencia(): number {
+        return get(this, 'data.codEstadoCompetencia');
+    }
+    set codEstadoCompetencia(value: number) {
+        set(this, 'data.codEstadoCompetencia', value);
+    }
+
+    get desEstadoCompetencia(): string {
+        return get(this, 'data.desEstadoCompetencia');
+    }
+    set desEstadoCompetencia(value: string) {
+        set(this, 'data.desEstadoCompetencia', value);
+    }
+
+    get colorBoton(): string {
+        return get(this, 'data.colorBoton');
+    }
+    set colorBoton(value: string) {
+        set(this, 'data.colorBoton', value);
     }
 }

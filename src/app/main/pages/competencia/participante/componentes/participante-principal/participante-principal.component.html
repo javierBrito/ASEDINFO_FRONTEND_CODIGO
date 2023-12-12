@@ -7,15 +7,79 @@
                         <b>{{'Datos Participante'}}</b>
                     </div>
                 </div>
-                <form detail-content [formGroup]="formParticipanteIdentificacion"
-                    (ngSubmit)="listarParticipantePorIdentificacion()">
+                <form detail-content [formGroup]="formParticipanteParametro"
+                    (ngSubmit)="listarParticipantePorSubcategoriaInstancia()">
+                    <div class="row form-group">
+                        <div class="col-3">
+                            <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
+                            <select name="codCategoria" formControlName="codCategoria" required
+                                [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
+                                class="form-control mr-sm-2" id="codCategoria"
+                                (change)="listarSubcategoriaPorCategoria()">
+                                <option [value]="''" selected>Seleccionar categoría</option>
+                                <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
+                                    <span><b>{{categoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
+                            <select name="codSubcategoria" formControlName="codSubcategoria" required required
+                                [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
+                                class="form-control mr-sm-2 custom-select" id="codSubcategoria"
+                                (change)="listarInstanciaActivo()">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
+                                    <span><b>{{subcategoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
+                            <select name="codInstancia" formControlName="codInstancia" required required
+                                [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
+                                class="form-control mr-sm-2 custom-select" id="codInstancia"
+                                (change)="listarParticipantePorSubcategoriaInstancia()">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
+                                    <span><b>{{instancia?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-md-2 col-3 form-group">
+                            <div class="my-2 text-left table-responsive">
+                                <button type="submit" [disabled]="formParticipanteParametro.invalid"
+                                    class="btn btn-info btn-rounded">
+                                    <b>{{ "Buscar"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                            <!--
+                            <div class="col-12 form-group">
+                                <button [disabled]=""
+                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="enviarCorreo()">
+                                    <b>{{ "Enviar Correo"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-envelope" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
+                            -->
+                        </div>
+                    </div>
                     <div class="row form-group">
                         <div class="col-md-6 col-12 form-group">
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                             <input type="text" name="identificacion" id="identificacion"
-                                formControlName="identificacion" (keypress)="validateFormat($event)" maxlength="10"
-                                placeholder="Por favor, ingrese el número de cédula." class="form-control"
-                                (keyup)="onKey($event)"
+                                formControlName="identificacion" placeholder="Por favor, ingrese el número de cédula."
+                                class="form-control"
                                 [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors,'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                             <div class="valid-feedback">
                                 <span>{{ "Exito"}}</span>
@@ -23,6 +87,7 @@
                             <div class="invalid-feedback">
                                 <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
+                            <!--
                             <div class="invalid-feedback">
                                 <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
                                     valida."}}</span>
@@ -39,10 +104,11 @@
                                 <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
                                     números."}}</span>
                             </div>
+                            -->
                         </div>
                         <div class="col-md-2 col-12 form-group">
                             <div class="my-2 text-left table-responsive">
-                                <button type="submit" [disabled]="formParticipanteIdentificacion.invalid"
+                                <button type="submit" [disabled]="formParticipanteParametro.invalid"
                                     class="btn btn-info btn-rounded">
                                     <b>{{ "Buscar"}}</b>
                                     <b>{{ " "}}</b>
@@ -67,54 +133,58 @@
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                                 {{'Agregar Participante'}}
                                             </button>
-                                            <table class="table" *ngIf="listaPersona?.length > 0" id="tablaPersona">
+                                            <table class="table" *ngIf="listaParticipante?.length > 0"
+                                                id="tablaParticipante">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Identificación</th>
                                                         <th scope="col">Nombres</th>
-                                                        <th scope="col">Correo</th>
-                                                        <th scope="col">Celular</th>
-                                                        <th scope="col">Inicio</th>
-                                                        <th scope="col">Usuario WP</th>
+                                                        <th scope="col">Fecha/hora Competencia</th>
+                                                        <th scope="col">Estado Competencia</th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr
-                                                        *ngFor="let persona of listaPersona | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        *ngFor="let participante of listaParticipante | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{persona?.identificacion}}</td>
-                                                        <td>{{persona?.nombres + ' ' + persona?.apellidos}}</td>
-                                                        <td>{{persona?.correo}}</td>
-                                                        <td>{{persona?.celular}}</td>
-                                                        <td><span
-                                                                *ngIf="persona.participante">{{persona?.participante?.dateRegistered}}
-                                                            </span>
+                                                        <td>{{participante?.username}}</td>
+                                                        <td>{{participante?.firstName + ' ' + participante?.lastName}}
                                                         </td>
-                                                        <td><span
-                                                                *ngIf="persona.participante">{{persona?.participante?.username}}
-                                                            </span>
+                                                        <td>{{participante?.dateLastActive}}</td>
+                                                        <!--<td>{{participante?.desEstadoCompetencia}}</td>-->
+                                                        <td>
+                                                            <!--style="{'background-color': participante?.dateLastActive}"-->
+                                                            <!--[disabled]="formParticipanteParametro.invalid"-->
+                                                            <button type="button" (click)="cambiarEstado(participante)"
+                                                                [ngStyle]="{'background-color': participante?.colorBoton}"
+                                                                style="color: black;"
+                                                                class="btn btn-rounded">
+                                                                <b>{{participante?.desEstadoCompetencia}}</b>
+                                                                <b>{{ " "}}</b>
+                                                                <i class="fa fa-pencil"></i>
+                                                            </button>
                                                         </td>
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
-                                                                <button (click)="openEditarDetail(persona)"
-                                                                    matTooltip="Editar Participante" type=" button"
+                                                                <button (click)="openEditarDetail(participante)"
+                                                                    matTooltip="Editar Participante" type="button"
                                                                     class="btn btn-primary" rippleEffect round><i
                                                                         class="fa fa-pencil"
-                                                                        (click)="openEditarDetail(persona)"></i></button>
-                                                                <button (click)="openRemoverDetail(persona)"
+                                                                        (click)="openEditarDetail(participante)"></i></button>
+                                                                <button (click)="openRemoverDetail(participante)"
                                                                     matTooltip="Eliminar Participante" type="button"
                                                                     class="btn btn-danger" rippleEffect><i
                                                                         class="fa fa-trash"
-                                                                        (click)="openRemoverDetail(persona)"></i></button>
+                                                                        (click)="openRemoverDetail(participante)"></i></button>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <div class="row mt-5" *ngIf="listaPersona?.length > itemsRegistros">
+                                            <div class="row mt-5" *ngIf="listaParticipante?.length > itemsRegistros">
                                                 <div class="col-12 text-center">
                                                     <pagination-controls id="paginacionMatutino" class="paginacion"
                                                         [responsive]="true" [autoHide]="true" previousLabel="Anterior"
@@ -123,7 +193,7 @@
                                                     </pagination-controls>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="listaPersona?.length === 0">
+                                            <ng-container *ngIf="listaParticipante?.length === 0">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p>No hay datos disponibles</p>
@@ -142,9 +212,9 @@
     </div>
 </div>
 
-<app-form-participante [personaEditar]="personaSeleccionado" [codigoChild]="codigo" [identificacionChild]="identificacion"
-    [listaPersonaChild]="listaPersona" (listaPersona)="listaPersonaActualizada($event)" (close)="closeDetail($event)"
-    *ngIf="showDetail">
+<app-form-participante [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
+    [identificacionChild]="identificacion" [listaParticipanteChild]="listaParticipante"
+    (listaParticipante)="listaParticipante($event)" (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-participante>
 
 <ng-template #modal_confirm_delete let-modal>

@@ -23,6 +23,9 @@ export class ParticipanteService {
   listarParticipantePorPersona(codPersona: number) {
     return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorPersona/${codPersona}`);
   }
+  listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number) {
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}`);
+  }
   listarTodosParticipante(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarTodosParticipante`);
   }
@@ -39,4 +42,37 @@ export class ParticipanteService {
     return this.http.post<Participante>(`${environment.url_seguridad}/competencia/guardarParticipante`, participante);
   }
 
+  // Servicios de Categoria
+  buscarCategoriaPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarCategoriaPorCodigo/${codigo}`);
+  }
+  listarCategoriaActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarCategoriaActivo`);
+  }
+  // Servicios de Subcategoria
+  buscarSubcategoriaPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarSubcategoriaPorCodigo/${codigo}`);
+  }
+  listarSubcategoriaActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSubcategoriaActivo`);
+  }
+  listarSubcategoriaPorCategoria(codCategoria: number): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSubcategoriaPorCategoria/${codCategoria}`);
+  }
+  // Servicios de Instancia
+  buscarInstanciaPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarInstanciaPorCodigo/${codigo}`);
+  }
+  listarInstanciaActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarInstanciaActivo`);
+  }
+  // Servicios de Estado Competencia
+  buscarEstadoCompetenciaPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarEstadoCompetenciaPorCodigo/${codigo}`);
+  }
+  listarEstadoCompetenciaActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarEstadoCompetenciaActivo`);
+  }
+
 }
+

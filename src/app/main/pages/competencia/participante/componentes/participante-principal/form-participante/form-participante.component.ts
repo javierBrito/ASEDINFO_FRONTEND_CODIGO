@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { MensajesIziToastService } from 'app/main/pages/compartidos/servicios/iziToast/mensajesIziToast.service';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import { DetailComponent } from 'app/main/pages/competencia/participante/componentes/detail/detail.component';
 import dayjs from "dayjs";
 import { MyValidators } from 'app/utils/validators';
+import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
+import { ParticipanteService } from '../../../servicios/participante.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
-import { ParticipanteService } from '../../../servicios/participante.service';
 
 @Component({
   selector: 'app-form-participante',
@@ -21,11 +21,11 @@ export class FormParticipanteComponent implements OnInit {
 
   /*OUTPUT ENVIAN*/
   @Output() close: EventEmitter<boolean>;
-  @Output() listaPersona: EventEmitter<any>;
+  @Output() listaParticipante: EventEmitter<any>;
 
   /*INPUT RECIBEN*/
-  @Input() listaPersonaChild: any;
-  @Input() personaEditar: Persona;
+  @Input() listaParticipanteChild: any;
+  @Input() participanteEditar: Participante;
   @Input() codigoChild: number;
   @Input() identificacionChild: string;
 
@@ -44,9 +44,8 @@ export class FormParticipanteComponent implements OnInit {
 
   /*OBJETOS*/
   public participante: Participante;
-  public persona: Persona;
-  public listaPersonaAux: Persona[];
-  public listaParticipante: Participante[];
+  public personaEditar: Persona;
+  public listaParticipanteAux: Participante[];
   public listaRespuesta = [
     { valor: "SI" },
     { valor: "NO" },
@@ -65,28 +64,33 @@ export class FormParticipanteComponent implements OnInit {
     //this.sede = this.currentUser.sede;
     //this.amieRegex = this.patternAmie(this.sede.nombre);
     this.close = new EventEmitter<boolean>();
-    this.listaPersona = new EventEmitter<any>();
+    this.listaParticipante = new EventEmitter<any>();
     this.showDetail = true;
   }
 
   ngOnInit() {
-    if (this.personaEditar) {
+    if (this.participanteEditar) {
+      if (this.participanteEditar.codPersona != 0) {
+        this.buscarPersonaPorCodigo(this.participanteEditar.codPersona);
+      }
       this.formParticipante = this.formBuilder.group({
-        identificacion: new FormControl({ value: this.personaEditar.identificacion, disabled: true }, Validators.compose([
+        /*
+        identificacion: new FormControl({ value: this.participanteEditar.identificacion, disabled: true }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
           Validators.minLength(10),
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
+        */
+        identificacion: new FormControl(this.participanteEditar?.username, Validators.required),
         nombres: new FormControl(this.personaEditar?.nombres, Validators.required),
         apellidos: new FormControl(this.personaEditar?.apellidos, Validators.required),
         fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
         direccion: new FormControl(this.personaEditar?.direccion),
         celular: new FormControl(this.personaEditar?.celular, Validators.required),
         correo: new FormControl(this.personaEditar?.correo, Validators.required),
-        dateRegistered: new FormControl(dayjs(this.personaEditar?.participante?.fechaInicio).format("YYYY-MM-DD")),
-        username: new FormControl(this.personaEditar?.participante?.username),
+        dateLastActive: new FormControl(dayjs(this.participanteEditar?.dateLastActive).format("YYYY-MM-DD")),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
@@ -104,62 +108,81 @@ export class FormParticipanteComponent implements OnInit {
         direccion: new FormControl(''),
         celular: new FormControl('', Validators.required),
         correo: new FormControl('', Validators.required),
-        dateRegistered: new FormControl(dayjs(new Date()).format("YYYY-MM-DD")),
+        dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD")),
         username: new FormControl(''),
       })
     }
   }
-
+  /*
   async listarParticipantePorIdentificacion() {
-    this.personaService.listarPersonaPorIdentificacion(this.identificacionChild).subscribe(
+    this.participanteService.listarParticipantePorIdentificacion(this.identificacionChild).subscribe(
       (respuesta) => {
-        this.listaPersonaChild = respuesta['listado']
-        for (const ele of this.listaPersonaChild) {
+        this.listaParticipanteChild = respuesta['listado']
+        for (const ele of this.listaParticipanteChild) {
           ele.fechaNacimiento = dayjs(ele.fechaNacimiento).format("YYYY-MM-DD")
           if (ele.codigo != null) {
-            this.participanteService.listarParticipantePorPersona(ele.codigo).subscribe(
+            this.participanteService.listarParticipantePorParticipante(ele.codigo).subscribe(
               (respuesta) => {
                 this.listaParticipante = respuesta['listado'];
                 ele.participante = this.listaParticipante[0];
-                ele.participante.dateRegistered = dayjs(ele.participante.dateRegistered).format("YYYY-MM-DD")
+                ele.participante.dateLastActive = dayjs(ele.participante.dateLastActive).format("YYYY-MM-DD")
               }
             )
           }
         }
-        this.listaPersona.emit(this.listaPersonaChild);
+        this.listaParticipante.emit(this.listaParticipanteChild);
+      }
+    );
+  }
+  */
+ 
+  listarParticipantePorSubcategoriaInstancia() {
+    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.participante?.codSubcategoria, this.participante?.codInstancia).subscribe(
+      (respuesta) => {
+        this.listaParticipanteAux = respuesta['listado'];
+        for (const ele of this.listaParticipanteAux) {
+          switch (ele.codEstadoCompetencia) {
+            case 1: {
+              ele.colorBoton = "blue";
+              break;
+            }
+            case 2: {
+              ele.colorBoton = "green";
+              break;
+            }
+            case 3: {
+              ele.colorBoton = "Brown";
+              break;
+            }
+            case 4: {
+              ele.colorBoton = "red";
+              break;
+            }
+            default: {
+              ele.colorBoton = "black";
+              break;
+            }
+          }
+          //ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD")
+        }
+        this.listaParticipante.emit(this.listaParticipanteAux);
+        console.log("this.listaParticipanteAux = ", this.listaParticipanteAux);
       }
     );
   }
 
-  verificarPersona() {
-    // Receptar la identificación de formInscripcionCedula.value
-    let participanteIdentificacionTemp = this.formParticipante.value;
-    this.identificacionChild = participanteIdentificacionTemp.identificacion;
-    this.personaService.listarPersonaPorIdentificacion(this.identificacionChild).subscribe({
+  buscarPersonaPorCodigo(codPersona: number) {
+    this.personaService.buscarPersonaPorCodigo(codPersona).subscribe({
       next: (response) => {
-        this.listaPersonaAux = response['listado'];
-        this.persona = this.listaPersonaAux['0'];
-        if (this.persona?.codigo != null) {
-          this.formParticipante.controls.fechaNacimiento.setValue(dayjs(this.persona?.fechaNacimiento).format("YYYY-MM-DD"));
-          this.formParticipante.controls.nombres.setValue(this.persona?.nombres);
-          this.formParticipante.controls.apellidos.setValue(this.persona?.apellidos);
-          this.formParticipante.controls.direccion.setValue(this.persona?.direccion);
-          this.formParticipante.controls.correo.setValue(this.persona?.correo);
-          this.formParticipante.controls.celular.setValue(this.persona?.celular);
-
-          this.participanteService.listarParticipantePorPersona(this.persona?.codigo).subscribe(
-            (respuesta) => {
-              this.listaParticipante = respuesta['listado'];
-              this.persona.participante = this.listaParticipante[0];
-              if (this.persona.participante != undefined) {
-                this.persona.participante.dateRegistered = dayjs(this.persona.participante.dateRegistered).format("YYYY-MM-DD");
-                this.formParticipante.controls.dateRegistered.setValue(dayjs(this.persona.participante?.dateRegistered).format("YYYY-MM-DD"));
-                this.formParticipante.controls.username.setValue(this.persona.participante?.username);
-                }
-            }
-          )
-        }
-        this.personaEditar = this.persona;
+        this.personaEditar = response['objeto'];
+        /*
+        this.formParticipante.controls.fechaNacimiento.setValue(dayjs(this.participante?.fechaNacimiento).format("YYYY-MM-DD"));
+        this.formParticipante.controls.nombres.setValue(this.participante?.nombres);
+        this.formParticipante.controls.apellidos.setValue(this.participante?.apellidos);
+        this.formParticipante.controls.direccion.setValue(this.participante?.direccion);
+        this.formParticipante.controls.correo.setValue(this.participante?.correo);
+        this.formParticipante.controls.celular.setValue(this.participante?.celular);
+        */
       },
       error: (error) => {
         console.log(error);
@@ -177,7 +200,7 @@ export class FormParticipanteComponent implements OnInit {
   addRegistroPersona() {
     if (this.formParticipante?.valid) {
       let participanteTemp = this.formParticipante.value;
-      this.persona = new Persona({
+      this.participante = new Participante({
         codigo: 0,
         identificacion: participanteTemp?.identificacion,
         nombres: participanteTemp?.nombres,
@@ -189,10 +212,10 @@ export class FormParticipanteComponent implements OnInit {
         estado: 'A',
       });
     }
-    if (this.personaEditar) {
-      this.persona['data'].codigo = this.personaEditar?.codigo;
-      this.persona['data'].identificacion = this.identificacionChild;
-      this.personaService.guardarPersona(this.persona['data']).subscribe({
+    if (this.participanteEditar) {
+      this.participante['data'].codigo = this.participanteEditar?.codigo;
+      this.participante['data'].identificacion = this.identificacionChild;
+      this.participanteService.guardarParticipante(this.participante['data']).subscribe({
         next: (response) => {
           // Actualizar Datos Participante
           this.addRegistroParticipante();
@@ -203,9 +226,9 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     } else {
-      this.personaService.guardarPersona(this.persona['data']).subscribe({
+      this.participanteService.guardarParticipante(this.participante['data']).subscribe({
         next: async (response) => {
-          this.persona = response['objeto'];
+          this.participante = response['objeto'];
           // Actualizar Datos Participante
           this.addRegistroParticipante();
         },
@@ -222,17 +245,17 @@ export class FormParticipanteComponent implements OnInit {
       let participanteTemp = this.formParticipante.value;
       this.participante = new Participante({
         codigo: 0,
-        codPersona: this.persona?.codigo,
+        codParticipante: this.participante?.codigo,
         username: participanteTemp.username,
-        dateRegistered: dayjs(participanteTemp.dateRegistered).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        dateLastActive: dayjs(participanteTemp.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS"),
         estado: 'A',
       });
     }
-    if (this.personaEditar) {
-      this.participante['data'].codigo = this.personaEditar?.participante?.codigo;
+    if (this.participanteEditar) {
+      this.participante['data'].codigo = this.participanteEditar?.codigo;
       this.participanteService.guardarParticipante(this.participante['data']).subscribe({
         next: (response) => {
-          this.listarParticipantePorIdentificacion();
+          this.listarParticipantePorSubcategoriaInstancia();
           this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
           this.parentDetail.closeDetail();
         },
@@ -242,7 +265,7 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     } else {
-      // Si es nuevo el participante, movemos datos de la persona
+      // Si es nuevo el participante, movemos datos de la participante
       this.participante['data'].customerId = 0;
       this.participante['data'].userId = 0;
       this.participante['data'].firstname = this.personaEditar?.nombres;
@@ -250,7 +273,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participante['data'].email = this.personaEditar?.correo;
       this.participanteService.guardarParticipante(this.participante['data']).subscribe({
         next: async (response) => {
-          this.listarParticipantePorIdentificacion();
+          this.listarParticipantePorSubcategoriaInstancia();
           this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
           this.parentDetail.closeDetail();
         },
@@ -275,9 +298,10 @@ export class FormParticipanteComponent implements OnInit {
     if (event.target.value.length != 10) {
       this.resetTheForm();
     } else {
-      this.verificarPersona();    }
+      this.buscarPersonaPorCodigo(1);
+    }
   }
-  
+
   resetTheForm(): void {
     this.formParticipante.reset = null;
   }
@@ -325,7 +349,7 @@ export class FormParticipanteComponent implements OnInit {
   get usernameField() {
     return this.formParticipante.get('username');
   }
-  get dateRegisteredField() {
-    return this.formParticipante.get('dateRegistered');
+  get dateLastActiveField() {
+    return this.formParticipante.get('dateLastActive');
   }
 }

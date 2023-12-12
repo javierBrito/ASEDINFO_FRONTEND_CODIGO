@@ -5,7 +5,7 @@
             <div class="col-12">
                 <label for="nombreAplicacion">{{'Aplicacion(*): '}}</label>
                 <input type="text" name="nombreAplicacion" formControlName="nombreAplicacion" class="form-control"
-                    id="nombreAplicacion" disabled>
+                    id="nombreAplicacion">
             </div>
         </div>
         <div class="col-12">
@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="row form-group">
-            <div class="col-12">
+            <div class="col-6">
                 <label for="url">{{'Url(*): '}}</label>
                 <input type="text" name="url" formControlName="url" class="form-control" id="url"
                     [ngClass]="{'is-valid': urlField?.dirty && !urlField?.invalid && !urlField?.errors, 'is-invalid': urlField?.dirty && urlField?.invalid && urlField?.errors}">
@@ -49,9 +49,7 @@
                     <span *ngIf="urlField?.errors?.['required']">{{"Requerido"}}</span>
                 </div>
             </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-12">
+            <div class="col-6">
                 <label for="nivel">{{'Nivel(*): rango 1...2'}}</label>
                 <input type="number" name="nivel" formControlName="nivel" class="form-control"
                     id="nivel" placeholder="9" step="1" min="1" max="5"

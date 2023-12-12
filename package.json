@@ -55,6 +55,7 @@
     "bs-stepper": "1.7.0",
     "chart.js": "2.9.4",
     "core-js": "3.14.0",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "feather-icons": "4.28.0",
     "flatpickr": "4.6.9",

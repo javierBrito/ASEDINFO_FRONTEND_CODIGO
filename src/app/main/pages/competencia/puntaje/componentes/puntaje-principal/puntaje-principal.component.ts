@@ -201,14 +201,6 @@ export class PuntajePrincipalComponent implements OnInit {
     )
   }
 
-  buscarInstanciaPorCodigo() {
-    this.puntajeService.buscarInstanciaPorCodigo(this.codInstancia).subscribe(
-      (respuesta) => {
-        this.desInstancia = respuesta['objeto']?.denominacion;
-      }
-    )
-  }
-
   listarInstanciaActivo() {
     // Receptar codCategoria de formPuntajeParametro.value
     let puntajeParametroTemp = this.formPuntajeParametro.value;
@@ -222,6 +214,13 @@ export class PuntajePrincipalComponent implements OnInit {
     )
   }
 
+  buscarInstanciaPorCodigo() {
+    this.puntajeService.buscarInstanciaPorCodigo(this.codInstancia).subscribe(
+      (respuesta) => {
+        this.desInstancia = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
   async listarPuntajePorParticipante() {
     this.listaParticipantePresentacion = [];
     if (this.currentUser.cedula != 'JUEZ') {

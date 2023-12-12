@@ -1,6 +1,6 @@
 <app-detail (close)="closeDetail($event)">
-    <h1 detail-title><strong>{{personaEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
-    <form detail-content [formGroup]="formParticipante" (ngSubmit)="addRegistroPersona()">
+    <h1 detail-title><strong>{{participanteEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
+    <form detail-content [formGroup]="formParticipante" (ngSubmit)="addRegistroParticipante()">
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
                 <div class="col-12">
@@ -134,15 +134,15 @@
             </div>
             <div class="row form-group">
                 <div class="col-6">
-                    <label for="dateRegistered"><b>{{'Registro: '}}</b></label>
-                    <input type="date" name="dateRegistered" formControlName="dateRegistered" class="form-control"
-                        id="dateRegistered" 
-                        [ngClass]="{'is-valid': dateRegisteredField?.dirty && !dateRegisteredField?.invalid && !dateRegisteredField?.errors,'is-invalid': dateRegisteredField?.dirty && dateRegisteredField?.invalid && dateRegisteredField?.errors}">
+                    <label for="dateLastActive"><b>{{'Registro: '}}</b></label>
+                    <input type="date" name="dateLastActive" formControlName="dateLastActive" class="form-control"
+                        id="dateLastActive" 
+                        [ngClass]="{'is-valid': dateLastActiveField?.dirty && !dateLastActiveField?.invalid && !dateLastActiveField?.errors,'is-invalid': dateLastActiveField?.dirty && dateLastActiveField?.invalid && dateLastActiveField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
                     <div class="invalid-feedback">
-                        <span *ngIf="dateRegisteredField?.errors?.['required']">{{"Requerido"}}</span>
+                        <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
                 <div class="col-6">
@@ -165,7 +165,7 @@
         <div class="row">
             <div class="col-12">
                 <button type="submit" class="btn btn-block btn-primary" [disabled]="formParticipante?.invalid">
-                    {{personaEditar?'GUARDAR':'GUARDAR'}}</button>
+                    {{participanteEditar?'GUARDAR':'GUARDAR'}}</button>
             </div>
         </div>
     </form>
@@ -179,7 +179,7 @@
         </button>
     </div>
     <div class="modal-body">
-        {{personaEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro correctamente.'}}
+        {{participanteEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro correctamente.'}}
     </div>
 </ng-template>
 <ng-template #modal_error let-modal>
@@ -190,7 +190,7 @@
         </button>
     </div>
     <div class="modal-body">
-        {{personaEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
+        {{participanteEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
         registro.'}}
     </div>
 </ng-template>

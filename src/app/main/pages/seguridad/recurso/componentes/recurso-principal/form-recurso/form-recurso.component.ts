@@ -92,6 +92,7 @@ export class FormRecursoComponent implements OnInit {
     this.recursoService.listarRecursoPadre(this.codigoAplicacionChild).subscribe({
       next: (response) => {
         this.listaRecursoPadre = response['listado'];
+        console.log("this.listaRecursoPadre = ", this.listaRecursoPadre);
       },
       error: (error) => {
         console.log(error);
@@ -194,5 +195,8 @@ export class FormRecursoComponent implements OnInit {
   }
   get nivelField() {
     return this.formRecurso.get('nivel');
+  }
+  get recursoPadreField() {
+    return this.formRecurso.get('recursoPadre');
   }
 }

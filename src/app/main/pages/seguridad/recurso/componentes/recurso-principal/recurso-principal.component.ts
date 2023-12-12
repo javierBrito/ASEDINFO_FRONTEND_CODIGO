@@ -94,6 +94,7 @@ export class RecursoPrincipalComponent implements OnInit {
     this.recursoService.listarRecursoPorAplicacion(this.codigoAplicacion).subscribe(
       (respuesta) => {
         this.listaRecurso = respuesta['listado'];
+        console.log("this.listaRecurso 1 = ", this.listaRecurso);
         if (this.listaRecurso.length < this.itemsRegistros) {
           this.page = 1;
         }
@@ -111,6 +112,7 @@ export class RecursoPrincipalComponent implements OnInit {
             )
           }
         }
+        console.log("this.listaRecurso 2 = ", this.listaRecurso);
         // Ordenar lista por codigo
         //this.listaRecurso.sort((firstItem, secondItem) => firstItem.aplicacion.codigo - secondItem.aplicacion.codigo);
       }
