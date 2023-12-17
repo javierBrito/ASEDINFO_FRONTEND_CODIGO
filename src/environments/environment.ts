@@ -10,7 +10,8 @@ export const environment = {
   //url_seguridad: 'http://localhost:8080/asedinfo-servicios',
   url_seguridad: 'https://spring.asedinfo.com/asedinfo-servicios',
   //url_externo: 'http://localhost:5000',
-  url_externo: 'http://51.79.53.164:5000',
+  url_externo: 'https://wp.asedinfo.com',
+  //url_externo: 'http://51.79.53.164:5000',
 };
 
 /*
