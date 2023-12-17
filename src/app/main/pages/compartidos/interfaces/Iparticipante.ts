@@ -8,6 +8,7 @@ export interface Iparticipante {
     dateLastActive?: string;
     username?: string;
     desEstadoCompetencia?: string;
+    numPuntajeJuez?: number;
 
     customerId: number;
     userId: number;

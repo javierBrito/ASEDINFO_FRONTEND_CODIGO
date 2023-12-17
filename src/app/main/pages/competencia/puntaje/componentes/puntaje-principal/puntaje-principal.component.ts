@@ -121,7 +121,6 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   async ngOnInit() {
-    console.log("this.currentUser.cedula = ", this.currentUser.cedula);
     if (this.listaPuntajeChild != null) {
       this.listaPuntaje = this.listaPuntajeChild;
     }
@@ -245,14 +244,13 @@ export class PuntajePrincipalComponent implements OnInit {
           this.listaParticipantePresentacion = respuesta['listado'];
           for (const est of this.listaParticipantePresentacion) {
             await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorParticipante(est.codigo, this.codInstancia).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, this.codSubcategoria, this.codInstancia, this.currentUser.codigoUsuario).subscribe({
                 next: (respuesta) => {
                   let listNotas: PuntajeAux[] = [];
                   let listNotasConsulta: PuntajeAux[] = respuesta['listado'];
                   for (const modelo of this.listaModeloPuntaje) {
                     let auxBusqueda = listNotasConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
                     if (auxBusqueda) {
-                      //auxBusqueda.mprDesde = modelo.mprDesde;
                       auxBusqueda.porcentaje = modelo.porcentaje;
                       listNotas.push(auxBusqueda)
                     } else {
@@ -267,6 +265,7 @@ export class PuntajePrincipalComponent implements OnInit {
                         codModeloPuntaje: modelo?.codigo,
                         porcentaje: modelo?.porcentaje,
                         nombreParticipante: est?.nombreParticipante,
+                        codUsuarioJuez: 0,
                       }
                       listNotas.push(nuevoPuntajeAux)
                     }
@@ -371,6 +370,7 @@ export class PuntajePrincipalComponent implements OnInit {
         this.puntajeAuxTotal.codigo = this.codPuntaje;
         this.puntajeAuxTotal.codModeloPuntaje = 99;
         this.puntajeAuxTotal.puntaje = puntajeTotal;
+        this.puntajeAuxTotal.codUsuarioJuez = this.currentUser?.codigoUsuario;
 
         let puntajeTotalEntidad = new Puntaje;
         puntajeTotalEntidad = this.moverDatosPuntaje(this.puntajeAuxTotal);
@@ -391,7 +391,7 @@ export class PuntajePrincipalComponent implements OnInit {
   async verificarExistenciaRegistroTotal() {
     this.codPuntaje = 0;
     return new Promise((resolve, rejects) => {
-      this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal.codParticipante, this.puntajeAuxTotal.codInstancia, 99).subscribe({
+      this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal.codParticipante, this.puntajeAuxTotal.codInstancia, this.currentUser.codigoUsuario, 99).subscribe({
         next: (respuesta) => {
           this.listaPuntajeAux = respuesta['listado'];
           if (this.listaPuntajeAux.length > 0) {
@@ -417,6 +417,7 @@ export class PuntajePrincipalComponent implements OnInit {
       codSubcategoria: puntajeAux?.codSubcategoria,
       codInstancia: puntajeAux?.codInstancia,
       nombreParticipante: puntajeAux?.nombreParticipante,
+      codUsuarioJuez: this.currentUser.codigoUsuario,
     }
 
     return puntaje;

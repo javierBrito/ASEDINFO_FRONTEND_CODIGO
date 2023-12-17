@@ -151,7 +151,6 @@ export class ParametroPrincipalComponent implements OnInit {
       this.parametroService.buscarParametroPorNemonico(nemonico).subscribe({
         next: (respuesta) => {
           this.parametro = respuesta['objeto'];
-          console.log("this.parametro = ", this.parametro);
           this.codParametro = this.parametro?.codigo;
           resolve(respuesta);
         }, error: (error) => {
@@ -172,7 +171,6 @@ export class ParametroPrincipalComponent implements OnInit {
       estado: 'A',
     });
 
-    console.log("this.parametro.codigo = ", this.parametro.codigo);
     if (this.parametro.codigo != null) {
       this.parametroService.guardarParametro(this.parametro['data']).subscribe({
         next: (response) => {

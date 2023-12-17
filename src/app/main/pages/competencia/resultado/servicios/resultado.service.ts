@@ -27,8 +27,8 @@ export class ResultadoService {
   listarPuntajePorSubcategoria(codSubcategoria: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoria/${codSubcategoria}/${codInstancia}`);
   }
-  listarPuntajePorSubcategoriaRegTotal(codSubcategoria: number, codInstancia: number) {
-    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaRegTotal/${codSubcategoria}/${codInstancia}`);
+  listarPuntajePorSubcategoriaRegTotal(codSubcategoria: number, codInstancia: number, codUsuarioJuez: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaRegTotal/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}`);
   }
   listarPuntajePorParticipante(codParticipante: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaRegTotal/${codParticipante}/${codInstancia}`);

@@ -27,11 +27,11 @@ export class PuntajeService {
   listarPuntajePorSubcategoria(codSubcategoria: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoria/${codSubcategoria}/${codInstancia}`);
   }
-  listarPuntajePorParticipante(codParticipante: number, codInstancia: number) {
-    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipante/${codParticipante}/${codInstancia}`);
+  listarPuntajePorParticipanteSubcategoriaInstancia(codParticipante: number, codSubcategoria: number, codInstancia: number, codUsuarioJuez: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstancia/${codParticipante}/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}`);
   }
-  listarPuntajePorParticipanteRegTotal(codParticipante: number, codInstancia: number, codModeloPuntaje: number) {
-    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteRegTotal/${codParticipante}/${codInstancia}/${codModeloPuntaje}`);
+  listarPuntajePorParticipanteRegTotal(codParticipante: number, codInstancia: number, codModeloPuntaje: number, codUsuarioJuez: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteRegTotal/${codParticipante}/${codInstancia}/${codUsuarioJuez}/${codModeloPuntaje}`);
   }
   listarPuntajePorRangoFechas(fechaInicio: string, fechaFin: string) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePorRangoFechas/${fechaInicio}/${fechaFin}`);

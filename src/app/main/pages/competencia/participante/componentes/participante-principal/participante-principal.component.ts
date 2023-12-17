@@ -182,7 +182,6 @@ export class ParticipantePrincipalComponent implements OnInit {
           }
           //ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD")
         }
-        console.log("this.listaParticipante = ", this.listaParticipante);
       }
     );
   }
@@ -210,13 +209,11 @@ export class ParticipantePrincipalComponent implements OnInit {
         break;
       }
     }
-    console.log("participante.codEstadoCompetencia = ", participante.codEstadoCompetencia);
     this.participante = participante;
     this.addRegistroParticipante();
   }
 
   addRegistroParticipante() {
-    console.log("this.participante = ", this.participante);
     this.participanteService.guardarParticipante(this.participante).subscribe({
       next: (response) => {
         this.listarParticipantePorSubcategoriaInstancia();

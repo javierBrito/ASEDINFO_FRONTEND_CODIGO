@@ -4,6 +4,7 @@ export interface IpuntajeAux {
     codInstancia: number,
     codParticipante: number,
     codSubcategoria: number,
+    codUsuarioJuez: number,
     puntaje: number,
     estado: string,
 

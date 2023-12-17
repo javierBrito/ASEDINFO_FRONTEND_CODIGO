@@ -1,10 +1,10 @@
 <div class="row">
     <div class="col-12">
         <div class="card box-shadow-sm">
-            <div class="card-footer container" style="border: 1px solid blue">
+            <div class="card-footer">
                 <div class="row form-group">
                     <div class="col-12">
-                        <b>{{'Datos Participante'}}</b>
+                        <h4><b>Parámetros busqueda :</b></h4>
                     </div>
                 </div>
                 <form detail-content [formGroup]="formParticipanteParametro"
@@ -52,6 +52,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
+                        <!--
                         <div class="col-md-2 col-3 form-group">
                             <div class="my-2 text-left table-responsive">
                                 <button type="submit" [disabled]="formParticipanteParametro.invalid"
@@ -61,7 +62,6 @@
                                     <i class="fa fa-search"></i>
                                 </button>
                             </div>
-                            <!--
                             <div class="col-12 form-group">
                                 <button [disabled]=""
                                     class="btn btn-success btn-submit waves-effect waves-float waves-light"
@@ -71,9 +71,10 @@
                                     <i class="fa fa-envelope" style="font-size:14px;color:red"></i>
                                 </button>
                             </div>
-                            -->
                         </div>
+                        -->
                     </div>
+                    <!--
                     <div class="row form-group">
                         <div class="col-md-6 col-12 form-group">
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
@@ -87,7 +88,6 @@
                             <div class="invalid-feedback">
                                 <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
-                            <!--
                             <div class="invalid-feedback">
                                 <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
                                     valida."}}</span>
@@ -104,7 +104,6 @@
                                 <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
                                     números."}}</span>
                             </div>
-                            -->
                         </div>
                         <div class="col-md-2 col-12 form-group">
                             <div class="my-2 text-left table-responsive">
@@ -117,6 +116,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
                 </form>
                 <div class="row">
                     <div class="col-12">
@@ -126,7 +126,7 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <b>{{'Lista Participante'}}</b>
+                                            <b>{{'Lista Participantes de : '}}</b>
                                             <button type="submit" (click)="openDetail(1)"
                                                 matTooltip="Agregar Nuevo Participante"
                                                 class="btn btn-block btn-primary form-control mt-2">

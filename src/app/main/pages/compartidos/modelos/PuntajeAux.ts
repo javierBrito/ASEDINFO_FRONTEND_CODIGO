@@ -55,4 +55,12 @@ export class PuntajeAux implements IpuntajeAux {
     set nombreParticipante(value: string) {
         set(this, 'data.nombreParticipante', value);
     }
+    
+    get codUsuarioJuez(): number {
+        return get(this, 'data.codUsuarioJuez');
+    }
+    set codUsuarioJuez(value: number) {
+        set(this, 'data.codUsuarioJuez', value);
+    }
+
 }

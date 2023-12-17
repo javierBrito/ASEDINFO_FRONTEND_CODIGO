@@ -226,7 +226,7 @@ export class ResultadoPrincipalComponent implements OnInit {
     this.activarInput = false;
 
     await new Promise((resolve, rejects) => {
-      this.resultadoService.listarPuntajePorSubcategoriaRegTotal(this.codSubcategoria, this.codInstancia).subscribe({
+      this.resultadoService.listarPuntajePorSubcategoriaRegTotal(this.codSubcategoria, this.codInstancia, this.currentUser.codigoUsuario).subscribe({
         next: async (respuesta) => {
           this.listaPuntajeTotal = respuesta['listado'];
           // Ordenar lista por puntaje
@@ -295,7 +295,6 @@ export class ResultadoPrincipalComponent implements OnInit {
             next: (respuesta) => {
               puntaje.codigo = respuesta['objeto'].codigo;
               notaGuardada = notaGuardada + 1;
-              //this.mensajeService.mensajeCorrecto('Se ha guardado el registro correctamente...');
               resolve("OK");
             }, error: (error) => {
               this.mensajeService.mensajeError('Ha habido un problema al guardar el registro...' + error);
@@ -367,6 +366,7 @@ export class ResultadoPrincipalComponent implements OnInit {
       codSubcategoria: puntajeAux?.codSubcategoria,
       codInstancia: puntajeAux?.codInstancia,
       nombreParticipante: puntajeAux?.nombreParticipante,
+      codUsuarioJuez: puntajeAux?.codUsuarioJuez,
     }
 
     return puntaje;

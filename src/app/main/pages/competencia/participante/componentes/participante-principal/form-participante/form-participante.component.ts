@@ -166,7 +166,6 @@ export class FormParticipanteComponent implements OnInit {
           //ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD")
         }
         this.listaParticipante.emit(this.listaParticipanteAux);
-        console.log("this.listaParticipanteAux = ", this.listaParticipanteAux);
       }
     );
   }
