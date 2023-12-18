@@ -226,7 +226,7 @@ export class ResultadoPrincipalComponent implements OnInit {
     this.activarInput = false;
 
     await new Promise((resolve, rejects) => {
-      this.resultadoService.listarPuntajePorSubcategoriaRegTotal(this.codSubcategoria, this.codInstancia, this.currentUser.codigoUsuario).subscribe({
+      this.resultadoService.listarPuntajePorSubcategoriaInstanciaRegAVG(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
           this.listaPuntajeTotal = respuesta['listado'];
           // Ordenar lista por puntaje
