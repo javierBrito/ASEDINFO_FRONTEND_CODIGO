@@ -85,6 +85,26 @@ export class ProductoPrincipalComponent implements OnInit {
     this.formProductoDescripcion = this.formBuilder.group({
       descripcion: new FormControl('', Validators.required),
     })
+    this.listarProductoActivo();
+  }
+
+  listarProductoActivo() {
+    this.productoService.listarProductoActivo(this.nemonicoModulo).subscribe(
+      (respuesta) => {
+        this.listaProducto = respuesta['listado'];
+        console.log("this.listaProducto = ", this.listaProducto)
+        for (const ele of this.listaProducto) {
+          ele.fechaRegistra = dayjs(ele.fechaRegistra).format("YYYY-MM-DD")
+          // Obtener modulo
+          this.productoService.buscarModuloPorCodigo(ele.codModulo).subscribe(
+            (respuesta) => {
+              this.modulo = respuesta['objeto'];
+              ele.modulo = this.modulo;
+            }
+          )
+        }
+      }
+    );
   }
 
   listarProductoPorDescripcion() {
