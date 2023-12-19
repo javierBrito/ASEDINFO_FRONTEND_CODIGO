@@ -96,6 +96,7 @@ export class FormSubcategoriaComponent implements OnInit {
       (respuesta) => {
         this.listaSubcategoriaChild = respuesta['listado']
         for (const ele of this.listaSubcategoriaChild) {
+          ele.denominacion = ele.denominacion.toLowerCase()
           this.categoriaService.buscarCategoriaPorCodigo(ele.codCategoria).subscribe(
             (respuesta) => {
               ele.categoria = respuesta['objeto'];

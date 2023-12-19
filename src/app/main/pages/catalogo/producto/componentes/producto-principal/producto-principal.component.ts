@@ -92,7 +92,6 @@ export class ProductoPrincipalComponent implements OnInit {
     this.productoService.listarProductoActivo(this.nemonicoModulo).subscribe(
       (respuesta) => {
         this.listaProducto = respuesta['listado'];
-        console.log("this.listaProducto = ", this.listaProducto)
         for (const ele of this.listaProducto) {
           ele.fechaRegistra = dayjs(ele.fechaRegistra).format("YYYY-MM-DD")
           // Obtener modulo

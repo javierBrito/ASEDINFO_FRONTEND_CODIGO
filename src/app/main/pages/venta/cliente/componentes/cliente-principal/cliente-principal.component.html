@@ -8,7 +8,7 @@
                     </div>
                 </div>
                 <form detail-content [formGroup]="formClienteIdentificacion"
-                    (ngSubmit)="listarClientePorIdentificacion()">
+                    (ngSubmit)="listarClientePorPersonaIdentificacion()">
                     <div class="row form-group">
                         <div class="col-md-6 col-12 form-group">
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
@@ -67,7 +67,7 @@
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                                 {{'Agregar Cliente'}}
                                             </button>
-                                            <table class="table" *ngIf="listaPersona?.length > 0" id="tablaPersona">
+                                            <table class="table" *ngIf="listaCliente?.length > 0" id="tablaCliente">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
@@ -82,20 +82,14 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr
-                                                        *ngFor="let persona of listaPersona | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        *ngFor="let cliente of listaCliente | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{persona?.identificacion}}</td>
-                                                        <td>{{persona?.nombres + ' ' + persona?.apellidos}}</td>
-                                                        <td>{{persona?.correo}}</td>
-                                                        <td>{{persona?.celular}}</td>
-                                                        <td><span
-                                                                *ngIf="persona.cliente">{{persona?.cliente?.fechaInicio}}
-                                                            </span>
-                                                        </td>
-                                                        <td><span
-                                                                *ngIf="persona.cliente">{{persona?.cliente?.tipoCliente}}
-                                                            </span>
-                                                        </td>
+                                                        <td>{{cliente?.persona?.identificacion}}</td>
+                                                        <td>{{cliente?.persona?.nombres + ' ' + persona?.apellidos}}</td>
+                                                        <td>{{cliente?.persona?.correo}}</td>
+                                                        <td>{{cliente?.persona?.celular}}</td>
+                                                        <td>{{cliente?.fechaInicio}}</td>
+                                                        <td>{{cliente?.tipoCliente}}</td>
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">

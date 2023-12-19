@@ -92,24 +92,47 @@ export class ClientePrincipalComponent implements OnInit {
         Validators.pattern("^[0-9]*$"),
       ])),
     })
+    this.listarClienteActivo();
   }
 
-  listarClientePorIdentificacion() {
+  listarClienteActivo() {
+    this.clienteService.listarClienteActivo().subscribe(
+      (respuesta) => {
+        this.listaCliente = respuesta['listado'];
+        for (const ele of this.listaCliente) {
+          if (ele.codPersona != null) {
+            ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+            this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
+              (respuesta) => {
+                console.log("respueta = ", respuesta)
+                ele.persona = respuesta['objeto'];                                                            
+                if (ele?.persona != undefined) {
+                  ele.persona.fechaNacimiento = dayjs(ele.persona.fechaNacimiento).format("YYYY-MM-DD")
+                }
+              }
+            )
+          }
+        }
+      }
+    );
+  }
+
+  listarClientePorPersonaIdentificacion() {
     // Receptar la identificación de formInscripcionCedula.value
     let clienteIdentificacionTemp = this.formClienteIdentificacion.value;
     this.identificacion = clienteIdentificacionTemp.identificacion;
-    this.personaService.listarPersonaPorIdentificacion(this.identificacion).subscribe(
+    this.clienteService.listarClientePorPersonaIdentificacion(this.identificacion).subscribe(
       (respuesta) => {
-        this.listaPersona = respuesta['listado'];
-        for (const ele of this.listaPersona) {
-          ele.fechaNacimiento = dayjs(ele.fechaNacimiento).format("YYYY-MM-DD")
-          if (ele.codigo != null) {
-            this.clienteService.listarClientePorPersona(ele.codigo).subscribe(
+        this.listaCliente = respuesta['listado'];
+        for (const ele of this.listaCliente) {
+          if (ele.codPersona != null) {
+            ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+            this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
               (respuesta) => {
-                this.listaCliente = respuesta['listado'];                                                            
-                ele.cliente = this.listaCliente[0];
-                if (ele?.cliente != undefined) {
-                  ele.cliente.fechaInicio = dayjs(ele.cliente.fechaInicio).format("YYYY-MM-DD")
+                console.log("respueta = ", respuesta)
+                ele.persona = respuesta['objeto'];                                                            
+                if (ele?.persona != undefined) {
+                  ele.persona.fechaNacimiento = dayjs(ele.persona.fechaNacimiento).format("YYYY-MM-DD")
                 }
               }
             )
@@ -147,7 +170,7 @@ export class ClientePrincipalComponent implements OnInit {
           // Hicieron click en "Sí, eliminar"
           this.clienteService.eliminarClientePorId(persona.codigo).subscribe({
             next: (response) => {
-              this.listarClientePorIdentificacion();
+              this.listarClientePorPersonaIdentificacion();
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
             },
             error: (error) => {
@@ -171,7 +194,7 @@ export class ClientePrincipalComponent implements OnInit {
     if (event.target.value.length != 10) {
       this.resetTheForm();
     } else {
-      this.listarClientePorIdentificacion();    }
+      this.listarClientePorPersonaIdentificacion();    }
   }
 
   resetTheForm(): void {

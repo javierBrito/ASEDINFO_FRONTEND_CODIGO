@@ -18,7 +18,8 @@
         <div class="row form-group">
             <div class="col-12">
                 <label for="denominacion">{{'Denominación(*): '}}</label>
-                <input type="text" name="denominacion" formControlName="denominacion" class="form-control" id="denominacion"
+                <input type="text" name="denominacion" formControlName="denominacion" class="form-control" 
+                    id="denominacion" oninput="denominacion.value = denominacion.value.toUpperCase()"
                     [ngClass]="{'is-valid': denominacionField?.dirty && !denominacionField?.invalid && !denominacionField?.errors, 'is-invalid': denominacionField?.dirty && denominacionField?.invalid && denominacionField?.errors}">
                 <div class="valid-feedback">
                     <span>{{ "Exito"}}</span>
