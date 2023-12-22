@@ -3,7 +3,7 @@ export interface Iparticipante {
     codPersona?: number;
     codSubcategoria?: number;
     codInstancia?: number;
-    codCompetencia?: number;
+    codEstadoCompetencia?: number;
     dateRegistered?: string;
     dateLastActive?: string;
     username?: string;
@@ -22,6 +22,8 @@ export interface Iparticipante {
     persona: any;
     nombrePersona: string;
     celular: string;
+
+    estadoCompetencia: any;
 
     colorBoton: string;
 }

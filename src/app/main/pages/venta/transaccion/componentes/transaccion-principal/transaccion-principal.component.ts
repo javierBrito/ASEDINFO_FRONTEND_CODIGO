@@ -123,7 +123,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       fechaFin: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
     });
     this.obtenerParametros();
-    this.obtenerTransaccionACaducarse();
+    //this.obtenerTransaccionACaducarse();
   }
 
   obtenerParametros() {
@@ -294,10 +294,6 @@ export class TransaccionPrincipalComponent implements OnInit {
       });
   }
 
-  compararAplicacion(o1, o2) {
-    return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
-  }
-
   closeDetail($event) {
     this.showDetail = $event;
     this.transaccionSeleccionado = null;
@@ -415,7 +411,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.seEnvioWhatsapp = true;
     this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    
+
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {
         console.log("response = ", response);

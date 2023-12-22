@@ -1,19 +1,12 @@
 <app-detail (close)="closeDetail($event)">
-    <h1 detail-title><strong>{{personaEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
+    <h1 detail-title><strong>{{clienteEditar ?'EDITAR':'AGREGAR'}}{{' Cliente'}}</strong></h1>
     <form detail-content [formGroup]="formCliente" (ngSubmit)="addRegistroPersona()">
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
-            <div class="row form-group">
-                <div class="col-12">
-                    <b>
-                        <h3>Datos Persona</h3>
-                    </b>
-                </div>
-            </div>
             <div class="row form-group">
                 <div class="col-6">
                     <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        (keypress)="validateFormat($event)" maxlength="10" id="identificacion"
+                        maxlength="60" id="identificacion"
                         (keyup)="onKey($event)"
                         placeholder="Por favor, ingrese el número de cédula."
                         oninput="identificacion.value = identificacion.value.toUpperCase()"
@@ -21,6 +14,7 @@
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
@@ -40,6 +34,7 @@
                         <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
                             números."}}</span>
                     </div>
+                    -->
                 </div>
                 <div class="col-6">
                     <label for="fechaNacimiento"><b>{{'Nacimiento: '}}</b></label>
@@ -126,13 +121,6 @@
         <br>
         <div class="container" style="border: 0px solid black; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
-                <div class="col-12">
-                    <b>
-                        <h3>Datos Cliente</h3>
-                    </b>
-                </div>
-            </div>
-            <div class="row form-group">
                 <div class="col-6">
                     <label for="fechaInicio"><b>{{'Inicio: '}}</b></label>
                     <input type="date" name="fechaInicio" formControlName="fechaInicio" class="form-control"
@@ -148,7 +136,7 @@
                 <div class="col-6">
                     <label for="tipoCliente"><b>{{'Tipo Cliente: '}}</b></label>
                     <input type="text" name="tipoCliente" formControlName="tipoCliente" class="form-control"
-                        id="tipoCliente"
+                        id="tipoCliente" oninput="tipoCliente.value = tipoCliente.value.toUpperCase()"
                         [ngClass]="{'is-valid': tipoClienteField?.dirty && !tipoClienteField?.invalid && !tipoClienteField?.errors, 'is-invalid': tipoClienteField?.dirty && tipoClienteField?.invalid && tipoClienteField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -165,7 +153,7 @@
         <div class="row">
             <div class="col-12">
                 <button type="submit" class="btn btn-block btn-primary" [disabled]="formCliente?.invalid">
-                    {{personaEditar?'GUARDAR':'GUARDAR'}}</button>
+                    {{clienteEditar?'GUARDAR':'GUARDAR'}}</button>
             </div>
         </div>
     </form>
@@ -179,7 +167,7 @@
         </button>
     </div>
     <div class="modal-body">
-        {{personaEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro correctamente.'}}
+        {{clienteEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro correctamente.'}}
     </div>
 </ng-template>
 <ng-template #modal_error let-modal>
@@ -190,7 +178,7 @@
         </button>
     </div>
     <div class="modal-body">
-        {{personaEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
+        {{clienteEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
         registro.'}}
     </div>
 </ng-template>

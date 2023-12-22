@@ -54,7 +54,7 @@ export class ClientePrincipalComponent implements OnInit {
   public itemsRegistros: number;
 
   /*OBJETOS*/
-  public personaSeleccionado: Persona;
+  public clienteSeleccionado: Cliente;
 
   /*FORMULARIOS*/
   public formCliente: FormGroup;
@@ -84,13 +84,16 @@ export class ClientePrincipalComponent implements OnInit {
       this.listaPersona = this.listaPersonaChild;
     }
     this.formClienteIdentificacion = this.formBuilder.group({
-      identificacion: new FormControl('', Validators.compose([
+      identificacion: new FormControl('', Validators.required),
+      /*
+        identificacion: new FormControl('', Validators.compose([
         MyValidators.isCedulaValid,
         Validators.required,
         Validators.minLength(10),
         Validators.maxLength(10),
         Validators.pattern("^[0-9]*$"),
       ])),
+      */
     })
     this.listarClienteActivo();
   }
@@ -104,7 +107,6 @@ export class ClientePrincipalComponent implements OnInit {
             ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
             this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
               (respuesta) => {
-                console.log("respueta = ", respuesta)
                 ele.persona = respuesta['objeto'];                                                            
                 if (ele?.persona != undefined) {
                   ele.persona.fechaNacimiento = dayjs(ele.persona.fechaNacimiento).format("YYYY-MM-DD")
@@ -129,7 +131,6 @@ export class ClientePrincipalComponent implements OnInit {
             ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
             this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
               (respuesta) => {
-                console.log("respueta = ", respuesta)
                 ele.persona = respuesta['objeto'];                                                            
                 if (ele?.persona != undefined) {
                   ele.persona.fechaNacimiento = dayjs(ele.persona.fechaNacimiento).format("YYYY-MM-DD")
@@ -150,8 +151,9 @@ export class ClientePrincipalComponent implements OnInit {
     this.showDetail = true;
   }
 
-  openEditarDetail(persona: Persona) {
-    this.personaSeleccionado = persona;
+  openEditarDetail(cliente: Cliente) {
+    this.identificacion = cliente?.persona?.identificacion;
+    this.clienteSeleccionado = cliente;
     this.showDetail = true;
   }
 
@@ -186,7 +188,7 @@ export class ClientePrincipalComponent implements OnInit {
 
   closeDetail($event) {
     this.showDetail = $event;
-    this.personaSeleccionado = null;
+    this.clienteSeleccionado = null;
   }
 
   // Contar los caracteres de la cedula para activar boton <Buscar>

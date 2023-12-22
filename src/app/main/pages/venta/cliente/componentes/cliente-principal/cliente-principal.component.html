@@ -13,13 +13,14 @@
                         <div class="col-md-6 col-12 form-group">
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                             <input type="text" name="identificacion" id="identificacion"
-                                formControlName="identificacion" (keypress)="validateFormat($event)" maxlength="10"
+                                formControlName="identificacion" maxlength="60"
                                 placeholder="Por favor, ingrese el número de cédula." class="form-control"
                                 (keyup)="onKey($event)"
                                 [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors,'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                             <div class="valid-feedback">
                                 <span>{{ "Exito"}}</span>
                             </div>
+                            <!--
                             <div class="invalid-feedback">
                                 <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
@@ -39,6 +40,7 @@
                                 <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
                                     números."}}</span>
                             </div>
+                            -->
                         </div>
                         <div class="col-md-2 col-12 form-group">
                             <div class="my-2 text-left table-responsive">
@@ -85,7 +87,7 @@
                                                         *ngFor="let cliente of listaCliente | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
                                                         <td>{{cliente?.persona?.identificacion}}</td>
-                                                        <td>{{cliente?.persona?.nombres + ' ' + persona?.apellidos}}</td>
+                                                        <td>{{cliente?.persona?.nombres + ' ' + cliente?.persona?.apellidos}}</td>
                                                         <td>{{cliente?.persona?.correo}}</td>
                                                         <td>{{cliente?.persona?.celular}}</td>
                                                         <td>{{cliente?.fechaInicio}}</td>
@@ -93,12 +95,12 @@
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
-                                                                <button (click)="openEditarDetail(persona)"
+                                                                <button (click)="openEditarDetail(cliente)"
                                                                     matTooltip="Editar Cliente" type=" button"
                                                                     class="btn btn-primary" rippleEffect round><i
                                                                         class="fa fa-pencil"
-                                                                        (click)="openEditarDetail(persona)"></i></button>
-                                                                <button (click)="openRemoverDetail(persona)"
+                                                                        (click)="openEditarDetail(cliente)"></i></button>
+                                                                <button (click)="openRemoverDetail(cliente)"
                                                                     matTooltip="Eliminar Cliente" type="button"
                                                                     class="btn btn-danger" rippleEffect><i
                                                                         class="fa fa-trash"
@@ -136,8 +138,8 @@
     </div>
 </div>
 
-<app-form-cliente [personaEditar]="personaSeleccionado" [codigoChild]="codigo" [identificacionChild]="identificacion"
-    [listaPersonaChild]="listaPersona" (listaPersona)="listaPersonaActualizada($event)" (close)="closeDetail($event)"
+<app-form-cliente [clienteEditar]="clienteSeleccionado" [codigoChild]="codigo" [identificacionChild]="identificacion"
+    [listaClienteChild]="listaCliente" (listaPersona)="listaClienteActualizada($event)" (close)="closeDetail($event)"
     *ngIf="showDetail">
 </app-form-cliente>
 

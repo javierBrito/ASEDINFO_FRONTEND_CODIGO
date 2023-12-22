@@ -180,6 +180,13 @@ export class ParticipantePrincipalComponent implements OnInit {
               break;
             }
           }
+          if (ele.codEstadoCompetencia != 0) {
+            this.participanteService.buscarEstadoCompetenciaPorCodigo(ele.codEstadoCompetencia).subscribe(
+              (respuesta) => {
+                ele.estadoCompetencia = respuesta['objeto'];                                                            
+              }
+            )
+          }
           //ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD")
         }
       }

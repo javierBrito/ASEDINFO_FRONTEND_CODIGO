@@ -147,4 +147,25 @@ export class Transaccion implements Itransaccion {
     set celular(value: string) {
         set(this, 'data.celular', value);
     }
+
+    get precioCosto(): number {
+        return get(this, 'data.precioCosto');
+    }
+    set precioCosto(value: number) {
+        set(this, 'data.precioCosto', value);
+    }
+
+    get precioMayoreo(): number {
+        return get(this, 'data.precioMayoreo');
+    }
+    set precioMayoreo(value: number) {
+        set(this, 'data.precioMayoreo', value);
+    }
+
+    get monto(): number {
+        return get(this, 'data.monto');
+    }
+    set monto(value: number) {
+        set(this, 'data.monto', value);
+    }
 }

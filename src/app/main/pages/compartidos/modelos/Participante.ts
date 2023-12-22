@@ -144,4 +144,11 @@ export class Participante implements Iparticipante {
     set colorBoton(value: string) {
         set(this, 'data.colorBoton', value);
     }
+
+    get estadoCompetencia(): any {
+        return get(this, 'data.estadoCompetencia');
+    }
+    set estadoCompetencia(value: any) {
+        set(this, 'data.estadoCompetencia', value);
+    }
 }

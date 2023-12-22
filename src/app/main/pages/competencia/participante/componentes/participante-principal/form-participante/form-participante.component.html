@@ -24,6 +24,7 @@
                     <div class="invalid-feedback">
                         <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
                             valida."}}</span>
@@ -40,6 +41,7 @@
                         <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
                             números."}}</span>
                     </div>
+                    -->
                 </div>
                 <div class="col-6">
                     <label for="fechaNacimiento"><b>{{'Nacimiento: '}}</b></label>
@@ -132,6 +134,18 @@
                     </b>
                 </div>
             </div>
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="estadoCompetencia">{{'Estado Competencia(*):'}}</label>
+                    <select class="custom-select" formControlName="estadoCompetencia"
+                        name="estadoCompetencia" id="estadoCompetencia" [compareWith]="compararEstadoCompetencia">
+                        <option [value]="''" selected>Seleccionar estado competencia</option>
+                        <option *ngFor="let estadoCompetencia of listaEstadoCompetencia" [ngValue]="estadoCompetencia">
+                            {{estadoCompetencia?.denominacion}}</option>
+                    </select>
+                </div>
+            </div>
+    
             <div class="row form-group">
                 <div class="col-6">
                     <label for="dateLastActive"><b>{{'Registro: '}}</b></label>

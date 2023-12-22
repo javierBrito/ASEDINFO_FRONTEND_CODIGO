@@ -21,11 +21,11 @@ export class FormClienteComponent implements OnInit {
 
   /*OUTPUT ENVIAN*/
   @Output() close: EventEmitter<boolean>;
-  @Output() listaPersona: EventEmitter<any>;
+  @Output() listaCliente: EventEmitter<any>;
 
   /*INPUT RECIBEN*/
-  @Input() listaPersonaChild: any;
-  @Input() personaEditar: Persona;
+  @Input() listaClienteChild: any;
+  @Input() clienteEditar: Cliente;
   @Input() codigoChild: number;
   @Input() identificacionChild: string;
 
@@ -45,8 +45,7 @@ export class FormClienteComponent implements OnInit {
   /*OBJETOS*/
   public cliente: Cliente;
   public persona: Persona;
-  public listaPersonaAux: Persona[];
-  public listaCliente: Cliente[];
+  public listaPersona: Persona[];
   public listaRespuesta = [
     { valor: "SI" },
     { valor: "NO" },
@@ -65,32 +64,37 @@ export class FormClienteComponent implements OnInit {
     //this.sede = this.currentUser.sede;
     //this.amieRegex = this.patternAmie(this.sede.nombre);
     this.close = new EventEmitter<boolean>();
-    this.listaPersona = new EventEmitter<any>();
+    this.listaCliente = new EventEmitter<any>();
     this.showDetail = true;
   }
 
   ngOnInit() {
-    if (this.personaEditar) {
+    if (this.clienteEditar) {
       this.formCliente = this.formBuilder.group({
-        identificacion: new FormControl({ value: this.personaEditar.identificacion, disabled: true }, Validators.compose([
+        identificacion: new FormControl({ value: this.clienteEditar?.persona?.identificacion, disabled: true }, Validators.required),
+        /*
+        identificacion: new FormControl({ value: this.clienteEditar.identificacion, disabled: true }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
           Validators.minLength(10),
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
-        nombres: new FormControl(this.personaEditar?.nombres, Validators.required),
-        apellidos: new FormControl(this.personaEditar?.apellidos, Validators.required),
-        fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
-        direccion: new FormControl(this.personaEditar?.direccion),
-        celular: new FormControl(this.personaEditar?.celular, Validators.required),
-        correo: new FormControl(this.personaEditar?.correo, Validators.required),
-        fechaInicio: new FormControl(dayjs(this.personaEditar?.cliente?.fechaInicio).format("YYYY-MM-DD")),
-        tipoCliente: new FormControl(this.personaEditar?.cliente?.tipoCliente),
+        */
+        nombres: new FormControl(this.clienteEditar?.persona?.nombres, Validators.required),
+        apellidos: new FormControl(this.clienteEditar?.persona?.apellidos, Validators.required),
+        fechaNacimiento: new FormControl(dayjs(this.clienteEditar?.persona?.fechaNacimiento).format("YYYY-MM-DD")),
+        direccion: new FormControl(this.clienteEditar?.persona?.direccion),
+        celular: new FormControl(this.clienteEditar?.persona?.celular, Validators.required),
+        correo: new FormControl(this.clienteEditar?.persona?.correo, Validators.required),
+        fechaInicio: new FormControl(dayjs(this.clienteEditar?.fechaInicio).format("YYYY-MM-DD")),
+        tipoCliente: new FormControl(this.clienteEditar?.tipoCliente),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
       this.formCliente = this.formBuilder.group({
+        identificacion: new FormControl({ value: this.identificacionChild, disabled: false }, Validators.required),
+        /*
         identificacion: new FormControl({ value: this.identificacionChild, disabled: false }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
@@ -98,6 +102,7 @@ export class FormClienteComponent implements OnInit {
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
+        */
         nombres: new FormControl('', Validators.required),
         apellidos: new FormControl('', Validators.required),
         fechaNacimiento: new FormControl(''),
@@ -113,8 +118,8 @@ export class FormClienteComponent implements OnInit {
   async listarClientePorIdentificacion() {
     this.personaService.listarPersonaPorIdentificacion(this.identificacionChild).subscribe(
       (respuesta) => {
-        this.listaPersonaChild = respuesta['listado']
-        for (const ele of this.listaPersonaChild) {
+        this.listaClienteChild = respuesta['listado']
+        for (const ele of this.listaClienteChild) {
           ele.fechaNacimiento = dayjs(ele.fechaNacimiento).format("YYYY-MM-DD")
           if (ele.codigo != null) {
             this.clienteService.listarClientePorPersona(ele.codigo).subscribe(
@@ -126,7 +131,7 @@ export class FormClienteComponent implements OnInit {
             )
           }
         }
-        this.listaPersona.emit(this.listaPersonaChild);
+        this.listaCliente.emit(this.listaClienteChild);
       }
     );
   }
@@ -137,8 +142,8 @@ export class FormClienteComponent implements OnInit {
     this.identificacionChild = clienteIdentificacionTemp.identificacion;
     this.personaService.listarPersonaPorIdentificacion(this.identificacionChild).subscribe({
       next: (response) => {
-        this.listaPersonaAux = response['listado'];
-        this.persona = this.listaPersonaAux['0'];
+        this.listaPersona = response['listado'];
+        this.persona = this.listaPersona['0'];
         if (this.persona?.codigo != null) {
           this.formCliente.controls.fechaNacimiento.setValue(dayjs(this.persona?.fechaNacimiento).format("YYYY-MM-DD"));
           this.formCliente.controls.nombres.setValue(this.persona?.nombres);
@@ -159,7 +164,7 @@ export class FormClienteComponent implements OnInit {
             }
           )
         }
-        this.personaEditar = this.persona;
+        this.clienteEditar.persona = this.persona;
       },
       error: (error) => {
         console.log(error);
@@ -189,8 +194,8 @@ export class FormClienteComponent implements OnInit {
         estado: 'A',
       });
     }
-    if (this.personaEditar) {
-      this.persona['data'].codigo = this.personaEditar?.codigo;
+    if (this.clienteEditar) {
+      this.persona['data'].codigo = this.clienteEditar?.persona?.codigo;
       this.persona['data'].identificacion = this.identificacionChild;
       this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: (response) => {
@@ -228,8 +233,8 @@ export class FormClienteComponent implements OnInit {
         estado: 'A',
       });
     }
-    if (this.personaEditar) {
-      this.cliente['data'].codigo = this.personaEditar?.cliente?.codigo;
+    if (this.clienteEditar) {
+      this.cliente['data'].codigo = this.clienteEditar?.codigo;
       this.clienteService.guardarCliente(this.cliente['data']).subscribe({
         next: (response) => {
           this.listarClientePorIdentificacion();

@@ -6,6 +6,7 @@ export interface Itransaccion {
     codOperacion?: number;
     descripcion?: string;
     precio?: number;
+    monto?: number;
     numProducto?: number;
     numExistenciaActual?: number;
     numMes?: number;
@@ -18,8 +19,10 @@ export interface Itransaccion {
     producto?: any,
     modulo?: any,
     operacion?: any,
-    colorFila: string;
-    descripcionProducto: string;
-    nombreCliente: string;
-    celular: string;
+    colorFila?: string;
+    descripcionProducto?: string;
+    precioCosto?: number;
+    precioMayoreo?: number;
+    nombreCliente?: string;
+    celular?: string;
 }

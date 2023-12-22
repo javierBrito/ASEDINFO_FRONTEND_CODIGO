@@ -9,6 +9,7 @@ import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { ParticipanteService } from '../../../servicios/participante.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
+import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
 
 @Component({
   selector: 'app-form-participante',
@@ -46,6 +47,7 @@ export class FormParticipanteComponent implements OnInit {
   public participante: Participante;
   public personaEditar: Persona;
   public listaParticipanteAux: Participante[];
+  public listaEstadoCompetencia: EstadoCompetencia[];
   public listaRespuesta = [
     { valor: "SI" },
     { valor: "NO" },
@@ -69,6 +71,7 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.listarEstadoCompetenciaActivo();
     if (this.participanteEditar) {
       if (this.participanteEditar.codPersona != 0) {
         this.buscarPersonaPorCodigo(this.participanteEditar.codPersona);
@@ -91,10 +94,12 @@ export class FormParticipanteComponent implements OnInit {
         celular: new FormControl(this.personaEditar?.celular, Validators.required),
         correo: new FormControl(this.personaEditar?.correo, Validators.required),
         dateLastActive: new FormControl(dayjs(this.participanteEditar?.dateLastActive).format("YYYY-MM-DD")),
+        estadoCompetencia: new FormControl(this.participanteEditar?.estadoCompetencia),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
       this.formParticipante = this.formBuilder.group({
+        /*
         identificacion: new FormControl({ value: this.identificacionChild, disabled: false }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
@@ -102,6 +107,8 @@ export class FormParticipanteComponent implements OnInit {
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
+        */
+        identificacion: new FormControl('', Validators.required),
         nombres: new FormControl('', Validators.required),
         apellidos: new FormControl('', Validators.required),
         fechaNacimiento: new FormControl(''),
@@ -110,9 +117,20 @@ export class FormParticipanteComponent implements OnInit {
         correo: new FormControl('', Validators.required),
         dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD")),
         username: new FormControl(''),
+        estadoCompetencia: new FormControl(''),
       })
     }
   }
+
+  
+  listarEstadoCompetenciaActivo() {
+    this.participanteService.listarEstadoCompetenciaActivo().subscribe(
+      (respuesta) => {
+        this.listaEstadoCompetencia = respuesta['listado'];
+      }
+    )
+  }
+
   /*
   async listarParticipantePorIdentificacion() {
     this.participanteService.listarParticipantePorIdentificacion(this.identificacionChild).subscribe(
@@ -162,6 +180,13 @@ export class FormParticipanteComponent implements OnInit {
               ele.colorBoton = "black";
               break;
             }
+          }
+          if (ele.codEstadoCompetencia != 0) {
+            this.participanteService.buscarEstadoCompetenciaPorCodigo(ele.codEstadoCompetencia).subscribe(
+              (respuesta) => {
+                ele.estadoCompetencia = respuesta['objeto'];                                                            
+              }
+            )
           }
           //ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD")
         }
@@ -288,7 +313,7 @@ export class FormParticipanteComponent implements OnInit {
     this.close.emit($event);
   }
 
-  compararSede(o1, o2) {
+  compararEstadoCompetencia(o1, o2) {
     return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
   }
 
@@ -350,5 +375,8 @@ export class FormParticipanteComponent implements OnInit {
   }
   get dateLastActiveField() {
     return this.formParticipante.get('dateLastActive');
+  }
+  get estadoCompetenciaField() {
+    return this.formParticipante.get('estadoCompetencia');
   }
 }
