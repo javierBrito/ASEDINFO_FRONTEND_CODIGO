@@ -7,8 +7,7 @@
                         <h4><b>Parámetros busqueda :</b></h4>
                     </div>
                 </div>
-                <form detail-content [formGroup]="formParticipanteParametro"
-                    (ngSubmit)="listarParticipantePorSubcategoriaInstancia()">
+                <form detail-content [formGroup]="formParticipanteParametro">
                     <div class="row form-group">
                         <div class="col-3">
                             <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
@@ -51,6 +50,19 @@
                             </select>
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-1">
+                        </div>
+                        <div class="col-md-2 col-3 form-group">
+                            <div class="my-2 text-left">
+                                <button [disabled]=""
+                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="cargarParticipantes()">
+                                    <b>{{ "Cargar Participantes"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-plus" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
                         </div>
                         <!--
                         <div class="col-md-2 col-3 form-group">
@@ -149,7 +161,7 @@
                                                     <tr
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{participante?.username}}</td>
+                                                        <td>{{participante?.email}}</td>
                                                         <td>{{participante?.firstName + ' ' + participante?.lastName}}
                                                         </td>
                                                         <td>{{participante?.dateLastActive}}</td>
@@ -214,7 +226,7 @@
 
 <app-form-participante [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
     [identificacionChild]="identificacion" [listaParticipanteChild]="listaParticipante"
-    (listaParticipante)="listaParticipante($event)" (close)="closeDetail($event)" *ngIf="showDetail">
+    (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-participante>
 
 <ng-template #modal_confirm_delete let-modal>

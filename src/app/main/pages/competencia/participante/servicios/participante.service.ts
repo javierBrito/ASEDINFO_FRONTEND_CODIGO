@@ -23,8 +23,8 @@ export class ParticipanteService {
   listarParticipantePorPersona(codPersona: number) {
     return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorPersona/${codPersona}`);
   }
-  listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number) {
-    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}`);
+  listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number, codEstadoCompetencia: number) {
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}/${codEstadoCompetencia}`);
   }
   listarTodosParticipante(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarTodosParticipante`);
@@ -72,6 +72,9 @@ export class ParticipanteService {
   }
   listarEstadoCompetenciaActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarEstadoCompetenciaActivo`);
+  }
+  migrarClienteWP(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/wordpress/migrarClienteWP`);
   }
 
 }

@@ -45,7 +45,9 @@ export class FormParticipanteComponent implements OnInit {
 
   /*OBJETOS*/
   public participante: Participante;
+  public participanteAux: Participante;
   public personaEditar: Persona;
+  public persona: Persona;
   public listaParticipanteAux: Participante[];
   public listaEstadoCompetencia: EstadoCompetencia[];
   public listaRespuesta = [
@@ -73,9 +75,6 @@ export class FormParticipanteComponent implements OnInit {
   ngOnInit() {
     this.listarEstadoCompetenciaActivo();
     if (this.participanteEditar) {
-      if (this.participanteEditar.codPersona != 0) {
-        this.buscarPersonaPorCodigo(this.participanteEditar.codPersona);
-      }
       this.formParticipante = this.formBuilder.group({
         /*
         identificacion: new FormControl({ value: this.participanteEditar.identificacion, disabled: true }, Validators.compose([
@@ -86,14 +85,15 @@ export class FormParticipanteComponent implements OnInit {
           Validators.pattern("^[0-9]*$"),
         ])),
         */
-        identificacion: new FormControl(this.participanteEditar?.username, Validators.required),
-        nombres: new FormControl(this.personaEditar?.nombres, Validators.required),
-        apellidos: new FormControl(this.personaEditar?.apellidos, Validators.required),
+        identificacion: new FormControl(this.participanteEditar?.email, Validators.required),
+        nombres: new FormControl(this.participanteEditar?.nombres, Validators.required),
+        apellidos: new FormControl(this.participanteEditar?.apellidos, Validators.required),
         fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
         direccion: new FormControl(this.personaEditar?.direccion),
-        celular: new FormControl(this.personaEditar?.celular, Validators.required),
-        correo: new FormControl(this.personaEditar?.correo, Validators.required),
+        celular: new FormControl(this.participanteEditar?.celular),
+        correo: new FormControl(this.participanteEditar?.correo, Validators.required),
         dateLastActive: new FormControl(dayjs(this.participanteEditar?.dateLastActive).format("YYYY-MM-DD")),
+        username: new FormControl(this.participanteEditar?.username),
         estadoCompetencia: new FormControl(this.participanteEditar?.estadoCompetencia),
       })
       //AQUI TERMINA ACTUALIZAR
@@ -113,7 +113,7 @@ export class FormParticipanteComponent implements OnInit {
         apellidos: new FormControl('', Validators.required),
         fechaNacimiento: new FormControl(''),
         direccion: new FormControl(''),
-        celular: new FormControl('', Validators.required),
+        celular: new FormControl(''),
         correo: new FormControl('', Validators.required),
         dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD")),
         username: new FormControl(''),
@@ -155,7 +155,7 @@ export class FormParticipanteComponent implements OnInit {
   */
  
   listarParticipantePorSubcategoriaInstancia() {
-    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.participante?.codSubcategoria, this.participante?.codInstancia).subscribe(
+    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.participanteEditar?.codSubcategoria, this.participanteEditar?.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipanteAux = respuesta['listado'];
         for (const ele of this.listaParticipanteAux) {
@@ -224,7 +224,7 @@ export class FormParticipanteComponent implements OnInit {
   addRegistroPersona() {
     if (this.formParticipante?.valid) {
       let participanteTemp = this.formParticipante.value;
-      this.participante = new Participante({
+      this.persona = new Persona({
         codigo: 0,
         identificacion: participanteTemp?.identificacion,
         nombres: participanteTemp?.nombres,
@@ -237,9 +237,9 @@ export class FormParticipanteComponent implements OnInit {
       });
     }
     if (this.participanteEditar) {
-      this.participante['data'].codigo = this.participanteEditar?.codigo;
-      this.participante['data'].identificacion = this.identificacionChild;
-      this.participanteService.guardarParticipante(this.participante['data']).subscribe({
+      this.persona['data'].codigo = this.participanteEditar?.codPersona;
+      this.persona['data'].identificacion = this.identificacionChild;
+      this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: (response) => {
           // Actualizar Datos Participante
           this.addRegistroParticipante();
@@ -250,9 +250,9 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     } else {
-      this.participanteService.guardarParticipante(this.participante['data']).subscribe({
+      this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: async (response) => {
-          this.participante = response['objeto'];
+          this.persona = response['objeto'];
           // Actualizar Datos Participante
           this.addRegistroParticipante();
         },
@@ -267,17 +267,26 @@ export class FormParticipanteComponent implements OnInit {
   addRegistroParticipante() {
     if (this.formParticipante?.valid) {
       let participanteTemp = this.formParticipante.value;
-      this.participante = new Participante({
+      this.participanteAux = new Participante({
         codigo: 0,
-        codParticipante: this.participante?.codigo,
+        //codPersona: this.persona?.codigo,
+        firstName: participanteTemp?.nombres,
+        lastName: participanteTemp?.apellidos,
         username: participanteTemp.username,
+        email: participanteTemp.correo,
         dateLastActive: dayjs(participanteTemp.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        estado: 'A',
+        codEstadoCompetencia: participanteTemp?.estadoCompetencia?.codigo,
       });
     }
     if (this.participanteEditar) {
-      this.participante['data'].codigo = this.participanteEditar?.codigo;
-      this.participanteService.guardarParticipante(this.participante['data']).subscribe({
+      this.participante = this.participanteEditar;
+      this.participante.nombres = this.participanteAux['data'].nombres; 
+      this.participante.apellidos = this.participanteAux['data'].apellidos; 
+      this.participante.username = this.participanteAux['data'].username; 
+      this.participante.email = this.participanteAux['data'].email; 
+      this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
+      this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
+      this.participanteService.guardarParticipante(this.participante).subscribe({
         next: (response) => {
           this.listarParticipantePorSubcategoriaInstancia();
           this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
@@ -289,7 +298,7 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     } else {
-      // Si es nuevo el participante, movemos datos de la participante
+      // Si es nuevo el participante
       this.participante['data'].customerId = 0;
       this.participante['data'].userId = 0;
       this.participante['data'].firstname = this.personaEditar?.nombres;

@@ -151,4 +151,26 @@ export class Participante implements Iparticipante {
     set estadoCompetencia(value: any) {
         set(this, 'data.estadoCompetencia', value);
     }
+
+    get correo(): string {
+        return get(this, 'data.correo');
+    }
+    set correo(value: string) {
+        set(this, 'data.correo', value);
+    }    
+
+    get nombres(): string {
+        return get(this, 'data.nombres');
+    }
+    set nombres(value: string) {
+        set(this, 'data.nombres', value);
+    }    
+
+    get apellidos(): string {
+        return get(this, 'data.apellidos');
+    }
+    set apellidos(value: string) {
+        set(this, 'data.apellidos', value);
+    }    
+
 }

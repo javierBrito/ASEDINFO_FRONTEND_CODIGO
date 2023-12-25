@@ -9,7 +9,7 @@
                 </div>
                 <form detail-content [formGroup]="formTransaccionDescripcion" (ngSubmit)="listarTransaccion()">
                     <div class="row form-group">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="fechaInicio"><b>{{'Fecha Inicio(*): '}}</b></label>
                             <input type="date" name="fechaInicio" formControlName="fechaInicio" class="form-control"
                                 id="fechaInicio"
@@ -21,7 +21,7 @@
                                 <span *ngIf="fechaInicioField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="fechaFin"><b>{{'Fecha Fin(*): '}}</b></label>
                             <input type="date" name="fechaFin" formControlName="fechaFin" class="form-control"
                                 id="fechaFin"
@@ -43,7 +43,7 @@
                                 <span>{{ "Exito"}}</span>
                             </div>
                         </div>
-                        <div class="col-md-2 col-3 form-group">
+                        <div class="col-md-2 col-2 form-group">
                             <div class="my-2 text-left table-responsive">
                                 <button type="submit" class="btn btn-info btn-rounded">
                                     <b>{{ "Buscar"}}</b>
@@ -51,7 +51,20 @@
                                     <i class="fa fa-search"></i>
                                 </button>
                             </div>
-                            <!--
+                        </div>
+                        <div class="col-md-2 col-3 form-group">
+                            <div class="my-2 text-left">
+                                <button [disabled]=""
+                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="obtenerTransaccionACaducarse()">
+                                    <b>{{ "Enviar Notificaciones"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-plus" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!--
                             <div class="col-12 form-group">
                                 <button [disabled]=""
                                     class="btn btn-success btn-submit waves-effect waves-float waves-light"
@@ -62,7 +75,6 @@
                                 </button>
                             </div>
                             -->
-                        </div>
                     </div>
                     <div class="row form-group">
                     </div>

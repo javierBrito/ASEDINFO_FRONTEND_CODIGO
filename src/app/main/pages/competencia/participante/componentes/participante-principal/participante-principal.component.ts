@@ -23,7 +23,7 @@ import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoComp
 })
 export class ParticipantePrincipalComponent implements OnInit {
   /*INPUT RECIBEN*/
-  @Input() listaPersonaChild: any;
+  @Input() listaParticipanteChild: any;
 
   /*MODALES*/
   @ViewChild("modal_confirm_delete", { static: false }) modal_confirm_delete: TemplateRef<any>;
@@ -63,7 +63,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public itemsRegistros: number;
 
   /*OBJETOS*/
-  public participanteSeleccionado: Persona;
+  public participanteSeleccionado: Participante;
   public participante: Participante;
 
   /*FORMULARIOS*/
@@ -89,8 +89,8 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.listaPersonaChild != null) {
-      this.listaPersona = this.listaPersonaChild;
+    if (this.listaParticipanteChild != null) {
+      this.listaPersona = this.listaParticipanteChild;
     }
     this.formParticipanteParametro = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
@@ -111,7 +111,11 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.listarInstanciaActivo();
     this.listarEstadoCompetenciaActivo();
   }
-
+  
+  cargarParticipantes() {
+    this.confirmarCargarParticipantes();
+  }  
+  
   listarEstadoCompetenciaActivo() {
     this.participanteService.listarEstadoCompetenciaActivo().subscribe(
       (respuesta) => {
@@ -154,7 +158,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     let participanteParametroTemp = this.formParticipanteParametro.value;
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
     this.codInstancia = participanteParametroTemp?.codInstancia;
-    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia).subscribe(
+    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
@@ -241,8 +245,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.showDetail = true;
   }
 
-  openEditarDetail(persona: Persona) {
-    this.participanteSeleccionado = persona;
+  openEditarDetail(participante: Participante) {
+    this.participanteSeleccionado = participante;
     this.showDetail = true;
   }
 
@@ -266,6 +270,34 @@ export class ParticipantePrincipalComponent implements OnInit {
             },
             error: (error) => {
               this.mensajeService.mensajeError('Ha habido un problema al borrar el registro...');
+            }
+          });
+        } else {
+          // Hicieron click en "Cancelar"
+          console.log("*Se cancela el proceso...*");
+        }
+      });
+  }
+
+  confirmarCargarParticipantes() {
+    Swal
+      .fire({
+        title: "Cargar Participantes",
+        text: "¿Quieres cargar los participantes?'",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: "Sí, cargar",
+        cancelButtonText: "Cancelar",
+      })
+      .then(resultado => {
+        if (resultado.value) {
+          // Hicieron click en "Sí, eliminar"
+          this.participanteService.migrarClienteWP().subscribe({
+            next: (response) => {
+              this.mensajeService.mensajeCorrecto('Se ha cargado los participantes...');
+            },
+            error: (error) => {
+              this.mensajeService.mensajeError('Ha habido un problema al cargar los participantes...');
             }
           });
         } else {

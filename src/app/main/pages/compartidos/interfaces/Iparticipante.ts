@@ -22,6 +22,9 @@ export interface Iparticipante {
     persona: any;
     nombrePersona: string;
     celular: string;
+    correo: string;
+    nombres: string;
+    apellidos: string;
 
     estadoCompetencia: any;
 

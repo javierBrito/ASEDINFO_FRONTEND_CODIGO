@@ -63,6 +63,7 @@ export class PuntajePrincipalComponent implements OnInit {
   public desCategoria: string;
   public desSubcategoria: string;
   public desInstancia: string;
+  public codEstadoCompetencia: number;
 
   /*LISTAS*/
   public listaPuntaje: Puntaje[] = [];
@@ -143,11 +144,15 @@ export class PuntajePrincipalComponent implements OnInit {
       (respuesta) => {
         this.parametro = respuesta['objeto'];
         this.codSubcategoria = this.parametro?.valor;
+        // Obtener la denominación de la subcategoria
+        this.buscarSubcategoriaPorCodigo();
         // Obtener codInstancia para obtener el participante
         this.puntajeService.buscarParametroPorNemonico('INSTANCIA').subscribe(
           (respuesta) => {
             this.parametro = respuesta['objeto'];
             this.codInstancia = this.parametro?.valor;
+            // Obtener la denominación de la instancia
+            this.buscarInstanciaPorCodigo();
             this.listarPuntajePorParticipante();
           }
         )
@@ -188,6 +193,7 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.buscarCategoriaPorCodigo(this.codCategoria).subscribe(
       (respuesta) => {
         this.desCategoria = respuesta['objeto']?.denominacion;
+        console.log("this.desCategoria = ", this.desCategoria)
       }
     )
   }
@@ -196,6 +202,9 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.buscarSubcategoriaPorCodigo(this.codSubcategoria).subscribe(
       (respuesta) => {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
+        this.codCategoria = respuesta['objeto']?.codCategoria;
+        console.log("this.codCategoria = ", this.codCategoria)
+        this.buscarCategoriaPorCodigo();
       }
     )
   }
@@ -220,15 +229,21 @@ export class PuntajePrincipalComponent implements OnInit {
       }
     )
   }
+
   async listarPuntajePorParticipante() {
     this.listaParticipantePresentacion = [];
+    
     if (this.currentUser.cedula != 'JUEZ') {
       // Receptar codCategoria, codSubcategoria y codInstancia de formPuntajeParametro.value
       let puntajeParametroTemp = this.formPuntajeParametro.value;
       this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
       this.codInstancia = puntajeParametroTemp?.codInstancia;
       this.buscarInstanciaPorCodigo();
+      this.codEstadoCompetencia = 0;
+    } else {
+      this.codEstadoCompetencia = 2;
     }
+    console.log("this.codEstadoCompetencia = ", this.codEstadoCompetencia);
 
     if (this.activarInput) {
       this.editarNota(this.participante, " ");
@@ -239,7 +254,7 @@ export class PuntajePrincipalComponent implements OnInit {
     this.activarInput = false;
 
     await new Promise((resolve, rejects) => {
-      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia).subscribe({
+      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
           for (const est of this.listaParticipantePresentacion) {
@@ -597,7 +612,6 @@ export class PuntajePrincipalComponent implements OnInit {
 
     this.puntajeService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {
-        console.log("response = ", response);
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
       },
       error: (error) => {

@@ -1,22 +1,12 @@
 <app-detail (close)="closeDetail($event)">
-    <h1 detail-title><strong>{{participanteEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
+    <h1 detail-title><strong>{{participanteEditar ?'EDITAR':'AGREGAR'}}{{' Participante'}}</strong></h1>
     <form detail-content [formGroup]="formParticipante" (ngSubmit)="addRegistroParticipante()">
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
-            <div class="row form-group">
-                <div class="col-12">
-                    <b>
-                        <h3>Datos Persona</h3>
-                    </b>
-                </div>
-            </div>
             <div class="row form-group">
                 <div class="col-6">
                     <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        (keypress)="validateFormat($event)" maxlength="10" id="identificacion"
-                        (keyup)="onKey($event)"
-                        placeholder="Por favor, ingrese el número de cédula."
-                        oninput="identificacion.value = identificacion.value.toUpperCase()"
+                        maxlength="60" id="identificacion" placeholder="Por favor, ingrese la identificación."
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -92,9 +82,11 @@
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="direccionField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    -->
                 </div>
             </div>
             <div class="row form-group">
@@ -105,9 +97,11 @@
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="celularField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    -->
                 </div>
                 <div class="col-8">
                     <label for="correo"><b>{{'Correo(*): '}}</b></label>
@@ -128,14 +122,7 @@
         <br>
         <div class="container" style="border: 0px solid black; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
-                <div class="col-12">
-                    <b>
-                        <h3>Datos Participante</h3>
-                    </b>
-                </div>
-            </div>
-            <div class="row form-group">
-                <div class="col-12">
+                <div class="col-4">
                     <label for="estadoCompetencia">{{'Estado Competencia(*):'}}</label>
                     <select class="custom-select" formControlName="estadoCompetencia"
                         name="estadoCompetencia" id="estadoCompetencia" [compareWith]="compararEstadoCompetencia">
@@ -144,10 +131,7 @@
                             {{estadoCompetencia?.denominacion}}</option>
                     </select>
                 </div>
-            </div>
-    
-            <div class="row form-group">
-                <div class="col-6">
+                <div class="col-4">
                     <label for="dateLastActive"><b>{{'Registro: '}}</b></label>
                     <input type="date" name="dateLastActive" formControlName="dateLastActive" class="form-control"
                         id="dateLastActive" 
@@ -159,7 +143,7 @@
                         <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
                     <label for="username"><b>{{'Usuario WP: '}}</b></label>
                     <input type="text" name="username" formControlName="username" class="form-control"
                         id="username"
