@@ -117,7 +117,7 @@ export class CategoriaPrincipalComponent implements OnInit {
       });
   }
 
-  clocategoriatail($event) {
+  closeDetail($event) {
     this.showDetail = $event;
     this.categoriaSeleccionado = null;
   }

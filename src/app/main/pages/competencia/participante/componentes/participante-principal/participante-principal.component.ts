@@ -23,7 +23,6 @@ import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoComp
 })
 export class ParticipantePrincipalComponent implements OnInit {
   /*INPUT RECIBEN*/
-  @Input() listaParticipanteChild: any;
 
   /*MODALES*/
   @ViewChild("modal_confirm_delete", { static: false }) modal_confirm_delete: TemplateRef<any>;
@@ -89,33 +88,21 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.listaParticipanteChild != null) {
-      this.listaPersona = this.listaParticipanteChild;
-    }
     this.formParticipanteParametro = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
       codInstancia: new FormControl('', Validators.required),
       identificacion: new FormControl(''),
-      /*
-      identificacion: new FormControl('', Validators.compose([
-        MyValidators.isCedulaValid,
-        Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(10),
-        Validators.pattern("^[0-9]*$"),
-      ])),
-      */
     })
     this.listarCategoriaActivo();
     this.listarInstanciaActivo();
     this.listarEstadoCompetenciaActivo();
   }
-  
+
   cargarParticipantes() {
     this.confirmarCargarParticipantes();
-  }  
-  
+  }
+
   listarEstadoCompetenciaActivo() {
     this.participanteService.listarEstadoCompetenciaActivo().subscribe(
       (respuesta) => {
@@ -161,37 +148,9 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        console.log("this.listaParticipante 1 = ", this.listaParticipante)
         for (const ele of this.listaParticipante) {
-          switch (ele.codEstadoCompetencia) {
-            case 1: {
-              ele.colorBoton = "blue";
-              break;
-            }
-            case 2: {
-              ele.colorBoton = "green";
-              break;
-            }
-            case 3: {
-              ele.colorBoton = "Brown";
-              break;
-            }
-            case 4: {
-              ele.colorBoton = "red";
-              break;
-            }
-            default: {
-              ele.colorBoton = "black";
-              break;
-            }
-          }
-          if (ele.codEstadoCompetencia != 0) {
-            this.participanteService.buscarEstadoCompetenciaPorCodigo(ele.codEstadoCompetencia).subscribe(
-              (respuesta) => {
-                ele.estadoCompetencia = respuesta['objeto'];                                                            
-              }
-            )
-          }
-          //ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD")
+          ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
         }
       }
     );
@@ -201,27 +160,27 @@ export class ParticipantePrincipalComponent implements OnInit {
     switch (participante?.codEstadoCompetencia) {
       case 1: {
         participante.codEstadoCompetencia = 2;
+        this.participante = participante;
+        this.addRegistroParticipante();
         break;
       }
       case 2: {
         participante.codEstadoCompetencia = 3;
+        this.participante = participante;
+        this.addRegistroParticipante();
         break;
       }
       case 3: {
-        participante.codEstadoCompetencia = 4;
-        break;
-      }
-      case 4: {
-        participante.codEstadoCompetencia = 1;
+        //participante.codEstadoCompetencia = 4;
+        this.mensajeService.mensajeError('Su participación ha sido completada...');
         break;
       }
       default: {
-        participante.codEstadoCompetencia = 1;
+        //participante.codEstadoCompetencia = 1;
+        this.mensajeService.mensajeError('Defina un estado para el participante...');
         break;
       }
     }
-    this.participante = participante;
-    this.addRegistroParticipante();
   }
 
   addRegistroParticipante() {
@@ -237,8 +196,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     });
   }
 
-  listaPersonaActualizada(event) {
-    this.listaPersona = event;
+  listarParticipanteActivoActualizada(event) {
+    this.listaParticipante = event;
   }
 
   openDetail(codjornada) {
@@ -265,7 +224,6 @@ export class ParticipantePrincipalComponent implements OnInit {
           // Hicieron click en "Sí, eliminar"
           this.participanteService.eliminarParticipantePorId(persona.codigo).subscribe({
             next: (response) => {
-              //this.listarParticipantePorIdentificacion();
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
             },
             error: (error) => {
@@ -317,7 +275,6 @@ export class ParticipantePrincipalComponent implements OnInit {
     if (event.target.value.length != 10) {
       this.resetTheForm();
     } else {
-      //this.listarParticipantePorIdentificacion();
     }
   }
 

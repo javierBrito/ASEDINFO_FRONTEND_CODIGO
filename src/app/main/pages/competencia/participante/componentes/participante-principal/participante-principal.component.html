@@ -225,7 +225,7 @@
 </div>
 
 <app-form-participante [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
-    [identificacionChild]="identificacion" [listaParticipanteChild]="listaParticipante"
+    [identificacionChild]="identificacion" (listaPaticipante)="listarParticipanteActivoActualizada($event)"
     (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-participante>
 

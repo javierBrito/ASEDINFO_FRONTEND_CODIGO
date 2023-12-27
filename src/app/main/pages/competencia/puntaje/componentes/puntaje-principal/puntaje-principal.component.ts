@@ -15,6 +15,7 @@ import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
 import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { PuntajeAux } from 'app/main/pages/compartidos/modelos/PuntajeAux';
+import { ParticipanteService } from '../../../participante/servicios/participante.service';
 
 @Component({
   selector: 'app-puntaje-principal',
@@ -88,8 +89,9 @@ export class PuntajePrincipalComponent implements OnInit {
   public operacion: Operacion;
   public reporteDTO: ReporteDTO;
   public puntajeAux: Puntaje;
-  public participante: Participante;
   public puntajeAuxTotal: any = null;
+  public participante: Participante;
+  public participanteAux: Participante;
 
   /*DETAIL*/
   public showDetail: boolean;
@@ -109,6 +111,7 @@ export class PuntajePrincipalComponent implements OnInit {
   constructor(
     /*Servicios*/
     private readonly puntajeService: PuntajeService,
+    private readonly participanteService: ParticipanteService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder
   ) {
@@ -139,7 +142,7 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   obtenerParametros() {
-    // Obtener codSubcategoria para obtener el participante
+    // Obtener codSubcategoria y codInstancia
     this.puntajeService.buscarParametroPorNemonico('SUBCATEGORIA').subscribe(
       (respuesta) => {
         this.parametro = respuesta['objeto'];
@@ -189,11 +192,33 @@ export class PuntajePrincipalComponent implements OnInit {
     )
   }
 
+  async actualizarNumPuntajeJuez(codParticipante: number) {
+    return new Promise((resolve, rejects) => {
+      this.participanteService.buscarParticipantePorCodigo(codParticipante).subscribe({
+        next: (respuesta) => {
+          this.participanteAux = respuesta['objeto'];
+          this.participanteAux.numPuntajeJuez = this.participanteAux?.numPuntajeJuez + 1;
+          this.participanteService.guardarParticipante(this.participanteAux).subscribe({
+            next: (response) => {
+              this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+            },
+            error: (error) => {
+              this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
+            }
+          });
+          resolve(respuesta);
+        }, error: (error) => {
+          this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
+          rejects("Error");
+        }
+      })
+    });
+  }
+
   buscarCategoriaPorCodigo() {
     this.puntajeService.buscarCategoriaPorCodigo(this.codCategoria).subscribe(
       (respuesta) => {
         this.desCategoria = respuesta['objeto']?.denominacion;
-        console.log("this.desCategoria = ", this.desCategoria)
       }
     )
   }
@@ -203,7 +228,6 @@ export class PuntajePrincipalComponent implements OnInit {
       (respuesta) => {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
         this.codCategoria = respuesta['objeto']?.codCategoria;
-        console.log("this.codCategoria = ", this.codCategoria)
         this.buscarCategoriaPorCodigo();
       }
     )
@@ -232,7 +256,7 @@ export class PuntajePrincipalComponent implements OnInit {
 
   async listarPuntajePorParticipante() {
     this.listaParticipantePresentacion = [];
-    
+
     if (this.currentUser.cedula != 'JUEZ') {
       // Receptar codCategoria, codSubcategoria y codInstancia de formPuntajeParametro.value
       let puntajeParametroTemp = this.formPuntajeParametro.value;
@@ -243,7 +267,6 @@ export class PuntajePrincipalComponent implements OnInit {
     } else {
       this.codEstadoCompetencia = 2;
     }
-    console.log("this.codEstadoCompetencia = ", this.codEstadoCompetencia);
 
     if (this.activarInput) {
       this.editarNota(this.participante, " ");
@@ -391,6 +414,7 @@ export class PuntajePrincipalComponent implements OnInit {
         puntajeTotalEntidad = this.moverDatosPuntaje(this.puntajeAuxTotal);
         this.puntajeService.guardarPuntaje(puntajeTotalEntidad).subscribe({
           next: (response) => {
+            this.actualizarNumPuntajeJuez(participante?.codigo);
             this.mensajeService.mensajeCorrecto('Se ha actualizado el registro de totales correctamente...');
           },
           error: (error) => {

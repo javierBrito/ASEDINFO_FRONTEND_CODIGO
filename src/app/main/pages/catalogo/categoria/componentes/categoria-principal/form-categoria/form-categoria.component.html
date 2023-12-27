@@ -1,4 +1,4 @@
-<app-detail (close)="clocategoriatail($event)">
+<app-detail (close)="closeDetail($event)">
     <h1 detail-title><strong>{{categoriaEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
     <form detail-content [formGroup]="formCategoria" (ngSubmit)="addRegistro()">
         <div class="row form-group">

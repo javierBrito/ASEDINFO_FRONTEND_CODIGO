@@ -78,7 +78,7 @@
 </div>
 
 <app-form-categoria [categoriaEditar]="categoriaSeleccionado" (listaCategoria)="listarCategoriaActivoActualizada($event)"
-    (close)="clocategoriatail($event)" *ngIf="showDetail">
+    (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-categoria>
 
 <ng-template #modal_confirm_delete let-modal>

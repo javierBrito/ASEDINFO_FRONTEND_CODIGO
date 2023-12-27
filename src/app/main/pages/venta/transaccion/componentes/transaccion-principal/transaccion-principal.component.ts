@@ -414,11 +414,9 @@ export class TransaccionPrincipalComponent implements OnInit {
 
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {
-        console.log("response = ", response);
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
       },
       error: (error) => {
-        console.log("error = ", error);
         this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
       }
     });

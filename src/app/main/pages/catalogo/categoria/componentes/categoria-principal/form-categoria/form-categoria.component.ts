@@ -49,7 +49,6 @@ export class FormCategoriaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listarCategoriaSuperior();
     if (this.categoriaEditar) {
       this.formCategoria = this.formBuilder.group({
         denominacion: new FormControl(this.categoriaEditar.denominacion, Validators.required),
@@ -65,29 +64,9 @@ export class FormCategoriaComponent implements OnInit {
     this.categoriaService.listarCategoriaActivo().subscribe(
       (respuesta) => {
         this.listaCategoriaChild = respuesta['listado']
-        for (const ele of this.listaCategoriaChild) {
-          if (ele.codigoCategoriaSuperior != null) {
-            this.categoriaService.buscarCategoriaPorCodigo(ele.codigoCategoriaSuperior).subscribe(
-              (respuesta) => {
-                ele.categoriaSuperior = respuesta['objeto'];
-              }
-            )
-          }
-        }
         this.listaCategoria.emit(this.listaCategoriaChild);
       }
     );
-  }
-
-  listarCategoriaSuperior() {
-    this.categoriaService.listarCategoriaSuperior().subscribe({
-      next: (response) => {
-        this.listaCategoriaSuperior = response['listado'];
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    });
   }
   
   addRegistro() {
@@ -134,8 +113,8 @@ export class FormCategoriaComponent implements OnInit {
       });
     }
   }
-
-  clocategoriatail($event) {
+  
+  closeDetail($event) {
     this.close.emit($event);
   }
 

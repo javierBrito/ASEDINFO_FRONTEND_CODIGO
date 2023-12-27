@@ -38,7 +38,8 @@ export class ParticipanteService {
   buscarParticipantePorCodigo(codigo: number) {
     return this.http.get<Participante>(`${environment.url_seguridad}/competencia/buscarParticipantePorCodigo/${codigo}`);
   }
-  guardarParticipante(participante) {
+  guardarParticipante(participante: Participante) {
+    console.log("participante servicio = ", participante)
     return this.http.post<Participante>(`${environment.url_seguridad}/competencia/guardarParticipante`, participante);
   }
 
