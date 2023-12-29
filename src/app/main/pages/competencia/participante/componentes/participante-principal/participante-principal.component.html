@@ -2,15 +2,15 @@
     <div class="col-12">
         <div class="card box-shadow-sm">
             <div class="card-footer">
-                <div class="row form-group">
+                <div class="row form-group" [ngStyle]="{'display': displayNone}">
                     <div class="col-12">
                         <h4><b>Parámetros busqueda :</b></h4>
                     </div>
                 </div>
                 <form detail-content [formGroup]="formParticipanteParametro">
-                    <div class="row form-group">
+                    <div class="row form-group" [ngStyle]="{'display': displayNone}">
                         <div class="col-3">
-                            <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
+                            <label for="codCategoria"><h4><b>{{'Categoría(*): '}}</b></h4></label>
                             <select name="codCategoria" formControlName="codCategoria" required
                                 [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
                                 class="form-control mr-sm-2" id="codCategoria"
@@ -24,7 +24,7 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-3">
-                            <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
+                            <label for="codSubcategoria"><h4><b>{{'Subcategoría(*): '}}</b></h4></label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                                 class="form-control mr-sm-2 custom-select" id="codSubcategoria"
@@ -38,11 +38,11 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-3">
-                            <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
+                            <label for="codInstancia"><h4><b>{{'Instancia(*): '}}</b></h4></label>
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
                                 class="form-control mr-sm-2 custom-select" id="codInstancia"
-                                (change)="listarParticipantePorSubcategoriaInstancia()">
+                                (change)="listarParticipanteGeneral()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>
@@ -53,7 +53,7 @@
                         </div>
                         <div class="col-1">
                         </div>
-                        <div class="col-md-2 col-3 form-group">
+                        <div class="col-md-2 col-3 form-group" [ngStyle]="{'display': displayNone}">
                             <div class="my-2 text-left">
                                 <button [disabled]=""
                                     class="btn btn-success btn-submit waves-effect waves-float waves-light"
@@ -138,8 +138,11 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <b>{{'Lista Participantes de : '}}</b>
+                                            <h3><b>{{'Lista Participantes de : '}} {{desCategoria}}
+                                                - {{desSubcategoria}} - {{desInstancia}}
+                                            </b></h3>
                                             <button type="submit" (click)="openDetail(1)"
+                                                [disabled]="habilitarAgregarParticipante"
                                                 matTooltip="Agregar Nuevo Participante"
                                                 class="btn btn-block btn-primary form-control mt-2">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
@@ -225,6 +228,7 @@
 </div>
 
 <app-form-participante [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
+    [codSubcategoriaChild]="codSubcategoria" [codInstanciaChild]="codInstancia"
     [identificacionChild]="identificacion" (listaPaticipante)="listarParticipanteActivoActualizada($event)"
     (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-participante>

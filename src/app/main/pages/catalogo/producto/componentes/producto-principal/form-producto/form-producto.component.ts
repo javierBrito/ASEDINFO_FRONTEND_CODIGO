@@ -80,6 +80,7 @@ export class FormProductoComponent implements OnInit {
         codModulo: new FormControl(this.productoEditar.codModulo, Validators.required),
         descripcion: new FormControl(this.productoEditar.descripcion, Validators.required),
         precioCosto: new FormControl(this.productoEditar.precioCosto, Validators.required),
+        precioCompra: new FormControl(this.productoEditar.precioCompra, Validators.required),
         precioMayoreo: new FormControl(this.productoEditar.precioMayoreo),
         fechaRegistra: new FormControl(dayjs(this.productoEditar.fechaRegistra).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
         numExistenciaActual: new FormControl(this.productoEditar.numExistenciaActual, Validators.required),
@@ -91,6 +92,7 @@ export class FormProductoComponent implements OnInit {
         codModulo: new FormControl(this.codModulo, Validators.required),
         descripcion: new FormControl('', Validators.required),
         precioCosto: new FormControl('', Validators.required),
+        precioCompra: new FormControl('', Validators.required),
         precioMayoreo: new FormControl(''),
         fechaRegistra: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
         numExistenciaActual: new FormControl('', Validators.required),
@@ -157,6 +159,7 @@ export class FormProductoComponent implements OnInit {
         codModulo: productoTemp.codModulo,
         descripcion: productoTemp.descripcion,
         precioCosto: productoTemp.precioCosto,
+        precioCompra: productoTemp.precioCompra,
         precioMayoreo: productoTemp.precioMayoreo,
         numExistenciaActual: productoTemp.numExistenciaActual,
         numExistenciaMinima: productoTemp.numExistenciaMinima,
@@ -228,6 +231,9 @@ export class FormProductoComponent implements OnInit {
   }
   get precioCostoField() {
     return this.formProducto.get('precioCosto');
+  }
+  get precioCompraField() {
+    return this.formProducto.get('precioCompra');
   }
   get precioMayoreoField() {
     return this.formProducto.get('precioMayoreo');

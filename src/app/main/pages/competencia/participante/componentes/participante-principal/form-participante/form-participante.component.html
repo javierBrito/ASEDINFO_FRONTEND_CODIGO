@@ -4,9 +4,55 @@
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
                 <div class="col-6">
-                    <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
+                    <label for="codCategoria"><h4><b>{{'Categoría(*): '}}</b></h4></label>
+                    <select name="codCategoria" formControlName="codCategoria" required
+                        [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
+                        class="form-control mr-sm-2" id="codCategoria"
+                        (change)="listarSubcategoriaPorCategoria()">
+                        <option [value]="''" selected>Seleccionar categoría</option>
+                        <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
+                            <span><b>{{categoria?.denominacion}}</b></span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+                <div class="col-6">
+                    <label for="codSubcategoria"><h4><b>{{'Subcategoría(*): '}}</b></h4></label>
+                    <select name="codSubcategoria" formControlName="codSubcategoria" required required
+                        [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
+                        class="form-control mr-sm-2 custom-select" id="codSubcategoria"
+                        (change)="listarInstanciaActivo()">
+                        <option [value]="''" selected>Seleccionar subcategoría</option>
+                        <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
+                            <span><b>{{subcategoria?.denominacion}}</b></span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="codInstancia"><h4><b>{{'Instancia(*): '}}</b></h4></label>
+                    <select name="codInstancia" formControlName="codInstancia" required required
+                        [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
+                        class="form-control mr-sm-2 custom-select" id="codInstancia"
+                        (change)="obtenerCodInstancia()">
+                        <option [value]="''" selected>Seleccionar subcategoría</option>
+                        <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
+                            <span><b>{{instancia?.denominacion}}</b></span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="identificacion"><h4><b>{{'Correo electrónico(*): '}}</b></h4></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        maxlength="60" id="identificacion" placeholder="Por favor, ingrese la identificación."
+                        maxlength="60" id="identificacion" placeholder="Correo electrónico"
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -16,7 +62,7 @@
                     </div>
                 </div>
                 <div class="col-6">
-                    <label for="fechaNacimiento"><b>{{'Nacimiento: '}}</b></label>
+                    <label for="fechaNacimiento"><h4><b>{{'Nacimiento: '}}</b></h4></label>
                     <input type="date" name="fechaNacimiento" formControlName="fechaNacimiento" class="form-control"
                         id="fechaNacimiento" 
                         [ngClass]="{'is-valid': fechaNacimientoField?.dirty && !fechaNacimientoField?.invalid && !fechaNacimientoField?.errors,'is-invalid': fechaNacimientoField?.dirty && fechaNacimientoField?.invalid && fechaNacimientoField?.errors}">
@@ -30,9 +76,9 @@
             </div>
             <div class="row form-group">
                 <div class="col-6">
-                    <label for="nombres"><b>{{'Nombre(*): '}}</b></label>
+                    <label for="nombres"><h4><b>{{'Nombre & Apellido(*): '}}</b></h4></label>
                     <input type="text" name="nombres" formControlName="nombres" class="form-control" id="nombres"
-                        oninput="nombres.value = nombres.value.toUpperCase()"
+                        oninput="nombres.value = nombres.value.toUpperCase()" placeholder="Nombre & Apellido"
                         [ngClass]="{'is-valid': nombresField?.dirty && !nombresField?.invalid && !nombresField?.errors, 'is-invalid': nombresField?.dirty && nombresField?.invalid && nombresField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -42,9 +88,9 @@
                     </div>
                 </div>
                 <div class="col-6">
-                    <label for="apellidos"><b>{{'Apellido(*): '}}</b></label>
+                    <label for="apellidos"><h4><b>{{'Integrante-2(*): '}}</b></h4></label>
                     <input type="text" name="apellidos" formControlName="apellidos" class="form-control" id="apellidos"
-                        oninput="apellidos.value = apellidos.value.toUpperCase()"
+                        oninput="apellidos.value = apellidos.value.toUpperCase()" placeholder="Nombres integrante-2"
                         [ngClass]="{'is-valid': apellidosField?.dirty && !apellidosField?.invalid && !apellidosField?.errors, 'is-invalid': apellidosField?.dirty && apellidosField?.invalid && apellidosField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -56,20 +102,19 @@
             </div>
             <div class="row form-group">
                 <div class="col-8">
-                    <label for="correo"><b>{{'Correo(*): '}}</b></label>
-                    <input type="text" name="correo" formControlName="correo" class="form-control"
-                        id="correo"
-                        [ngClass]="{'is-valid': correoField?.dirty && !correoField?.invalid && !correoField?.errors, 'is-invalid': correoField?.dirty && correoField?.invalid && correoField?.errors}">
+                    <label for="country"><h4><b>{{'País: '}}</b></h4></label>
+                    <input type="text" name="country" formControlName="country"
+                        class="form-control" id="country"
+                        oninput="country.value = country.value.toUpperCase()" placeholder="Nombre país"
+                        [ngClass]="{'is-valid': countryField?.dirty && !countryField?.invalid && !countryField?.errors, 'is-invalid': countryField?.dirty && countryField?.invalid && countryField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="correoField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
                 </div>
                 <div class="col-4">
-                    <label for="celular"><b>{{'Celular(*): '}}</b></label>
+                    <label for="celular"><h4><b>{{'Celular(*): '}}</b></h4></label>
                     <input type="text" name="celular" formControlName="celular" class="form-control" id="celular"
+                        placeholder="Celular"
                         [ngClass]="{'is-valid': celularField?.dirty && !celularField?.invalid && !celularField?.errors, 'is-invalid': celularField?.dirty && celularField?.invalid && celularField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -77,25 +122,15 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-12">
-                    <label for="direccion"><b>{{'Dirección: '}}</b></label>
-                    <input type="text" name="direccion" formControlName="direccion"
-                        class="form-control" id="direccion"
-                        oninput="direccion.value = direccion.value.toUpperCase()"
-                        [ngClass]="{'is-valid': direccionField?.dirty && !direccionField?.invalid && !direccionField?.errors, 'is-invalid': direccionField?.dirty && direccionField?.invalid && direccionField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                </div>
             </div>
             <div class="row">
             </div>
         </div>
         <br>
-        <div class="container" style="border: 0px solid black; box-shadow: 0px 10px 10px black">
+        <div [ngStyle]="{'display': displayNone}" class="container" style="border: 0px solid black; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
                 <div class="col-5">
-                    <label for="codEstadoCompetencia"><b>{{'Estado Competencia(*):'}}</b></label>
+                    <label for="codEstadoCompetencia"><h4><b>{{'Estado Competencia(*):'}}</b></h4></label>
                     <select class="custom-select" formControlName="codEstadoCompetencia"
                         name="codEstadoCompetencia" id="codEstadoCompetencia" [compareWith]="compararEstadoCompetencia">
                         <option [value]="''" selected>Seleccionar estado competencia</option>
@@ -104,7 +139,7 @@
                     </select>
                 </div>
                 <div class="col-7">
-                    <label for="dateLastActive"><b>{{'Fecha/Hora Competencia: '}}</b></label>
+                    <label for="dateLastActive"><h4><b>{{'Fecha / Hora Competencia: '}}</b></h4></label>
                     <input type="datetime-local" name="dateLastActive" formControlName="dateLastActive" class="form-control"
                         id="dateLastActive" 
                         [ngClass]="{'is-valid': dateLastActiveField?.dirty && !dateLastActiveField?.invalid && !dateLastActiveField?.errors,'is-invalid': dateLastActiveField?.dirty && dateLastActiveField?.invalid && dateLastActiveField?.errors}">
@@ -118,9 +153,9 @@
             </div>
             <div class="row form-group">    
                 <div class="col-5">
-                    <label for="username"><b>{{'Usuario WP: '}}</b></label>
+                    <label for="username"><h4><b>{{'Usuario WP: '}}</b></h4></label>
                     <input type="text" name="username" formControlName="username" class="form-control"
-                        id="username"
+                        id="username" placeholder="Usuario WP"
                         [ngClass]="{'is-valid': usernameField?.dirty && !usernameField?.invalid && !usernameField?.errors, 'is-invalid': usernameField?.dirty && usernameField?.invalid && usernameField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -130,9 +165,9 @@
                     </div>
                 </div>
                 <div class="col-7">
-                    <label for="numPuntajeJuez"><b>{{'Número Puntaje Juez: '}}</b></label>
+                    <label for="numPuntajeJuez"><h4><b>{{'Número Puntaje Juez: '}}</b></h4></label>
                     <input type="text" name="numPuntajeJuez" formControlName="numPuntajeJuez" class="form-control"
-                        id="numPuntajeJuez" [attr.disabled]="true"
+                        id="numPuntajeJuez" [attr.disabled]="true" placeholder="9"
                         [ngClass]="{'is-valid': numPuntajeJuezField?.dirty && !numPuntajeJuezField?.invalid && !numPuntajeJuezField?.errors, 'is-invalid': numPuntajeJuezField?.dirty && numPuntajeJuezField?.invalid && numPuntajeJuezField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>

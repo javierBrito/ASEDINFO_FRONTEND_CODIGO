@@ -37,11 +37,15 @@ export class ParticipantePrincipalComponent implements OnInit {
   public codCategoria: number;
   public codSubcategoria: number;
   public codInstancia: number;
+  public desCategoria: string;
+  public desSubcategoria: string;
+  public desInstancia: string;
+  public habilitarAgregarParticipante: boolean;
+  public displayNone: string = '';
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
   public listaPersona: Persona[] = [];
-  public listaAplicacion: Aplicacion[] = [];
   public listaCategoria: Categoria[] = [];
   public listaSubcategoria: Subcategoria[] = [];
   public listaInstancia: Instancia[] = [];
@@ -85,6 +89,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.sede = this.currentUser.sede;
+    this.habilitarAgregarParticipante = true;
   }
 
   ngOnInit() {
@@ -95,8 +100,11 @@ export class ParticipantePrincipalComponent implements OnInit {
       identificacion: new FormControl(''),
     })
     this.listarCategoriaActivo();
-    this.listarInstanciaActivo();
     this.listarEstadoCompetenciaActivo();
+    if (this.currentUser.cedula == "Suscriptor") {
+      this.displayNone = 'none';
+      this.listarParticipantePorEmail();
+    }
   }
 
   cargarParticipantes() {
@@ -120,10 +128,12 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarSubcategoriaPorCategoria() {
+    this.habilitarAgregarParticipante = true;
     this.listaParticipante = [];
     // Receptar la descripción de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
     this.codCategoria = participanteParametroTemp?.codCategoria;
+    this.buscarCategoriaPorCodigo();
     this.participanteService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
         this.listaSubcategoria = respuesta['listado'];
@@ -131,8 +141,21 @@ export class ParticipantePrincipalComponent implements OnInit {
     )
   }
 
+  buscarCategoriaPorCodigo() {
+    this.participanteService.buscarCategoriaPorCodigo(this.codCategoria).subscribe(
+      (respuesta) => {
+        this.desCategoria = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
   listarInstanciaActivo() {
+    this.habilitarAgregarParticipante = true;
     this.listaParticipante = [];
+    // Receptar codCategoria de formParticipanteParametro.value
+    let participanteParametroTemp = this.formParticipanteParametro.value;
+    this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
+    this.buscarSubcategoriaPorCodigo();
     this.participanteService.listarInstanciaActivo().subscribe(
       (respuesta) => {
         this.listaInstancia = respuesta['listado'];
@@ -140,15 +163,58 @@ export class ParticipantePrincipalComponent implements OnInit {
     )
   }
 
+  buscarInstanciaPorCodigo() {
+    this.participanteService.buscarInstanciaPorCodigo(this.codInstancia).subscribe(
+      (respuesta) => {
+        this.desInstancia = respuesta['objeto']?.denominacion;
+      }
+    )
+  }
+
+  buscarSubcategoriaPorCodigo() {
+    this.participanteService.buscarSubcategoriaPorCodigo(this.codSubcategoria).subscribe(
+      (respuesta) => {
+        this.desSubcategoria = respuesta['objeto']?.denominacion;
+        this.codCategoria = respuesta['objeto']?.codCategoria;
+        this.buscarCategoriaPorCodigo();
+      }
+    )
+  }
+
+  listarParticipanteGeneral() {
+    if (this.currentUser.cedula == "Suscriptor") {
+      this.listarParticipantePorEmail();
+    } else {
+      this.listarParticipantePorSubcategoriaInstancia();
+    }
+  }
+
+  listarParticipantePorEmail() {
+    // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
+    let participanteParametroTemp = this.formParticipanteParametro.value;
+    this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
+    this.codInstancia = participanteParametroTemp?.codInstancia;
+    this.habilitarAgregarParticipante = true;
+    this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        for (const ele of this.listaParticipante) {
+          ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+        }
+      }
+    );
+  }
+
   listarParticipantePorSubcategoriaInstancia() {
     // Receptar la descripción de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
     this.codInstancia = participanteParametroTemp?.codInstancia;
+    this.buscarInstanciaPorCodigo();
+    this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
-        console.log("this.listaParticipante 1 = ", this.listaParticipante)
         for (const ele of this.listaParticipante) {
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
         }
@@ -171,6 +237,18 @@ export class ParticipantePrincipalComponent implements OnInit {
         break;
       }
       case 3: {
+        participante.codEstadoCompetencia = 4;
+        this.participante = participante;
+        this.addRegistroParticipante();
+        break;
+      }
+      case 4: {
+        participante.codEstadoCompetencia = 5;
+        this.participante = participante;
+        this.addRegistroParticipante();
+        break;
+      }
+      case 5: {
         //participante.codEstadoCompetencia = 4;
         this.mensajeService.mensajeError('Su participación ha sido completada...');
         break;
@@ -184,6 +262,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   addRegistroParticipante() {
+    this.participante.dateLastActive = dayjs(this.participante?.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
     this.participanteService.guardarParticipante(this.participante).subscribe({
       next: (response) => {
         this.listarParticipantePorSubcategoriaInstancia();

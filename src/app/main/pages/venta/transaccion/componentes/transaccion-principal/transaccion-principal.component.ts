@@ -381,7 +381,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   async enviarWhatsapp(ele: Transaccion) {
     this.seEnvioWhatsapp = true;
-    this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
+    this.mensaje = "<b>*Mensaje Automático*</b> Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcionProducto + " que tiene contratado con nosotros está por caducar el " + ele.fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
     var api = "https://script.google.com/macros/s/AKfycbyoBhxuklU5D3LTguTcYAS85klwFINHxxd-FroauC4CmFVvS0ua/exec";
     var payload = {

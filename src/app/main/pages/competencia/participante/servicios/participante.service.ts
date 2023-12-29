@@ -26,6 +26,9 @@ export class ParticipanteService {
   listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number, codEstadoCompetencia: number) {
     return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}/${codEstadoCompetencia}`);
   }
+  listarParticipantePorEmail(email: string) {
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorEmail/${email}`);
+  }
   listarTodosParticipante(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarTodosParticipante`);
   }

@@ -42,6 +42,13 @@ export class Producto implements Iproducto {
         set(this, 'data.precioCosto', value);
     }
 
+    get precioCompra(): number {
+        return get(this, 'data.precioCompra');
+    }
+    set precioCompra(value: number) {
+        set(this, 'data.precioCompra', value);
+    }
+
     get precioMayoreo(): number {
         return get(this, 'data.precioMayoreo');
     }

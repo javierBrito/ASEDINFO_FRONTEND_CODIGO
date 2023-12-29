@@ -4,6 +4,7 @@ export interface Iproducto {
     codCategoria?: number;
     descripcion?: string;
     precioCosto?: number;
+    precioCompra?: number;
     precioMayoreo?: number;
     numExistenciaActual?: number;
     numExistenciaMinima?: number;

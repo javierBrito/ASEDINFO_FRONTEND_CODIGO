@@ -68,6 +68,13 @@ export class Participante implements Iparticipante {
         set(this, 'data.codSubcategoria', value);
     }
     
+    get codCategoria(): number {
+        return get(this, 'data.codCategoria');
+    }
+    set codCategoria(value: number) {
+        set(this, 'data.codCategoria', value);
+    }
+    
     get customerId(): number {
         return get(this, 'data.customerId');
     }
@@ -98,6 +105,25 @@ export class Participante implements Iparticipante {
     set email(value: string) {
         set(this, 'data.email', value);
     }
+    get country(): string {
+        return get(this, 'data.country');
+    }
+    set country(value: string) {
+        set(this, 'data.country', value);
+    }
+    get city(): string {
+        return get(this, 'data.city');
+    }
+    set city(value: string) {
+        set(this, 'data.city', value);
+    }
+    get postcode(): string {
+        return get(this, 'data.postcode');
+    }
+    set postcode(value: string) {
+        set(this, 'data.postcode', value);
+    }
+
     get codInstancia(): number {
         return get(this, 'data.codInstancia');
     }

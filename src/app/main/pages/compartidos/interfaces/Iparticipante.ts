@@ -2,6 +2,7 @@ export interface Iparticipante {
     codigo?: number;
     codPersona?: number;
     codSubcategoria?: number;
+    codCategoria?: number;
     codInstancia?: number;
     codEstadoCompetencia?: number;
     dateRegistered?: string;
@@ -15,6 +16,9 @@ export interface Iparticipante {
     firstName: string;
     lastName: string;
     email: string;
+    country: string;
+    city: string;
+    postcode: string;
     
     desSubcategoria: string;
     desInstancia: string;

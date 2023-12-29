@@ -67,8 +67,8 @@ export class AuthenticationService {
         })
       );
   }
-  obtenerMenu() {
 
+  obtenerMenu() {
     const JsonEnvio = {
       codigoUsuario: this.codigoUsuario,
       prefijoAplicacion: environment.prefijoApp

@@ -46,17 +46,9 @@
                 <div class="col-3">
                     <label for="numExistenciaActual"><b>{{'Existencia(*):'}}</b></label>
                     <input type="number" name="numExistenciaActual" formControlName="numExistenciaActual"
-                        class="form-control" id="numExistenciaActual" placeholder="999" step="001" min="001"
-                        [attr.disabled]="true"
-                        [ngClass]="{'is-valid': numExistenciaActualField?.dirty && !numExistenciaActualField?.invalid && !numExistenciaActualField?.errors && (numExistenciaActualField?.value > numExistenciaActualField?.value), 'is-invalid': numExistenciaActualField?.dirty && numExistenciaActualField?.invalid && numExistenciaActualField?.errors  && !(numExistenciaActualField?.value > numExistenciaActualField?.value)}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="numExistenciaActualField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
+                        class="form-control" id="numExistenciaActual" placeholder="999"
+                        [attr.disabled]="true">
                 </div>
-
             </div>
             <div class="row form-group">
                 <div class="col-3">
@@ -108,14 +100,7 @@
                 <div class="col-3">
                     <label for="precioMayoreo"><b>{{'Por Mayor(*):'}}</b></label>
                     <input type="number" name="precioMayoreo" formControlName="precioMayoreo" class="form-control" id="precioMayoreo"
-                        placeholder="999.99" step="0.01" min="0.01" [attr.disabled]="true" 
-                        [ngClass]="{'is-valid': precioMayoreoField?.dirty && !precioMayoreoField?.invalid && !precioMayoreoField?.errors && (precioMayoreoField?.value > precioMayoreoField?.value), 'is-invalid': precioMayoreoField?.dirty && precioMayoreoField?.invalid && precioMayoreoField?.errors  && !(precioMayoreoField?.value > precioMayoreoField?.value)}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="precioMayoreoField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
+                        placeholder="999.99" [attr.disabled]="true">
                 </div>
             </div>
             <div class="row form-group">
@@ -134,14 +119,7 @@
                 <div class="col-3">
                     <label for="monto"><b>{{'Monto(*):'}}</b></label>
                     <input type="number" name="monto" formControlName="monto" class="form-control" id="monto"
-                        placeholder="999.99" step="0.01" min="0.01" [attr.disabled]="true" 
-                        [ngClass]="{'is-valid': montoField?.dirty && !montoField?.invalid && !montoField?.errors && (montoField?.value > montoField?.value), 'is-invalid': montoField?.dirty && montoField?.invalid && montoField?.errors  && !(montoField?.value > montoField?.value)}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="montoField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
+                        placeholder="999.99" [attr.disabled]="true">
                 </div>
             </div>
             <div class="row">

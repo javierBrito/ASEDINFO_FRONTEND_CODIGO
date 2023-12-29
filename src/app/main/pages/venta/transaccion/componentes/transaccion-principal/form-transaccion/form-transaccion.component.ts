@@ -223,7 +223,7 @@ export class FormTransaccionComponent implements OnInit {
         }
       )
     };
-    this.listaTransaccion.emit(this.listaTransaccionChild);
+    //this.listaTransaccion.emit(this.listaTransaccionChild);
   }
 
   mostrarListaTransaccion() {
@@ -244,6 +244,7 @@ export class FormTransaccionComponent implements OnInit {
             (respuesta) => {
               this.persona = respuesta['objeto'];
               ele.cliente.persona = this.persona;
+              this.listaTransaccion.emit(this.listaTransaccionChild);
             }
           )
         }
@@ -253,6 +254,7 @@ export class FormTransaccionComponent implements OnInit {
         (respuesta) => {
           this.producto = respuesta['objeto'];
           ele.producto = this.producto;
+          this.listaTransaccion.emit(this.listaTransaccionChild);
         }
       )
     }
