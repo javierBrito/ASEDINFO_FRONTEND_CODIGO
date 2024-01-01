@@ -22,7 +22,7 @@
                     <select name="codSubcategoria" formControlName="codSubcategoria" required required
                         [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                         class="form-control mr-sm-2 custom-select" id="codSubcategoria"
-                        (change)="listarInstanciaActivo()">
+                        (change)="obtenerCodInstancia()">
                         <option [value]="''" selected>Seleccionar subcategoría</option>
                         <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
                             <span><b>{{subcategoria?.denominacion}}</b></span>
@@ -32,10 +32,10 @@
                     <div class="invalid-feedback">Por favor seleccione una opción.</div>
                 </div>
             </div>
-            <div class="row form-group">
+            <div class="row form-group" [ngStyle]="{'display': displayNoneInstancia}">
                 <div class="col-6">
                     <label for="codInstancia"><h4><b>{{'Instancia(*): '}}</b></h4></label>
-                    <select name="codInstancia" formControlName="codInstancia" required required
+                    <select name="codInstancia" formControlName="codInstancia" 
                         [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
                         class="form-control mr-sm-2 custom-select" id="codInstancia"
                         (change)="obtenerCodInstancia()">
@@ -87,7 +87,7 @@
                         <span *ngIf="nombresField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-6" [ngStyle]="{'display': displayNoneIntegrante2}">
                     <label for="apellidos"><h4><b>{{'Integrante-2(*): '}}</b></h4></label>
                     <input type="text" name="apellidos" formControlName="apellidos" class="form-control" id="apellidos"
                         oninput="apellidos.value = apellidos.value.toUpperCase()" placeholder="Nombres integrante-2"

@@ -55,7 +55,7 @@
                         </div>
                         <div class="col-md-2 col-3 form-group" [ngStyle]="{'display': displayNone}">
                             <div class="my-2 text-left">
-                                <button [disabled]=""
+                                <button
                                     class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                     (click)="cargarParticipantes()">
                                     <b>{{ "Cargar Participantes"}}</b>
@@ -138,7 +138,7 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <h3><b>{{'Lista Participantes de : '}} {{desCategoria}}
+                                            <h3><b>{{'Lista Participantes: '}} {{desCategoria}}
                                                 - {{desSubcategoria}} - {{desInstancia}}
                                             </b></h3>
                                             <button type="submit" (click)="openDetail(1)"
@@ -156,6 +156,7 @@
                                                         <th scope="col">Identificación</th>
                                                         <th scope="col">Nombres</th>
                                                         <th scope="col">Fecha/hora Competencia</th>
+                                                        <th scope="col">Categoría/Subcategoría</th>
                                                         <th scope="col">Estado Competencia</th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
@@ -164,15 +165,16 @@
                                                     <tr
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{participante?.email}}</td>
-                                                        <td>{{participante?.firstName + ' ' + participante?.lastName}}
-                                                        </td>
+                                                        <td>{{participante?.identificacion}}</td>
+                                                        <td>{{participante?.firstName + ' - ' + participante?.lastName}}</td>
+                                                        <td>{{participante?.desCategoria + ' / ' + participante?.desSubcategoria}}</td>
                                                         <td>{{participante?.dateLastActive}}</td>
                                                         <!--<td>{{participante?.desEstadoCompetencia}}</td>-->
                                                         <td>
                                                             <!--style="{'background-color': participante?.dateLastActive}"-->
                                                             <!--[disabled]="formParticipanteParametro.invalid"-->
                                                             <button type="button" (click)="cambiarEstado(participante)"
+                                                                [attr.disabled]="disabledAcciones"
                                                                 [ngStyle]="{'background-color': participante?.colorBoton}"
                                                                 style="color: black;"
                                                                 class="btn btn-rounded">
@@ -182,14 +184,16 @@
                                                             </button>
                                                         </td>
                                                         <td>
-                                                            <div class="btn-group" role="group"
+                                                            <div class="btn-group" role="group" 
                                                                 aria-label="Basic example">
                                                                 <button (click)="openEditarDetail(participante)"
+                                                                    [attr.disabled]="disabledAcciones"
                                                                     matTooltip="Editar Participante" type="button"
                                                                     class="btn btn-primary" rippleEffect round><i
                                                                         class="fa fa-pencil"
                                                                         (click)="openEditarDetail(participante)"></i></button>
                                                                 <button (click)="openRemoverDetail(participante)"
+                                                                    [attr.disabled]="disabledAcciones"
                                                                     matTooltip="Eliminar Participante" type="button"
                                                                     class="btn btn-danger" rippleEffect><i
                                                                         class="fa fa-trash"

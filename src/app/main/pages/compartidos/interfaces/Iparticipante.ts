@@ -20,6 +20,7 @@ export interface Iparticipante {
     city: string;
     postcode: string;
     
+    desCategoria: string;
     desSubcategoria: string;
     desInstancia: string;
     
@@ -29,6 +30,7 @@ export interface Iparticipante {
     correo: string;
     nombres: string;
     apellidos: string;
+    identificacion: string;
 
     estadoCompetencia: any;
 

@@ -46,9 +46,12 @@ export class FormParticipanteComponent implements OnInit {
   private amieRegex: string;
   private currentUser: any;
   public displayNone: string = '';
+  public displayNoneInstancia: string = '';
+  public displayNoneIntegrante2: string = '';
   public codCategoria: number;
   public codSubcategoria: number;
   public codInstancia: number;
+  public desSubcategoria: string;
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -92,7 +95,7 @@ export class FormParticipanteComponent implements OnInit {
       this.formParticipante = this.formBuilder.group({
         identificacion: new FormControl(this.participanteEditar?.email, Validators.required),
         nombres: new FormControl(this.participanteEditar?.nombres, Validators.required),
-        apellidos: new FormControl(this.participanteEditar?.apellidos, Validators.required),
+        apellidos: new FormControl(this.participanteEditar?.apellidos),
         fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
         country: new FormControl(this.participanteEditar?.country),
         celular: new FormControl(this.participanteEditar?.celular),
@@ -110,7 +113,7 @@ export class FormParticipanteComponent implements OnInit {
       this.formParticipante = this.formBuilder.group({
         identificacion: new FormControl('', Validators.required),
         nombres: new FormControl('', Validators.required),
-        apellidos: new FormControl('', Validators.required),
+        apellidos: new FormControl(''),
         fechaNacimiento: new FormControl(''),
         country: new FormControl(''),
         celular: new FormControl(''),
@@ -121,13 +124,15 @@ export class FormParticipanteComponent implements OnInit {
         numPuntajeJuez: new FormControl(''),
         codCategoria: new FormControl('', Validators.required),
         codSubcategoria: new FormControl('', Validators.required),
-        codInstancia: new FormControl('', Validators.required),
-        })
+        codInstancia: new FormControl(''),
+      })
     }
+    this.displayNoneInstancia = 'none';
     if (this.currentUser.cedula == "Suscriptor") {
       this.displayNone = 'none';
+      this.displayNoneIntegrante2 = 'none';
       this.listarCategoriaActivo();
-      this.listarSubcategoriaPorCategoria();
+      //this.listarSubcategoriaPorCategoria();
       this.listarInstanciaActivo();
     }
   }
@@ -171,9 +176,26 @@ export class FormParticipanteComponent implements OnInit {
     // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
     let participanteTemp = this.formParticipante.value;
     this.codSubcategoria = participanteTemp?.codSubcategoria;
+    // obtener la subcategoria por codigo
+    this.buscarSubcategoriaPorCodigo();
     this.codSubcategoriaChild = this.codSubcategoria;
-    this.codInstancia = participanteTemp?.codInstancia;
+    //this.codInstancia = participanteTemp?.codInstancia;
+    this.codInstancia = 1;
     this.codInstanciaChild = this.codInstancia;
+  }
+
+  buscarSubcategoriaPorCodigo() {
+    this.participanteService.buscarSubcategoriaPorCodigo(this.codSubcategoria).subscribe(
+      (respuesta) => {
+        this.desSubcategoria = respuesta['objeto']?.denominacion;
+        this.codCategoria = respuesta['objeto']?.codCategoria;
+        console.log("this.desSubcategoria = ", this.desSubcategoria)
+        if (this.desSubcategoria.includes("PAREJA")) {
+          console.log("PAREJA");
+          this.displayNoneIntegrante2 = "";
+        }
+      }
+    )
   }
 
   listarInstanciaActivo() {
@@ -188,10 +210,14 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstancia = async () => {
-    await this.obtenerListaParticipante();
+    if (this.currentUser.cedula == "Suscriptor") {
+      this.listarParticipantePorEmail();
+    } else {
+      await this.obtenerListaParticipante();
+    }
   }
 
-  // consultar establecimientos por codigo de institución
+  // consultar participantes por codSubcategoria y codInstancia
   obtenerListaParticipante() {
     return new Promise((resolve, rejects) => {
       this.participanteService.listarParticipantePorSubcategoriaInstancia(this.participanteEditar?.codSubcategoria, this.participanteEditar?.codInstancia, 0).subscribe({
@@ -207,6 +233,25 @@ export class FormParticipanteComponent implements OnInit {
         }
       })
     });
+  }
+
+  listarParticipantePorEmail() {
+    this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
+      (respuesta) => {
+        this.listaParticipanteChild = respuesta['listado'];
+        if (this.listaParticipante.length > 0) {
+          for (const ele of this.listaParticipanteChild) {
+            if (ele.identificacion == this.currentUser.identificacion) {
+              ele.desCategoria = "DIRECTOR";
+              ele.desSubcategoria = "ACADEMIA";
+            }
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          }
+          this.listaParticipante.emit(this.listaParticipanteChild);
+        }
+        console.log("", this.listaParticipante)
+      }
+    );
   }
 
   buscarPersonaPorCodigo(codPersona: number) {
@@ -290,7 +335,8 @@ export class FormParticipanteComponent implements OnInit {
         firstName: participanteTemp?.nombres,
         lastName: participanteTemp?.apellidos,
         username: participanteTemp.username,
-        email: participanteTemp.identificacion,
+        //email: participanteTemp.identificacion,
+        email: this.currentUser.identificacion,
         codSubcategoria: this.codSubcategoriaChild,
         codInstancia: this.codInstanciaChild,
         country: participanteTemp?.country,
@@ -305,8 +351,8 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.username = this.participanteAux['data'].username;
       this.participante.email = this.participanteAux['data'].email;
       this.participante.codSubcategoria = this.codSubcategoriaChild,
-      this.participante.codInstancia = this.codInstanciaChild,
-      this.participante.country = this.participanteAux['data'].country;
+        this.participante.codInstancia = this.codInstanciaChild,
+        this.participante.country = this.participanteAux['data'].country;
       this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
       this.participanteService.guardarParticipante(this.participante).subscribe({

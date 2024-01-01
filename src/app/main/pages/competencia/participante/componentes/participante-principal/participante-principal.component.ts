@@ -15,6 +15,7 @@ import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
+import { userInfo } from 'os';
 
 @Component({
   selector: 'app-participante-principal',
@@ -42,6 +43,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public desInstancia: string;
   public habilitarAgregarParticipante: boolean;
   public displayNone: string = '';
+  public disabledAcciones: boolean;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -102,6 +104,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
     if (this.currentUser.cedula == "Suscriptor") {
+      this.disabledAcciones = true;
       this.displayNone = 'none';
       this.listarParticipantePorEmail();
     }
@@ -198,9 +201,17 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
-        for (const ele of this.listaParticipante) {
-          ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+        if (this.listaParticipante.length > 0) {
+          this.habilitarAgregarParticipante = false;
+          for (const ele of this.listaParticipante) {
+            if (ele.identificacion == this.currentUser.identificacion) {
+              ele.desCategoria = "DIRECTOR";
+              ele.desSubcategoria = "ACADEMIA";
+            }
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          }
         }
+        console.log("", this.listaParticipante)
       }
     );
   }

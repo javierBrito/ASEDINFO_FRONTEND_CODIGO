@@ -60,6 +60,12 @@ export class Participante implements Iparticipante {
     set desSubcategoria(value: string) {
         set(this, 'data.desSubcategoria', value);
     }
+    get desCategoria(): string {
+        return get(this, 'data.desCategoria');
+    }
+    set desCategoria(value: string) {
+        set(this, 'data.desCategoria', value);
+    }
     
     get codSubcategoria(): number {
         return get(this, 'data.codSubcategoria');
@@ -197,6 +203,13 @@ export class Participante implements Iparticipante {
     }
     set apellidos(value: string) {
         set(this, 'data.apellidos', value);
+    }    
+
+    get identificacion(): string {
+        return get(this, 'data.identificacion');
+    }
+    set identificacion(value: string) {
+        set(this, 'data.identificacion', value);
     }    
 
 }
