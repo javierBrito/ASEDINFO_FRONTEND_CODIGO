@@ -131,6 +131,28 @@
                     -->
                 </form>
                 <div class="row">
+                    <div id="box2">
+                        <button id="selectButton" mat-raised-button 
+                                (click)="fileInput.click()"
+                                [disabled]="habilitarSeleccionarArchivo"
+                                >Seleccionar boucher de pago: </button>
+                
+                        <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
+                        <span *ngIf="fileName">{{fileName}}</span>
+                        
+                        <button id="uploadButton" mat-raised-button *ngIf="selectedFiles" [disabled]="habilitarSeleccionarArchivo"
+                            (click)="cargarArchivos()">
+                            Guardar Archivo
+                        </button>
+                        <div class="col-sm-12" *ngIf="true">
+                            <embed id="vistaPreviaDJ" type="application/pdf" with="120" height="120">
+                            <!--
+                            <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
+                            <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
+                            -->
+                        </div>
+                    </div>    
+                    <!--<ang-music-player [audioList] = audioList>Música</ang-music-player>-->
                     <div class="col-12">
                         <ng-container>
                             <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
@@ -230,9 +252,67 @@
         </div>
     </div>
 </div>
-
+<!--Inicio Personal Radio-->
+<div class="container">
+    <mat-toolbar color="primary" class="main-toolbar">
+      <mat-toolbar-row>
+        <span>Personal Radio</span>
+      </mat-toolbar-row>
+    </mat-toolbar>
+    <div class="content">
+      <mat-list color="primary">
+        <h3 mat-subheader="">Playlist</h3>
+        <div class="song-list" *ngIf="files && files.length > 0">
+          <mat-list-item *ngFor="let file of files; let i = index" (click)="openFile(file, i)">  
+            <mat-icon color="primary" *ngIf="currentFile.index === i && !state?.error">volume_up</mat-icon>        
+            <mat-icon color="primary">music_note</mat-icon>
+            <h4 mat-line="">{{ file.name }}</h4>
+            <h5 mat-line="">by {{ file.artist }}</h5>          
+            <h6 *ngIf="currentFile.index === i &amp;&amp; state?.error">ERROR</h6>
+            <mat-divider></mat-divider>
+          </mat-list-item>
+        </div>
+      </mat-list>
+    </div>
+    <div class="spacer"></div>
+    <div class="media-footer">
+      <mat-toolbar color="primary">
+        {{state?.readableCurrentTime}}
+        <mat-toolbar-row>
+           {{ state?.readableCurrentTime }}
+           <mat-slider class="time-slider" min="0" [max]="state?.duration" step="1" [value]="state?.currentTime" (input)="onSliderChangeEnd($event)" [disabled]="state?.error || currentFile.index === undefined"></mat-slider>
+           {{ state?.readableDuration }}
+        </mat-toolbar-row>
+        <mat-toolbar-row cols="2" class="media-action-bar" *ngIf="state">
+  
+            <button mat-button="" [disabled]="isFirstPlaying()" (click)="previous()">
+              <mat-icon>skip_previous</mat-icon>
+            </button>
+            <button mat-button="" (click)="play()" [disabled]="state?.error" *ngIf="!state?.playing">
+              <mat-icon>play_circle_filled</mat-icon>
+            </button>
+            <button mat-button="" (click)="pause()" *ngIf="state?.playing">
+              <mat-icon>pause</mat-icon>
+            </button>
+            <button mat-button="" (click)="stop()">
+              <mat-icon>stop</mat-icon>
+            </button>
+            <button mat-button="" [disabled]="isLastPlaying()" (click)="next()">
+              <mat-icon>skip_next</mat-icon>
+            </button>
+  
+          <span class="spacer"></span>
+          <mat-icon>volume_up</mat-icon>
+          <mat-slider class="time-slider" min="0" max="1" step="0.01" [value]="state?.volume" (input)="onVolumeChange($event)"></mat-slider>
+         
+        </mat-toolbar-row>
+      </mat-toolbar>
+    </div>
+  </div>
+<!--Fin Personal Radio-->
 <app-form-participante [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
     [codSubcategoriaChild]="codSubcategoria" [codInstanciaChild]="codInstancia"
+    [customerIdChild]="customerId" [userIdChild]="userId"
     [identificacionChild]="identificacion" (listaPaticipante)="listarParticipanteActivoActualizada($event)"
     (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-participante>

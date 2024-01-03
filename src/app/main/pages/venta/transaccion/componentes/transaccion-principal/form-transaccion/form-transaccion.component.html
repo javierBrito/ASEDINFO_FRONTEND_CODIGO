@@ -63,7 +63,7 @@
                 <div class="col-4">
                     <label for="fechaInicio"><b>{{'Fecha Inicio(*): '}}</b></label>
                     <input type="date" name="fechaInicio" formControlName="fechaInicio" class="form-control"
-                        id="fechaInicio"
+                        id="fechaInicio" (blur)="onKeyFechaInicio($event)" (change)="changeFechaInicio(this)"
                         [ngClass]="{'is-valid': fechaInicioField?.dirty && !fechaInicioField?.invalid && !fechaInicioField?.errors,'is-invalid': fechaInicioField?.dirty && fechaInicioField?.invalid && fechaInicioField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>

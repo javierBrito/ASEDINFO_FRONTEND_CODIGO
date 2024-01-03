@@ -58,6 +58,7 @@
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "feather-icons": "4.28.0",
+    "file-saver": "^2.0.5",
     "flatpickr": "4.6.9",
     "hammerjs": "2.0.8",
     "jquery": "^3.6.1",

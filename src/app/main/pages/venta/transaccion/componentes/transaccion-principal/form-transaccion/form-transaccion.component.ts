@@ -223,7 +223,7 @@ export class FormTransaccionComponent implements OnInit {
         }
       )
     };
-    //this.listaTransaccion.emit(this.listaTransaccionChild);
+    this.listaTransaccion.emit(this.listaTransaccionChild);
   }
 
   mostrarListaTransaccion() {
@@ -270,7 +270,7 @@ export class FormTransaccionComponent implements OnInit {
   addRegistro() {
     if (this.formTransaccion?.valid) {
       let transaccionTemp = this.formTransaccion.value;
-      let fechaFinDate = new Date();
+      let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       let fechaFinString = dayjs(transaccionTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS");
       if (transaccionTemp?.numMes != "" && transaccionTemp?.numMes != 0) {
         this.numMes = transaccionTemp?.numMes;
@@ -357,7 +357,8 @@ export class FormTransaccionComponent implements OnInit {
   // Tomar el valor de meses para obtener la fecha fin y el monto
   onKeyMes(event) {
     if (event.target.value.length != 0) {
-      var fechaFinDate = new Date();
+      let transaccionTemp = this.formTransaccion.value;
+      let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       var fechaFinString = "";
       this.numMes = Number(event.target.value);
       fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
@@ -366,6 +367,34 @@ export class FormTransaccionComponent implements OnInit {
       // Calcular monto de la transacción
       this.calcularMonto();
     }
+  }
+
+  // Tomar el valor de meses para obtener la fecha fin y el monto
+  onKeyFechaInicio(event) {
+    if (event.target.value.length != 0) {
+      let transaccionTemp = this.formTransaccion.value;
+      let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
+      var fechaFinString = "";
+      //this.numMes = Number(event.target.value);
+      this.numMes = transaccionTemp?.numMes;
+      fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
+      fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
+      this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+      // Calcular monto de la transacción
+      this.calcularMonto();
+    }
+  }
+
+  changeFechaInicio(object) {
+    let transaccionTemp = this.formTransaccion.value;
+    let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
+    var fechaFinString = "";
+    this.numMes = transaccionTemp?.numMes;
+    fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
+    fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
+    this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+    // Calcular monto de la transacción
+    this.calcularMonto();
   }
 
   // Tomar el valor de precio para obtener el monto

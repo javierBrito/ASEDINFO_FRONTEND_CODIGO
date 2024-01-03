@@ -1,5 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
@@ -42,7 +43,6 @@ export class ParticipanteService {
     return this.http.get<Participante>(`${environment.url_seguridad}/competencia/buscarParticipantePorCodigo/${codigo}`);
   }
   guardarParticipante(participante: Participante) {
-    console.log("participante servicio = ", participante)
     return this.http.post<Participante>(`${environment.url_seguridad}/competencia/guardarParticipante`, participante);
   }
 
@@ -80,6 +80,42 @@ export class ParticipanteService {
   migrarClienteWP(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/wordpress/migrarClienteWP`);
   }
+  
+  // GESTIÓN DE ARCHIVOS
+  // Cargar archivo PDF a una carpeta
+  cargarArchivo(file: File): Observable<HttpEvent<any>> {
+    const formData: FormData = new FormData();
+    formData.append('files', file);
+    const req = new HttpRequest('POST', `${environment.url_seguridad}/private/cargarArchivo`, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
+    return this.http.request(req);
+  }
 
+  // Descargar archivos PDF desde una carpeta y los muestra en una lista
+  descargarArchivos(): Observable<CargarArchivoModelo[]> {
+    return this.http.get<CargarArchivoModelo[]>(`${environment.url_seguridad}/private/descargarArchivos`);
+  }
+
+  // Metodo para borrar los archivos
+  deleteFile(filename: string) {
+    return this.http.get(`${environment.url_seguridad}/private/delete/${filename}`);
+  }
+
+  // Descargar archivo PDF desde una carpeta
+  descargarArchivo(filename: string, empCedulaRep: string): Observable<HttpEvent<any>> {
+    let url_ws = `${environment.url_seguridad}/private/descargarArchivo/`;
+    url_ws += filename + "/" + empCedulaRep;
+    return this.http.get(url_ws, {
+      headers: new HttpHeaders().set(
+        'Authorization',
+        localStorage.getItem('token')
+      ),
+      reportProgress: true,
+      observe: 'events',
+      responseType: 'blob'
+    });
+  }
 }
 

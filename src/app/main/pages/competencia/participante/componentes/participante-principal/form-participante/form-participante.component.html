@@ -79,6 +79,7 @@
                     <label for="nombres"><h4><b>{{'Nombre & Apellido(*): '}}</b></h4></label>
                     <input type="text" name="nombres" formControlName="nombres" class="form-control" id="nombres"
                         oninput="nombres.value = nombres.value.toUpperCase()" placeholder="Nombre & Apellido"
+                        (blur)="blurIdentificacion($event)"
                         [ngClass]="{'is-valid': nombresField?.dirty && !nombresField?.invalid && !nombresField?.errors, 'is-invalid': nombresField?.dirty && nombresField?.invalid && nombresField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>

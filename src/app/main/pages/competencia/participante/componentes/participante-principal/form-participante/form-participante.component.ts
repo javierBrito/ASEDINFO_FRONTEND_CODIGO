@@ -35,6 +35,9 @@ export class FormParticipanteComponent implements OnInit {
   @Input() identificacionChild: string;
   @Input() codSubcategoriaChild: number;
   @Input() codInstanciaChild: number;
+  @Input() customerIdChild: number;
+  @Input() userIdChild: number;
+
 
   /*MODALES*/
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
@@ -189,9 +192,7 @@ export class FormParticipanteComponent implements OnInit {
       (respuesta) => {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
         this.codCategoria = respuesta['objeto']?.codCategoria;
-        console.log("this.desSubcategoria = ", this.desSubcategoria)
         if (this.desSubcategoria.includes("PAREJA")) {
-          console.log("PAREJA");
           this.displayNoneIntegrante2 = "";
         }
       }
@@ -249,7 +250,6 @@ export class FormParticipanteComponent implements OnInit {
           }
           this.listaParticipante.emit(this.listaParticipanteChild);
         }
-        console.log("", this.listaParticipante)
       }
     );
   }
@@ -283,6 +283,12 @@ export class FormParticipanteComponent implements OnInit {
   addRegistroPersona() {
     if (this.formParticipante?.valid) {
       let participanteTemp = this.formParticipante.value;
+      /*
+      if (this.currentUser.cedula == "Suscriptor") {
+        if (this.currentUser.identificacion != participanteTemp?.identificacion) {
+        }
+      }
+      */
       if (participanteTemp?.fechaNacimiento != "") {
         participanteTemp.fechaNacimiento = dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
       }
@@ -335,6 +341,8 @@ export class FormParticipanteComponent implements OnInit {
         firstName: participanteTemp?.nombres,
         lastName: participanteTemp?.apellidos,
         username: participanteTemp.username,
+        customerId: this.customerIdChild,
+        userId: this.userIdChild, 
         //email: participanteTemp.identificacion,
         email: this.currentUser.identificacion,
         codSubcategoria: this.codSubcategoriaChild,
@@ -368,8 +376,8 @@ export class FormParticipanteComponent implements OnInit {
       });
     } else {
       // Si es nuevo el participante
-      this.participanteAux['data'].customerId = 0;
-      this.participanteAux['data'].userId = 0;
+      //this.participanteAux['data'].customerId = 0;
+      //this.participanteAux['data'].userId = 0;
       //this.participanteAux['data'].codSubcategoria = this.codSubcategoriaChild;
       //this.participanteAux['data'].codInstancia = this.codInstanciaChild;
       this.participanteAux['data'].codPersona = this.persona.codigo;
@@ -401,6 +409,16 @@ export class FormParticipanteComponent implements OnInit {
       this.resetTheForm();
     } else {
       this.buscarPersonaPorCodigo(1);
+    }
+  }
+
+  // Tomar el valor nombres y convertirlo en identificacion
+  blurIdentificacion(event) {
+    if (event.target.value.length != 0) {
+      let participanteTemp = this.formParticipante.value;
+      if (participanteTemp?.identificacion == "") {
+        this.formParticipante.controls.identificacion.setValue((event.target.value.replace(" ", ".")).toLowerCase());
+      }
     }
   }
 

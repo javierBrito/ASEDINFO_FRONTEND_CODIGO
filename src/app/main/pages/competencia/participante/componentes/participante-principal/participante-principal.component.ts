@@ -16,6 +16,11 @@ import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
 import { userInfo } from 'os';
+import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
+import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
+import { saveAs } from 'file-saver';
+import { AudioService } from 'app/main/pages/compartidos/servicios/audio.service';
+import { DataService } from 'app/main/pages/compartidos/servicios/data.service';
 
 @Component({
   selector: 'app-participante-principal',
@@ -42,8 +47,11 @@ export class ParticipantePrincipalComponent implements OnInit {
   public desSubcategoria: string;
   public desInstancia: string;
   public habilitarAgregarParticipante: boolean;
+  public habilitarSeleccionarArchivo: boolean;
   public displayNone: string = '';
   public disabledAcciones: boolean;
+  public customerId: number;
+  public userId: number;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -52,6 +60,23 @@ export class ParticipantePrincipalComponent implements OnInit {
   public listaSubcategoria: Subcategoria[] = [];
   public listaInstancia: Instancia[] = [];
   public listaEstadoCompetencia: EstadoCompetencia[] = [];
+
+  // TRATAR ARCHIVOS
+  // Lista de archivos seleccionados
+  public selectedFiles: FileList;
+  // Es el array que contiene los items para mostrar el progreso de subida de cada archivo
+  public progressInfo = [];
+  // Mensaje que almacena la respuesta de las Apis
+  public message = '';
+  // Nombre del archivo para usarlo posteriormente en la vista html
+  public fileName = "";
+  // Lista para obtener los archivos
+  public fileInfos: CargarArchivoModelo[] = [];
+  public pdfFileURL: any;
+  public fileStatus = { status: '', requestType: '', percent: 0 };
+  public filenames: string[] = [];
+  public listaBase64: any;
+  public nombreArchivoDescarga: string;
 
   /*TABS*/
   public selectedTab: number;
@@ -75,6 +100,15 @@ export class ParticipantePrincipalComponent implements OnInit {
   public formParticipante: FormGroup;
   public formParticipanteParametro: FormGroup;
 
+  // Inicio - Audio
+  state;
+  currentFile = {
+    index: 0
+  };
+  files = [];
+  index = 0;
+  // Fin - Audio
+
   /*CONSTRUCTOR */
   constructor(
     /*Servicios*/
@@ -82,7 +116,34 @@ export class ParticipantePrincipalComponent implements OnInit {
     private readonly personaService: PersonaService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
+    private audioService: AudioService,
+    private dataService: DataService
   ) {
+    // get all songs using API
+    this.dataService.getSongs().subscribe((data: any) => {
+      this.files = data.response;
+      console.log(this.files);
+      if (this.files.length > 0) {
+        this.loadData(this.files[this.index]);
+        this.currentFile.index = this.index;
+      }
+    });
+
+    // get state of audio streaming
+    this.audioService.getState().subscribe(data => {
+      this.state = data;
+      console.log(this.state);
+    });
+
+    // get index to play the selected song on click function
+    this.dataService.getIndex().subscribe(index => {
+      this.index = index;
+      console.log('index => ', this.index);
+      if (this.index < this.files.length) {
+        this.loadData(this.files[index]);
+      }
+    });
+
     this.codigo = 0;
     this.codigoSede = 0;
     this.itemsRegistros = 5;
@@ -92,6 +153,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
+    this.habilitarSeleccionarArchivo = false;
   }
 
   ngOnInit() {
@@ -202,8 +264,10 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length > 0) {
-          this.habilitarAgregarParticipante = false;
+          //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
+            this.customerId = ele.customerId;
+            this.userId = ele.userId;
             if (ele.identificacion == this.currentUser.identificacion) {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
@@ -222,7 +286,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
     this.codInstancia = participanteParametroTemp?.codInstancia;
     this.buscarInstanciaPorCodigo();
-    this.habilitarAgregarParticipante = false;
+    //this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
@@ -391,6 +455,174 @@ export class ParticipantePrincipalComponent implements OnInit {
     }
   }
 
+  // Tratar Archivos
+  selectFiles(event) {
+    this.progressInfo = [];
+    event.target.files.length == 1 ? this.fileName = event.target.files[0].name : this.fileName = event.target.files.length + " archivos";
+    this.selectedFiles = event.target.files;
+  }
+
+  cargarArchivos() {
+    console.log("uploadFiles()");
+    this.message = '';
+    for (let i = 0; i < this.selectedFiles.length; i++) {
+      this.cargarArchivo(i, this.selectedFiles[i]);
+      this.previsualizarArchivo(i, this.selectedFiles[i]);
+      //this.descargarArchivo(this.selectedFiles[i].name);
+      //this.obtenerReporteTitulo25();
+    }
+  }
+
+  previsualizarArchivo(index, file) {
+    console.log("upload(index, file) = " + index);
+    //Previsualizar documento
+    this.pdfFileURL = URL.createObjectURL(file);
+    //window.open(this.pdfFileURL);
+    console.log("this.pdfFileURL = ", this.pdfFileURL);
+    //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
+    document.getElementById('vistaPreviaDJ').setAttribute('src', this.pdfFileURL);
+  }
+
+  cargarArchivo(index, file) {
+    this.participanteService.cargarArchivo(file).subscribe(
+      async (respuesta) => {
+        console.log("respuesta = ", respuesta);
+      }, err => {
+        console.log("err = ", err);
+        if (err == "OK") {
+          this.habilitarAgregarParticipante = false;
+          this.habilitarSeleccionarArchivo = true;
+          this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta');
+        } else {
+          this.message = 'No se puede subir el archivo ' + file.name;
+        }
+      }
+    );
+  }
+
+  deleteFile(filename: string) {
+    this.participanteService.deleteFile(filename).subscribe(res => {
+      this.message = res['message'];
+      this.listarArchivos();
+    });
+  }
+
+  // Descargar archivos PDF desde una carpeta y los muestra en una lista
+  listarArchivos() {
+    this.participanteService.descargarArchivos().subscribe(
+      (respuesta) => {
+        this.fileInfos = respuesta;
+      }
+    );
+  }
+
+  // Descargar archivo PDF desde una carpeta
+  descargarArchivo(filename: string): void {
+    this.nombreArchivoDescarga = filename;
+    this.participanteService.descargarArchivo(filename, '1').subscribe(
+      event => {
+        console.log(event);
+      },
+      (error: HttpErrorResponse) => {
+        console.log(error);
+      }
+    );
+  }
+
+  private resportProgress(httpEvent: HttpEvent<string[] | Blob>): void {
+    switch (httpEvent.type) {
+      case HttpEventType.UploadProgress:
+        this.updateStatus(httpEvent.loaded, httpEvent.total!, 'Uploading... ');
+        break;
+      case HttpEventType.DownloadProgress:
+        this.updateStatus(httpEvent.loaded, httpEvent.total!, 'Downloading... ');
+        break;
+      case HttpEventType.ResponseHeader:
+        console.log('Header returned', httpEvent);
+        break;
+      case HttpEventType.Response:
+        if (httpEvent.body instanceof Array) {
+          this.fileStatus.status = 'done';
+          for (const filename of httpEvent.body) {
+            this.filenames.unshift(filename);
+          }
+        } else {
+          saveAs(new Blob([httpEvent.body!],
+            { type: `${httpEvent.headers.get('Content-Type')};charset=utf-8` }),
+            this.nombreArchivoDescarga);
+        }
+        this.fileStatus.status = 'done';
+        break;
+      default:
+        console.log(httpEvent);
+        break;
+    }
+  }
+
+  private updateStatus(loaded: number, total: number, requestType: string): void {
+    this.fileStatus.status = 'progress';
+    this.fileStatus.requestType = requestType;
+    this.fileStatus.percent = Math.round(100 * loaded / total);
+  }
+  isFirstPlaying(): boolean {
+    this.currentFile.index = this.index;
+    return this.index === 0;
+  }
+
+  isLastPlaying(): boolean {
+    this.currentFile.index = this.index;
+    return this.index === this.files.length - 1;
+  }
+
+  openFile(file, index): void {
+    this.currentFile.index = index;
+    this.dataService.add(file.url, index);
+    this.loadData(file);
+  }
+
+  loadData(file): void {
+    this.audioService.playStream(file.url).subscribe((ev: Event) => {
+      if (ev.type === 'ended') {
+        this.audioService.endPlay(); // Remove Previous Instance
+        if (!this.isLastPlaying()) {
+          this.currentFile.index = this.files.findIndex(elem => elem.id === file.id);
+          this.next();
+        } else {
+          this.currentFile.index = 0;
+        }
+      }
+    });
+  }
+
+  onSliderChangeEnd(change): void {
+    this.audioService.seekTo(change.value);
+  }
+
+  play(): void {
+    this.audioService.play();
+  }
+
+  pause(): void {
+    this.audioService.pause();
+  }
+
+  stop(): void {
+    this.audioService.stop();
+  }
+
+  previous(): void {
+    const index = this.index - 1;
+    this.currentFile.index = index;
+    this.dataService.addIndex(index);
+  }
+
+  next(): void {
+    const index = this.index + 1;
+    console.log('index => ', index);
+    this.currentFile.index = index;
+    this.dataService.addIndex(index);
+  }
+  
   compararCategoria(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
