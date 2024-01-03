@@ -409,7 +409,8 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   async enviarWhatsappApi(ele: Transaccion) {
     this.seEnvioWhatsapp = true;
-    this.mensaje = "<b>*Mensaje Automático*</b> Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcionProducto + " que tiene contratado con nosotros está por caducar el " + ele.fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    this.mensaje = "*Mensaje Automático* Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcion + " que tiene contratado con nosotros está por caducar el " + ele.fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    console.log("this.mensaje = ", this.mensaje)
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
 
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
