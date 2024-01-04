@@ -5,6 +5,7 @@ export interface Itransaccion {
     codModulo?: number;
     codOperacion?: number;
     descripcion?: string;
+    claveCuenta?: string;
     precio?: number;
     monto?: number;
     numProducto?: number;
@@ -13,6 +14,7 @@ export interface Itransaccion {
     fechaInicio?: string;
     fechaFin?: string;
     fechaRegistra?: string;
+    fechaCambia?: string;
     estado?: string;
 
     cliente?: any,
@@ -20,6 +22,7 @@ export interface Itransaccion {
     modulo?: any,
     operacion?: any,
     colorFila?: string;
+    colorColumna?: string;
     descripcionProducto?: string;
     precioCosto?: number;
     precioMayoreo?: number;

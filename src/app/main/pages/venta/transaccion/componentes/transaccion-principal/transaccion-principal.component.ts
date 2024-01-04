@@ -39,6 +39,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public institucion: any;
   public descripcion: string;
   public colorFila: string;
+  public colorColumna: string;
   public nemonicoModulo: string = 'VEN';
   public nemonicoOperacion: string = 'CRE';
   public fechaHoy = dayjs(new Date).format("YYYY-MM-DD");
@@ -113,7 +114,6 @@ export class TransaccionPrincipalComponent implements OnInit {
   ngOnInit() {
     this.buscarModuloPorNemonico();
     this.buscarOperacionPorNemonico();
-    this.colorFila = "green";
     if (this.listaTransaccionChild != null) {
       this.listaTransaccion = this.listaTransaccionChild;
     }
@@ -124,6 +124,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     });
     this.obtenerParametros();
     //this.obtenerTransaccionACaducarse();
+    this.listarTransaccionACaducarse();
   }
 
   obtenerParametros() {
@@ -224,8 +225,21 @@ export class TransaccionPrincipalComponent implements OnInit {
   mostrarListaTransaccion = async () => {
     for (const ele of this.listaTransaccion) {
       ele.colorFila = "green";
+      ele.colorColumna = "white";
       ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
       ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
+      console.log("ele?.fechaCambia = ", ele?.fechaCambia);
+      if (ele?.fechaCambia != null) {
+        ele.fechaCambia = dayjs(ele.fechaCambia).format("YYYY-MM-DD");
+        // Calcular la diferencia en días de la fecha actual y final de la transacción
+        var diff1 = new Date(ele.fechaCambia).getTime() - new Date(this.fechaHoy).getTime();
+        var numDias1 = diff1 / (1000 * 60 * 60 * 24);
+
+        console.log("numDias1 = ", numDias1)
+        if (numDias1 == 0) {
+          ele.colorColumna = "yellow";
+        }
+      }
       this.fechaFinMensaje = dayjs(ele.fechaFin).format("YYYY-MM-DD");
 
       // Calcular la diferencia en días de la fecha actual y final de la transacción
@@ -410,7 +424,6 @@ export class TransaccionPrincipalComponent implements OnInit {
   async enviarWhatsappApi(ele: Transaccion) {
     this.seEnvioWhatsapp = true;
     this.mensaje = "*Mensaje Automático* Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcion + " que tiene contratado con nosotros está por caducar el " + ele.fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
-    console.log("this.mensaje = ", this.mensaje)
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
 
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({

@@ -18,8 +18,8 @@
                 <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
                     <label for="codProducto"><b>{{'Producto(*): '}}</b></label>
                     <select name="producto" formControlName="codProducto" required [compareWith]="compararProducto"
-                        placeholder="Seleccione producto..." class="form-control mr-sm-2"
-                        id="codProducto" (change)="buscarProductoPorCodigo()" >
+                        placeholder="Seleccione producto..." class="form-control mr-sm-2" id="codProducto"
+                        (change)="buscarProductoPorCodigo()">
                         <option [value]="" selected>Seleccionar producto</option>
                         <option *ngFor="let producto of listaProducto" [value]="producto.codigo">
                             <span>{{producto?.descripcion}}</span>
@@ -46,8 +46,7 @@
                 <div class="col-3">
                     <label for="numExistenciaActual"><b>{{'Existencia(*):'}}</b></label>
                     <input type="number" name="numExistenciaActual" formControlName="numExistenciaActual"
-                        class="form-control" id="numExistenciaActual" placeholder="999"
-                        [attr.disabled]="true">
+                        class="form-control" id="numExistenciaActual" placeholder="999" [attr.disabled]="true">
                 </div>
             </div>
             <div class="row form-group">
@@ -97,12 +96,25 @@
                         <span *ngIf="precioField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <label for="precioMayoreo"><b>{{'Por Mayor(*):'}}</b></label>
-                    <input type="number" name="precioMayoreo" formControlName="precioMayoreo" class="form-control" id="precioMayoreo"
-                        placeholder="999.99" [attr.disabled]="true">
+                    <input type="number" name="precioMayoreo" formControlName="precioMayoreo" class="form-control"
+                        id="precioMayoreo" placeholder="999.99" [attr.disabled]="true">
+                </div>
+                <div class="col-4">
+                    <label for="fechaCambia"><b>{{'Fecha Cambiar(*): '}}</b></label>
+                    <input type="date" name="fechaCambia" formControlName="fechaCambia" class="form-control"
+                        id="fechaCambia"
+                        [ngClass]="{'is-valid': fechaCambiaField?.dirty && !fechaCambiaField?.invalid && !fechaCambiaField?.errors,'is-invalid': fechaCambiaField?.dirty && fechaCambiaField?.invalid && fechaCambiaField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="fechaCambiaField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
                 </div>
             </div>
+
             <div class="row form-group">
                 <div class="col-3">
                     <label for="numProducto"><b>{{'Cantidad(*):'}}</b></label>
@@ -120,6 +132,15 @@
                     <label for="monto"><b>{{'Monto(*):'}}</b></label>
                     <input type="number" name="monto" formControlName="monto" class="form-control" id="monto"
                         placeholder="999.99" [attr.disabled]="true">
+                </div>
+                <div class="col-6">
+                    <label for="claveCuenta"><b>{{'Clave Cuenta(*): '}}</b></label>
+                    <input type="text" name="claveCuenta" formControlName="claveCuenta" class="form-control"
+                        id="claveCuenta" placeholder="Por favor, ingrese la descripción."
+                        [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors, 'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
                 </div>
             </div>
             <div class="row">

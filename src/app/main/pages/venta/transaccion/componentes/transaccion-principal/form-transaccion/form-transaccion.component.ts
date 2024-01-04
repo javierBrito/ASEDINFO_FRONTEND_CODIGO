@@ -108,9 +108,11 @@ export class FormTransaccionComponent implements OnInit {
         codCliente: new FormControl(this.transaccionEditar.codCliente, Validators.required),
         codProducto: new FormControl(this.transaccionEditar.codProducto, Validators.required),
         descripcion: new FormControl(this.transaccionEditar.descripcion, Validators.required),
+        claveCuenta: new FormControl(this.transaccionEditar.claveCuenta),
         precio: new FormControl(this.transaccionEditar.precio, Validators.required),
         fechaInicio: new FormControl(dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
         fechaFin: new FormControl(dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
+        fechaCambia: new FormControl(dayjs(this.transaccionEditar.fechaCambia).format("YYYY-MM-DD")),
         numProducto: new FormControl(this.transaccionEditar.numProducto, Validators.required),
         numExistenciaActual: new FormControl(this.transaccionEditar.numExistenciaActual),
         numMes: new FormControl(this.transaccionEditar.numMes),
@@ -123,9 +125,11 @@ export class FormTransaccionComponent implements OnInit {
         codCliente: new FormControl('', Validators.required),
         codProducto: new FormControl('', Validators.required),
         descripcion: new FormControl('', Validators.required),
+        claveCuenta: new FormControl(''),
         precio: new FormControl('', Validators.required),
         fechaInicio: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
         fechaFin: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
+        fechaCambia: new FormControl(),
         numProducto: new FormControl('', Validators.required),
         numExistenciaActual: new FormControl(''),
         numMes: new FormControl(''),
@@ -229,11 +233,28 @@ export class FormTransaccionComponent implements OnInit {
   mostrarListaTransaccion() {
     for (const ele of this.listaTransaccionChild) {
       ele.colorFila = "green";
+      ele.colorColumna = "white";
       ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
       ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
-      if (ele.fechaFin <= this.fechaHoy) {
+      if (ele?.fechaCambia != null) {
+        ele.fechaCambia = dayjs(ele.fechaCambia).format("YYYY-MM-DD");
+        // Calcular la diferencia en días de la fecha actual y final de la transacción
+        var diff1 = new Date(ele.fechaCambia).getTime() - new Date(this.fechaHoy).getTime();
+        var numDias1 = diff1 / (1000 * 60 * 60 * 24);
+
+        if (numDias1 == 0) {
+          ele.colorColumna = "yellow";
+        }
+      }
+      // Calcular la diferencia en días de la fecha actual y final de la transacción
+      var diff = new Date(ele.fechaFin).getTime() - new Date(this.fechaHoy).getTime();
+      var numDias = diff / (1000 * 60 * 60 * 24);
+
+      // ele.fechaFin <= this.fechaHoy
+      if (!(numDias > 0 && numDias > 5)) {
         ele.colorFila = "red";
       }
+
       // Obtener cliente
       this.clienteService.buscarClientePorCodigo(ele.codCliente).subscribe(
         (respuesta) => {
@@ -277,7 +298,10 @@ export class FormTransaccionComponent implements OnInit {
         fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes)
         fechaFinString = fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate();
       }
-
+      let fechaCambia = "";
+      if (transaccionTemp?.fechaCambia != null && transaccionTemp?.fechaCambia != "") {
+        fechaCambia = dayjs(transaccionTemp?.fechaCambia).format("YYYY-MM-DD HH:mm:ss.SSS");
+      }
       this.transaccion = new Transaccion({
         codigo: 0,
         codCliente: transaccionTemp?.codCliente,
@@ -285,11 +309,13 @@ export class FormTransaccionComponent implements OnInit {
         codModulo: this.modulo?.codigo,
         codOperacion: this.operacion?.codigo,
         descripcion: transaccionTemp?.descripcion,
+        claveCuenta: transaccionTemp?.claveCuenta,
         precio: transaccionTemp?.precio,
         monto: transaccionTemp?.monto,
         numProducto: transaccionTemp?.numProducto,
         numMes: this.numMes,
         fechaInicio: dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        fechaCambia: fechaCambia,
         fechaFin: dayjs(fechaFinString).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaRegistra: dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS"),
         estado: 'A',
@@ -460,6 +486,12 @@ export class FormTransaccionComponent implements OnInit {
   }
   get montoField() {
     return this.formTransaccion.get('monto');
+  }
+  get fechaCambiaField() {
+    return this.formTransaccion.get('fechaCambia');
+  }
+  get claveCuentaField() {
+    return this.formTransaccion.get('claveCuenta');
   }
 
 }

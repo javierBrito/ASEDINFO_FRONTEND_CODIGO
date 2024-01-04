@@ -127,11 +127,11 @@ export class FormClienteComponent implements OnInit {
                 this.listaCliente = respuesta['listado'];
                 ele.cliente = this.listaCliente[0];
                 ele.cliente.fechaInicio = dayjs(ele.cliente.fechaInicio).format("YYYY-MM-DD")
+                this.listaCliente.emit(this.listaClienteChild);
               }
             )
           }
         }
-        this.listaCliente.emit(this.listaClienteChild);
       }
     );
   }
@@ -160,11 +160,11 @@ export class FormClienteComponent implements OnInit {
                 this.persona.cliente.fechaInicio = dayjs(this.persona.cliente.fechaInicio).format("YYYY-MM-DD");
                 this.formCliente.controls.fechaInicio.setValue(dayjs(this.persona.cliente?.fechaInicio).format("YYYY-MM-DD"));
                 this.formCliente.controls.tipoCliente.setValue(this.persona.cliente?.tipoCliente);
-                }
+                this.clienteEditar.persona = this.persona;
+              }
             }
           )
         }
-        this.clienteEditar.persona = this.persona;
       },
       error: (error) => {
         console.log(error);
@@ -180,14 +180,18 @@ export class FormClienteComponent implements OnInit {
   }
 
   addRegistroPersona() {
+    let fechaNacimiento = "";
     if (this.formCliente?.valid) {
       let clienteTemp = this.formCliente.value;
+      if (clienteTemp?.fechaNacimiento.length != 0 && clienteTemp?.fechaNacimiento.length != 12) {
+        fechaNacimiento = dayjs(clienteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
+      }
       this.persona = new Persona({
         codigo: 0,
         identificacion: clienteTemp?.identificacion,
         nombres: clienteTemp?.nombres,
         apellidos: clienteTemp?.apellidos,
-        fechaNacimiento: dayjs(clienteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        fechaNacimiento: fechaNacimiento,
         direccion: clienteTemp?.direccion,
         celular: clienteTemp?.celular,
         correo: clienteTemp?.correo,
@@ -274,9 +278,10 @@ export class FormClienteComponent implements OnInit {
     if (event.target.value.length != 10) {
       this.resetTheForm();
     } else {
-      this.verificarPersona();    }
+      this.verificarPersona();
+    }
   }
-  
+
   resetTheForm(): void {
     this.formCliente.reset = null;
   }

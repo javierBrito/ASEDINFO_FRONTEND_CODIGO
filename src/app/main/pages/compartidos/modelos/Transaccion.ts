@@ -127,6 +127,13 @@ export class Transaccion implements Itransaccion {
         set(this, 'data.colorFila', value);
     }
 
+    get colorColumna(): string {
+        return get(this, 'data.colorColumna');
+    }
+    set colorColumna(value: string) {
+        set(this, 'data.colorColumna', value);
+    }
+
     get descripcionProducto(): string {
         return get(this, 'data.descripcionProducto');
     }
@@ -167,5 +174,19 @@ export class Transaccion implements Itransaccion {
     }
     set monto(value: number) {
         set(this, 'data.monto', value);
+    }
+
+    get claveCuenta(): string {
+        return get(this, 'data.claveCuenta');
+    }
+    set claveCuenta(value: string) {
+        set(this, 'data.claveCuenta', value);
+    }
+
+    get fechaCambia(): string {
+        return get(this, 'data.fechaCambia');
+    }
+    set fechaCambia(value: string) {
+        set(this, 'data.fechaCambia', value);
     }
 }

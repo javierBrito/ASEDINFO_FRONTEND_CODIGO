@@ -106,6 +106,7 @@
                                                         <th scope="col">Cantidad</th>
                                                         <th scope="col">Inicio</th>
                                                         <th scope="col">Fin</th>
+                                                        <th scope="col">Cambiar</th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -120,6 +121,7 @@
                                                         <td>{{transaccion?.numProducto}}</td>
                                                         <td>{{transaccion?.fechaInicio}}</td>
                                                         <td>{{transaccion?.fechaFin}}</td>
+                                                        <td [ngStyle]="{'background-color': transaccion?.colorColumna}">{{transaccion?.fechaCambia}}</td>
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
