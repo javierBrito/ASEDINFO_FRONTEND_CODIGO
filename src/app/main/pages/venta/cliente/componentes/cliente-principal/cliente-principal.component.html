@@ -14,8 +14,8 @@
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                             <input type="text" name="identificacion" id="identificacion"
                                 formControlName="identificacion" maxlength="60"
-                                placeholder="Por favor, ingrese el número de cédula." class="form-control"
-                                (keyup)="onKey($event)"
+                                placeholder="Por favor, ingrese la identificación." class="form-control"
+                                (blur)="blurIdentificacion($event)"
                                 [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors,'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                             <div class="valid-feedback">
                                 <span>{{ "Exito"}}</span>

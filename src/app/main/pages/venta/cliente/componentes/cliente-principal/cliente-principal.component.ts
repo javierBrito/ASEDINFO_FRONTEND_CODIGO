@@ -115,6 +115,9 @@ export class ClientePrincipalComponent implements OnInit {
             )
           }
         }
+        if (this.listaCliente.length < this.itemsRegistros) {
+          this.page = 1;
+        }
       }
     );
   }
@@ -139,6 +142,9 @@ export class ClientePrincipalComponent implements OnInit {
             )
           }
         }
+        if (this.listaCliente.length < this.itemsRegistros) {
+          this.page = 1;
+        }
       }
     );
   }
@@ -149,6 +155,9 @@ export class ClientePrincipalComponent implements OnInit {
 
   openDetail(codjornada) {
     this.showDetail = true;
+    if (this.listaCliente.length < this.itemsRegistros) {
+      this.page = 1;
+    }
   }
 
   openEditarDetail(cliente: Cliente) {
@@ -192,11 +201,12 @@ export class ClientePrincipalComponent implements OnInit {
   }
 
   // Contar los caracteres de la cedula para activar boton <Buscar>
-  onKey(event) {
-    if (event.target.value.length != 10) {
-      this.resetTheForm();
-    } else {
-      this.listarClientePorPersonaIdentificacion();    }
+  blurIdentificacion(event) {
+    //if (event.target.value.length != 10) {
+    //  this.resetTheForm();
+    //} else {
+      this.listarClientePorPersonaIdentificacion();    
+    //}
   }
 
   resetTheForm(): void {

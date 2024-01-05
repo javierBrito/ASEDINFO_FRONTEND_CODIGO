@@ -127,11 +127,11 @@ export class FormClienteComponent implements OnInit {
                 this.listaCliente = respuesta['listado'];
                 ele.cliente = this.listaCliente[0];
                 ele.cliente.fechaInicio = dayjs(ele.cliente.fechaInicio).format("YYYY-MM-DD")
-                this.listaCliente.emit(this.listaClienteChild);
               }
             )
           }
         }
+        this.listaCliente.emit(this.listaClienteChild);
       }
     );
   }
