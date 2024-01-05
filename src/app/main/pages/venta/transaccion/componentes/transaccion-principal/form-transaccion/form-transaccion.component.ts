@@ -299,7 +299,7 @@ export class FormTransaccionComponent implements OnInit {
         fechaFinString = fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate();
       }
       let fechaCambia = "";
-      if (transaccionTemp?.fechaCambia != null && transaccionTemp?.fechaCambia != "") {
+      if (transaccionTemp?.fechaCambia != null && transaccionTemp?.fechaCambia != "" && transaccionTemp?.fechaCambia != 'Invalid Date') {
         fechaCambia = dayjs(transaccionTemp?.fechaCambia).format("YYYY-MM-DD HH:mm:ss.SSS");
       }
       this.transaccion = new Transaccion({

@@ -228,14 +228,12 @@ export class TransaccionPrincipalComponent implements OnInit {
       ele.colorColumna = "white";
       ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
       ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
-      console.log("ele?.fechaCambia = ", ele?.fechaCambia);
       if (ele?.fechaCambia != null) {
         ele.fechaCambia = dayjs(ele.fechaCambia).format("YYYY-MM-DD");
         // Calcular la diferencia en días de la fecha actual y final de la transacción
         var diff1 = new Date(ele.fechaCambia).getTime() - new Date(this.fechaHoy).getTime();
         var numDias1 = diff1 / (1000 * 60 * 60 * 24);
 
-        console.log("numDias1 = ", numDias1)
         if (numDias1 == 0) {
           ele.colorColumna = "yellow";
         }
