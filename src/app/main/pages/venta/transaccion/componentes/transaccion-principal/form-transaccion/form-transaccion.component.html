@@ -9,7 +9,7 @@
                         class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente">
                         <option [value]="" selected>Seleccionar Cliente</option>
                         <option *ngFor="let cliente of listaCliente" [value]="cliente.codigo">
-                            <span>{{cliente?.persona?.nombres + " - " +cliente?.persona?.celular}}</span>
+                            <span>{{cliente?.persona?.nombres + " " + cliente?.persona?.apellidos + " - " +cliente?.persona?.celular}}</span>
                         </option>
                     </select>
                     <div class="valid-feedback"></div>

@@ -71,7 +71,7 @@ export class FormClienteComponent implements OnInit {
   ngOnInit() {
     if (this.clienteEditar) {
       this.formCliente = this.formBuilder.group({
-        identificacion: new FormControl({ value: this.clienteEditar?.persona?.identificacion, disabled: true }, Validators.required),
+        identificacion: new FormControl({ value: this.clienteEditar?.identificacion, disabled: true }, Validators.required),
         /*
         identificacion: new FormControl({ value: this.clienteEditar.identificacion, disabled: true }, Validators.compose([
           MyValidators.isCedulaValid,
@@ -81,12 +81,12 @@ export class FormClienteComponent implements OnInit {
           Validators.pattern("^[0-9]*$"),
         ])),
         */
-        nombres: new FormControl(this.clienteEditar?.persona?.nombres, Validators.required),
-        apellidos: new FormControl(this.clienteEditar?.persona?.apellidos, Validators.required),
+        nombres: new FormControl(this.clienteEditar?.nombres, Validators.required),
+        apellidos: new FormControl(this.clienteEditar?.apellidos, Validators.required),
         fechaNacimiento: new FormControl(dayjs(this.clienteEditar?.persona?.fechaNacimiento).format("YYYY-MM-DD")),
         direccion: new FormControl(this.clienteEditar?.persona?.direccion),
-        celular: new FormControl(this.clienteEditar?.persona?.celular, Validators.required),
-        correo: new FormControl(this.clienteEditar?.persona?.correo, Validators.required),
+        celular: new FormControl(this.clienteEditar?.celular, Validators.required),
+        correo: new FormControl(this.clienteEditar?.correo, Validators.required),
         fechaInicio: new FormControl(dayjs(this.clienteEditar?.fechaInicio).format("YYYY-MM-DD")),
         tipoCliente: new FormControl(this.clienteEditar?.tipoCliente),
       })
@@ -115,11 +115,14 @@ export class FormClienteComponent implements OnInit {
     }
   }
 
-  async listarClientePorIdentificacion() {
+  listarClientePorIdentificacion() {
     this.personaService.listarPersonaPorIdentificacion(this.identificacionChild).subscribe(
       (respuesta) => {
         this.listaClienteChild = respuesta['listado']
+        //this.listaCliente.emit(this.listaClienteChild);
         for (const ele of this.listaClienteChild) {
+          ele.fechaInicio = dayjs(ele?.fechaInicio).format("YYYY-MM-DD")
+          /*
           ele.fechaNacimiento = dayjs(ele.fechaNacimiento).format("YYYY-MM-DD")
           if (ele.codigo != null) {
             this.clienteService.listarClientePorPersona(ele.codigo).subscribe(
@@ -130,8 +133,36 @@ export class FormClienteComponent implements OnInit {
               }
             )
           }
+          */
         }
         this.listaCliente.emit(this.listaClienteChild);
+      }
+    );
+  }
+  
+  async listarClienteActivoOrdenNombre() {
+    this.clienteService.listarClienteActivoOrdenNombre().subscribe(
+      (respuesta) => {
+        this.listaClienteChild = respuesta['listado'];
+        this.listaCliente.emit(this.listaClienteChild);
+        /*
+        for (const ele of this.listaClienteChild) {
+          ele.fechaInicio = dayjs(ele?.fechaInicio).format("YYYY-MM-DD")
+          if (ele.codPersona != null) {
+            ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+            this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
+              (respuesta) => {
+                ele.persona = respuesta['objeto'];                                                            
+                if (ele?.persona != undefined) {
+                  ele.persona.fechaNacimiento = dayjs(ele.persona.fechaNacimiento).format("YYYY-MM-DD")
+                }
+              }
+            )
+          }
+          
+        }
+        */
+        //this.listaCliente.emit(this.listaClienteChild);
       }
     );
   }
@@ -199,7 +230,7 @@ export class FormClienteComponent implements OnInit {
       });
     }
     if (this.clienteEditar) {
-      this.persona['data'].codigo = this.clienteEditar?.persona?.codigo;
+      this.persona['data'].codigo = this.clienteEditar?.codPersona;
       this.persona['data'].identificacion = this.identificacionChild;
       this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: (response) => {
@@ -241,7 +272,7 @@ export class FormClienteComponent implements OnInit {
       this.cliente['data'].codigo = this.clienteEditar?.codigo;
       this.clienteService.guardarCliente(this.cliente['data']).subscribe({
         next: (response) => {
-          this.listarClientePorIdentificacion();
+          this.listarClienteActivoOrdenNombre();
           this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
           this.parentDetail.closeDetail();
         },
@@ -253,7 +284,7 @@ export class FormClienteComponent implements OnInit {
     } else {
       this.clienteService.guardarCliente(this.cliente['data']).subscribe({
         next: async (response) => {
-          this.listarClientePorIdentificacion();
+          this.listarClienteActivoOrdenNombre();
           this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
           this.parentDetail.closeDetail();
         },

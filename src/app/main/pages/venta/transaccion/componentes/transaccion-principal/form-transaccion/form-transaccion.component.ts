@@ -90,12 +90,11 @@ export class FormTransaccionComponent implements OnInit {
     this.listaTransaccion = new EventEmitter<any>();
     this.showDetail = true;
     /*LISTAS*/
-    this.listarCliente();
+    this.listarClienteActivoOrdenNombre();
     this.listarProducto();
   }
 
   ngOnInit() {
-    this.listarSedeActivo();
     this.buscarModuloPorNemonico();
     this.buscarOperacionPorNemonico();
     if (this.transaccionEditar) {
@@ -155,8 +154,8 @@ export class FormTransaccionComponent implements OnInit {
     )
   }
 
-  listarCliente() {
-    this.clienteService.listarClienteActivo().subscribe(
+  listarClienteActivoOrdenNombre() {
+    this.clienteService.listarClienteActivoOrdenNombre().subscribe(
       (respuesta) => {
         this.listaCliente = respuesta['listado'];
         for (const ele of this.listaCliente) {
@@ -194,17 +193,6 @@ export class FormTransaccionComponent implements OnInit {
         this.precio = this.producto?.precioCosto;
       }
     );
-  }
-
-  listarSedeActivo() {
-    this.sedeService.listarSedeActivo().subscribe({
-      next: (response) => {
-        this.listaSede = response['listado'];
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    });
   }
 
   async listarTransaccionPorDescripcion() {

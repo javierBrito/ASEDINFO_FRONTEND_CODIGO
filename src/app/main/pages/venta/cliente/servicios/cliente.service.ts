@@ -32,6 +32,9 @@ export class ClienteService {
   listarClienteActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/venta/listarClienteActivo`);
   }
+  listarClienteActivoOrdenNombre(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/venta/listarClienteActivoOrdenNombre`);
+  }
   listarClientePadre(codigoAplicacion: number) {
     return this.http.get<Cliente[]>(`${environment.url_seguridad}/venta/listarClientePadre/${codigoAplicacion}`);
   }

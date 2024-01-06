@@ -84,12 +84,12 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr
-                                                        *ngFor="let cliente of listaCliente | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        *ngFor="let cliente of listaCliente | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{cliente?.persona?.identificacion}}</td>
-                                                        <td>{{cliente?.persona?.nombres + ' ' + cliente?.persona?.apellidos}}</td>
-                                                        <td>{{cliente?.persona?.correo}}</td>
-                                                        <td>{{cliente?.persona?.celular}}</td>
+                                                        <td>{{cliente?.identificacion}}</td>
+                                                        <td>{{cliente?.nombres + ' ' + cliente?.apellidos}}</td>
+                                                        <td>{{cliente?.correo}}</td>
+                                                        <td>{{cliente?.celular}}</td>
                                                         <td>{{cliente?.fechaInicio}}</td>
                                                         <td>{{cliente?.tipoCliente}}</td>
                                                         <td>
@@ -110,16 +110,16 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <div class="row mt-5" *ngIf="listaPersona?.length > itemsRegistros">
+                                            <div class="row mt-5" *ngIf="listaCliente?.length > itemsRegistros">
                                                 <div class="col-12 text-center">
-                                                    <pagination-controls id="paginacionMatutino" class="paginacion"
+                                                    <pagination-controls id="paginar" class="paginacion"
                                                         [responsive]="true" [autoHide]="true" previousLabel="Anterior"
                                                         nextLabel="Siguiente" (pageChange)="page = $event"
                                                         screenReaderCurrentLabel="Tú estas en la página:">
                                                     </pagination-controls>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="listaPersona?.length === 0">
+                                            <ng-container *ngIf="listaCliente?.length === 0">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p>No hay datos disponibles</p>
@@ -139,7 +139,7 @@
 </div>
 
 <app-form-cliente [clienteEditar]="clienteSeleccionado" [codigoChild]="codigo" [identificacionChild]="identificacion"
-    [listaClienteChild]="listaCliente" (listaPersona)="listaClienteActualizada($event)" (close)="closeDetail($event)"
+    [listaClienteChild]="listaCliente" (listaCliente)="listaClienteActualizada($event)" (close)="closeDetail($event)"
     *ngIf="showDetail">
 </app-form-cliente>
 

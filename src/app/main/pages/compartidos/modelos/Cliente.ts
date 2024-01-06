@@ -50,4 +50,58 @@ export class Cliente implements Icliente {
         set(this, 'data.persona', value);
     }
 
+    get correo(): string {
+        return get(this, 'data.correo');
+    }
+    set correo(value: string) {
+        set(this, 'data.correo', value);
+    }    
+
+    get nombres(): string {
+        return get(this, 'data.nombres');
+    }
+    set nombres(value: string) {
+        set(this, 'data.nombres', value);
+    }    
+
+    get apellidos(): string {
+        return get(this, 'data.apellidos');
+    }
+    set apellidos(value: string) {
+        set(this, 'data.apellidos', value);
+    }    
+
+    get identificacion(): string {
+        return get(this, 'data.identificacion');
+    }
+    set identificacion(value: string) {
+        set(this, 'data.identificacion', value);
+    }    
+    get celular(): string {
+        return get(this, 'data.celular');
+    }
+    set celular(value: string) {
+        set(this, 'data.celular', value);
+    }
+
+    get nombrePersona(): string {
+        return get(this, 'data.nombrePersona');
+    }
+    set nombrePersona(value: string) {
+        set(this, 'data.nombrePersona', value);
+    }
+
+    get direccion(): string {
+        return get(this, 'data.direccion');
+    }
+    set direccion(value: string) {
+        set(this, 'data.direccion', value);
+    }
+
+    get fechaNacimiento(): string {
+        return get(this, 'data.fechaNacimiento');
+    }
+    set fechaNacimiento(value: string) {
+        set(this, 'data.fechaNacimiento', value);
+    }
 }

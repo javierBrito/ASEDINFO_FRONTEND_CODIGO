@@ -95,16 +95,17 @@ export class ClientePrincipalComponent implements OnInit {
       ])),
       */
     })
-    this.listarClienteActivo();
+    this.listarClienteActivoOrdenNombre();
   }
 
-  listarClienteActivo() {
-    this.clienteService.listarClienteActivo().subscribe(
+  listarClienteActivoOrdenNombre() {
+    this.clienteService.listarClienteActivoOrdenNombre().subscribe(
       (respuesta) => {
         this.listaCliente = respuesta['listado'];
         for (const ele of this.listaCliente) {
+          ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+          /*
           if (ele.codPersona != null) {
-            ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
             this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
               (respuesta) => {
                 ele.persona = respuesta['objeto'];                                                            
@@ -114,6 +115,7 @@ export class ClientePrincipalComponent implements OnInit {
               }
             )
           }
+          */
         }
         if (this.listaCliente.length < this.itemsRegistros) {
           this.page = 1;
@@ -130,8 +132,9 @@ export class ClientePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaCliente = respuesta['listado'];
         for (const ele of this.listaCliente) {
+          ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+          /*
           if (ele.codPersona != null) {
-            ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
             this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
               (respuesta) => {
                 ele.persona = respuesta['objeto'];                                                            
@@ -141,6 +144,7 @@ export class ClientePrincipalComponent implements OnInit {
               }
             )
           }
+          */
         }
         if (this.listaCliente.length < this.itemsRegistros) {
           this.page = 1;
@@ -149,8 +153,8 @@ export class ClientePrincipalComponent implements OnInit {
     );
   }
 
-  listaPersonaActualizada(event) {
-    this.listaPersona = event;
+  listaClienteActualizada(event) {
+    this.listaCliente = event;
   }
 
   openDetail(codjornada) {

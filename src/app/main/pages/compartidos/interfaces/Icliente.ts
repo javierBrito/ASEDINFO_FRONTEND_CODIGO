@@ -6,4 +6,12 @@ export interface Icliente {
     estado?: string;
     
     persona: any;
+    nombrePersona: string;
+    celular: string;
+    correo: string;
+    nombres: string;
+    apellidos: string;
+    identificacion: string;
+    direccion: string;
+    fechaNacimiento: string;
 }

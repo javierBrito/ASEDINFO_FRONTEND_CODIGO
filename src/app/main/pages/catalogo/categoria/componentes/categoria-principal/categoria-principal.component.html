@@ -77,7 +77,8 @@
     </div>
 </div>
 
-<app-form-categoria [categoriaEditar]="categoriaSeleccionado" (listaCategoria)="listarCategoriaActivoActualizada($event)"
+<app-form-categoria [categoriaEditar]="categoriaSeleccionado" 
+    (listaCategoria)="listarCategoriaActivoActualizada($event)"
     (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-categoria>
 

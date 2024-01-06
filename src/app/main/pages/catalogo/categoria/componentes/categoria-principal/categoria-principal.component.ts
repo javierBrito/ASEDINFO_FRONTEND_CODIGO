@@ -32,8 +32,6 @@ export class CategoriaPrincipalComponent implements OnInit {
 
   /*PAGINACION*/
   public page: number;
-  public pageVespertina: number;
-  public pageNocturna: number;
   public itemsRegistros: number;
 
   /*OBJETOS*/
@@ -48,8 +46,6 @@ export class CategoriaPrincipalComponent implements OnInit {
   ) {
     this.itemsRegistros = 5;
     this.page = 1;
-    this.pageVespertina = 1;
-    this.pageNocturna = 1;
     this.showDetail = false;
     this.selectedTab = 0;
   }
