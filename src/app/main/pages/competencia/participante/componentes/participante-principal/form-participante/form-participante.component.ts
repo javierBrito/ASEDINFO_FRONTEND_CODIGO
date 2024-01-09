@@ -14,6 +14,8 @@ import { delay } from 'rxjs/operators';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
+import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-form-participante',
@@ -59,6 +61,22 @@ export class FormParticipanteComponent implements OnInit {
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
 
+  // TRATAR ARCHIVOS
+  // Lista de archivos seleccionados
+  public selectedFiles: FileList;
+  // Es el array que contiene los items para mostrar el progreso de subida de cada archivo
+  public progressInfo = [];
+  // Mensaje que almacena la respuesta de las Apis
+  public message = '';
+  // Nombre del archivo para usarlo posteriormente en la vista html
+  public fileName = "";
+  // Lista para obtener los archivos
+  public fileInfos: CargarArchivoModelo[] = [];
+  public pdfFileURL: any;
+  public fileStatus = { status: '', requestType: '', percent: 0 };
+  public filenames: string[] = [];
+  public listaBase64: any;
+  public nombreArchivoDescarga: string;
   /*OBJETOS*/
   public participante: Participante;
   public participanteAux: Participante;
@@ -457,6 +475,79 @@ export class FormParticipanteComponent implements OnInit {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
 
+  // Tratar Archivos
+  selectFiles(event) {
+    this.progressInfo = [];
+    event.target.files.length == 1 ? this.fileName = event.target.files[0].name : this.fileName = event.target.files.length + " archivos";
+    this.selectedFiles = event.target.files;
+  }
+
+  cargarArchivos() {
+    console.log("uploadFiles()");
+    this.message = '';
+    for (let i = 0; i < this.selectedFiles.length; i++) {
+      this.cargarArchivo(i, this.selectedFiles[i]);
+      this.previsualizarArchivo(i, this.selectedFiles[i]);
+      //this.descargarArchivo(this.selectedFiles[i].name);
+      //this.obtenerReporteTitulo25();
+    }
+  }
+
+  previsualizarArchivo(index, file) {
+    console.log("upload(index, file) = " + index);
+    //Previsualizar documento
+    this.pdfFileURL = URL.createObjectURL(file);
+    //window.open(this.pdfFileURL);
+    console.log("this.pdfFileURL = ", this.pdfFileURL);
+    //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
+    document.getElementById('vistaPreviaDJ').setAttribute('src', this.pdfFileURL);
+  }
+
+  cargarArchivo(index, file) {
+    this.participanteService.cargarArchivo(file).subscribe(
+      async (respuesta) => {
+        console.log("respuesta = ", respuesta);
+      }, err => {
+        console.log("err = ", err);
+        if (err == "OK") {
+          //this.habilitarAgregarParticipante = false;
+          //this.habilitarSeleccionarArchivo = true;
+          this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta');
+        } else {
+          this.message = 'No se puede subir el archivo ' + file.name;
+        }
+      }
+    );
+  }
+
+  deleteFile(filename: string) {
+    this.participanteService.deleteFile(filename).subscribe(res => {
+      this.message = res['message'];
+      this.listarArchivos();
+    });
+  }
+
+  // Descargar archivos PDF desde una carpeta y los muestra en una lista
+  listarArchivos() {
+    this.participanteService.descargarArchivos().subscribe(
+      (respuesta) => {
+        this.fileInfos = respuesta;
+      }
+    );
+  }
+
+  // Descargar archivo PDF desde una carpeta
+  descargarArchivo(filename: string): void {
+    this.nombreArchivoDescarga = filename;
+    this.participanteService.descargarArchivo(filename, '1').subscribe(
+      event => {
+        console.log(event);
+      },
+      (error: HttpErrorResponse) => {
+        console.log(error);
+      }
+    );
+  }
   get identificacionField() {
     return this.formParticipante.get('identificacion');
   }

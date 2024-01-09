@@ -1,7 +1,7 @@
 <app-detail (close)="closeDetail($event)">
     <h1 detail-title><strong>{{participanteEditar ?'EDITAR':'AGREGAR'}}{{' Participante'}}</strong></h1>
     <form detail-content [formGroup]="formParticipante" (ngSubmit)="addRegistroPersona()">
-        <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
+        <div class="container" style="border: 0px solid blue; box-shadow: 0px 2px 2px black">
             <div class="row form-group">
                 <div class="col-6">
                     <label for="codCategoria"><h4><b>{{'Categoría(*): '}}</b></h4></label>
@@ -122,8 +122,34 @@
                     </div>
                 </div>
             </div>
-            <div class="row form-group">
+            <div class="row">
+                <div class="col-6">
+                    <label for="idAudio"><h4><b>{{'Subir mp3: '}}</b></h4></label>
+                    <audio controls id="idAudio">
+                        <source src="./assets/musica/solista_salsa_javier_brito.mp3" type="audio/mpeg" />
+                    </audio>
+                </div>
             </div>
+            <div class="row form-group">
+                <div id="box2">
+                    <button id="selectButton" mat-raised-button 
+                            (click)="fileInput.click()"
+                            >Seleccionar boucher de pago: </button>
+                    <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
+                    <span *ngIf="fileName">{{fileName}}</span>
+                    <button id="uploadButton" mat-raised-button *ngIf="selectedFiles" [disabled]="habilitarSeleccionarArchivo"
+                        (click)="cargarArchivos()">
+                        Guardar Archivo
+                    </button>
+                    <div class="col-sm-12" *ngIf="true">
+                        <embed id="vistaPreviaDJ" type="application/pdf" with="60" height="60">
+                        <!--
+                        <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
+                        <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
+                        -->
+                    </div>
+                </div>    
+        </div>
             <div class="row">
             </div>
         </div>
