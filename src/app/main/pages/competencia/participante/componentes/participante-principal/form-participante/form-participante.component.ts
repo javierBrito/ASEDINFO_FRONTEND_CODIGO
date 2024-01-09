@@ -500,7 +500,7 @@ export class FormParticipanteComponent implements OnInit {
     //window.open(this.pdfFileURL);
     console.log("this.pdfFileURL = ", this.pdfFileURL);
     //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
-    document.getElementById('vistaPreviaDJ').setAttribute('src', this.pdfFileURL);
+    document.getElementById('vistaPreviaDJ1').setAttribute('src', this.pdfFileURL);
   }
 
   cargarArchivo(index, file) {
