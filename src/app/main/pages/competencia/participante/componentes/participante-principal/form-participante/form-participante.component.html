@@ -1,6 +1,6 @@
 <app-detail (close)="closeDetail($event)">
     <h1 detail-title><strong>{{participanteEditar ?'EDITAR':'AGREGAR'}}{{' Participante'}}</strong></h1>
-    <form detail-content [formGroup]="formParticipante" (ngSubmit)="addRegistroPersona()">
+    <form detail-content [formGroup]="formParticipante">
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 2px 2px black">
             <div class="row form-group">
                 <div class="col-6">
@@ -148,14 +148,16 @@
             </div>
             -->
             <div class="row form-group">
-                <div id="box2">
-                    <button id="selectButton" mat-raised-button (click)="fileInput.click()">Seleccionar boucher de pago:
+                <div class="col-12">
+                    <button id="selectButton" mat-raised-button (click)="fileInput.click()"
+                        class="btn btn-primary">Subir mp3:
                     </button>
                     <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
                     <span *ngIf="fileName">{{fileName}}</span>
                     <button id="uploadButton" mat-raised-button *ngIf="selectedFiles"
-                        [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()">
-                        Guardar Archivo
+                        [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()"
+                        class="btn btn-primary">
+                        <b>Guardar</b>
                     </button>
                     <div class="col-sm-12" *ngIf="true">
                         <embed id="vistaPreviaDJ1" type="application/pdf" with="60" height="60">
@@ -236,7 +238,9 @@
         <br>
         <div class="row">
             <div class="col-12">
-                <button type="submit" class="btn btn-block btn-primary" [disabled]="formParticipante?.invalid">
+                <button type="submit" class="btn btn-block btn-primary" 
+                        [disabled]="formParticipante?.invalid"
+                        (click)="addRegistroPersona()">
                     {{participanteEditar?'GUARDAR':'GUARDAR'}}</button>
             </div>
         </div>

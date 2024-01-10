@@ -250,7 +250,6 @@ export class ParticipantePrincipalComponent implements OnInit {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
         }
-        console.log("", this.listaParticipante)
       }
     );
   }
@@ -438,7 +437,6 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   cargarArchivos() {
-    console.log("uploadFiles()");
     this.message = '';
     for (let i = 0; i < this.selectedFiles.length; i++) {
       this.cargarArchivo(i, this.selectedFiles[i]);
@@ -449,11 +447,9 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   previsualizarArchivo(index, file) {
-    console.log("upload(index, file) = " + index);
     //Previsualizar documento
     this.pdfFileURL = URL.createObjectURL(file);
     //window.open(this.pdfFileURL);
-    console.log("this.pdfFileURL = ", this.pdfFileURL);
     //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
     document.getElementById('vistaPreviaDJ').setAttribute('src', this.pdfFileURL);
   }
@@ -505,12 +501,10 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   play(): void {
-    console.log("play()")
     this.audioService.play();
   }
 
   pause(): void {
-    console.log("pause()")
     this.audioService.pause();
   }
   

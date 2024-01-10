@@ -277,6 +277,12 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.showDetail = true;
   }
 
+  openRenovarDetail(transaccion: Transaccion) {
+    this.transaccionSeleccionado = transaccion;
+    this.transaccionSeleccionado.estado = "R";
+    this.showDetail = true;
+  }
+  
   openRemoverDetail(transaccion: Transaccion) {
     Swal
       .fire({

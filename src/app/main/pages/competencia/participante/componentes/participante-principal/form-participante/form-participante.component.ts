@@ -57,6 +57,7 @@ export class FormParticipanteComponent implements OnInit {
   public codSubcategoria: number;
   public codInstancia: number;
   public desSubcategoria: string;
+  public nombreCancion: string;
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -339,7 +340,6 @@ export class FormParticipanteComponent implements OnInit {
       this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: async (response) => {
           this.persona = response['objeto'];
-          console.log("this.persona = ", this.persona)
           // Actualizar Datos Participante
           this.addRegistroParticipante();
         },
@@ -368,6 +368,7 @@ export class FormParticipanteComponent implements OnInit {
         country: participanteTemp?.country,
         dateLastActive: dayjs(participanteTemp.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS"),
         codEstadoCompetencia: participanteTemp?.codEstadoCompetencia,
+        nombreCancion: this.nombreCancion,
       });
     }
     if (this.participanteEditar) {
@@ -394,10 +395,6 @@ export class FormParticipanteComponent implements OnInit {
       });
     } else {
       // Si es nuevo el participante
-      //this.participanteAux['data'].customerId = 0;
-      //this.participanteAux['data'].userId = 0;
-      //this.participanteAux['data'].codSubcategoria = this.codSubcategoriaChild;
-      //this.participanteAux['data'].codInstancia = this.codInstanciaChild;
       this.participanteAux['data'].codPersona = this.persona.codigo;
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
@@ -483,7 +480,6 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   cargarArchivos() {
-    console.log("uploadFiles()");
     this.message = '';
     for (let i = 0; i < this.selectedFiles.length; i++) {
       this.cargarArchivo(i, this.selectedFiles[i]);
@@ -494,16 +490,15 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   previsualizarArchivo(index, file) {
-    console.log("upload(index, file) = " + index);
     //Previsualizar documento
     this.pdfFileURL = URL.createObjectURL(file);
     //window.open(this.pdfFileURL);
-    console.log("this.pdfFileURL = ", this.pdfFileURL);
     //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
     document.getElementById('vistaPreviaDJ1').setAttribute('src', this.pdfFileURL);
   }
 
   cargarArchivo(index, file) {
+    this.nombreCancion = file.name
     this.participanteService.cargarArchivo(file).subscribe(
       async (respuesta) => {
         console.log("respuesta = ", respuesta);

@@ -122,10 +122,16 @@
                                                         <td>{{transaccion?.numProducto}}</td>
                                                         <td>{{transaccion?.fechaInicio}}</td>
                                                         <td>{{transaccion?.fechaFin}}</td>
-                                                        <td [ngStyle]="{'background-color': transaccion?.colorColumna}">{{transaccion?.fechaCambia}}</td>
+                                                        <td [ngStyle]="{'background-color': transaccion?.colorColumna}">
+                                                            {{transaccion?.fechaCambia}}</td>
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
+                                                                <button (click)="openRenovarDetail(transaccion)"
+                                                                    matTooltip="Renovar Transaccion" type=" button"
+                                                                    class="btn btn-info" rippleEffect round><i
+                                                                        class="fas fa-spinner fa-spin"
+                                                                        (click)="openRenovarDetail(transaccion)"></i></button>
                                                                 <button (click)="openEditarDetail(transaccion)"
                                                                     matTooltip="Editar Transaccion" type=" button"
                                                                     class="btn btn-primary" rippleEffect round><i

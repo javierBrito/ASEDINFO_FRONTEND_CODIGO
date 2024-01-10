@@ -10,6 +10,7 @@ export interface Iparticipante {
     username?: string;
     desEstadoCompetencia?: string;
     numPuntajeJuez?: number;
+    nombreCancion?: string;
 
     customerId: number;
     userId: number;

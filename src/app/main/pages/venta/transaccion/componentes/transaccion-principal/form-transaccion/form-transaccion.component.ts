@@ -71,6 +71,7 @@ export class FormTransaccionComponent implements OnInit {
     { valor: "SI" },
     { valor: "NO" },
   ];
+  public transaccionEditarAux: Transaccion;
 
   /*CONSTRUCTOR*/
   constructor(
@@ -98,6 +99,7 @@ export class FormTransaccionComponent implements OnInit {
     this.buscarModuloPorNemonico();
     this.buscarOperacionPorNemonico();
     if (this.transaccionEditar) {
+      this.transaccionEditarAux = this.transaccionEditar;
       this.codProducto = this.transaccionEditar?.codProducto;
       this.numMes = this.transaccionEditar?.numMes;
       this.precio = this.transaccionEditar?.precio;
@@ -311,8 +313,29 @@ export class FormTransaccionComponent implements OnInit {
     }
     if (this.transaccionEditar) {
       this.transaccion['data'].codigo = this.transaccionEditar.codigo;
+      if (this.transaccionEditar?.estado == "R") {
+        this.transaccion['data'].codigo = 0;
+      }
       this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: (response) => {
+          // Actualizamos registro existente con R de renovacion 
+          if (this.transaccionEditar?.estado == "R") {
+            this.transaccionEditar.fechaInicio = dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")            
+            this.transaccionEditar.fechaFin = dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS")            
+            console.log("this.transaccionEditarAux = ", this.transaccionEditarAux)
+            this.transaccionService.guardarTransaccion(this.transaccionEditarAux).subscribe({
+              next: async (response) => {
+                this.listarTransaccionPorDescripcion();
+                this.mensajeService.mensajeCorrecto('Se ha renovado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.mensajeService.mensajeError('Ha habido un problema al renovar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          }
+          // Recargamos la lista
           this.listarTransaccionPorDescripcion();
           this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
           this.parentDetail.closeDetail();

@@ -134,15 +134,15 @@
                     <div id="box2">
                         <button id="selectButton" mat-raised-button 
                                 (click)="fileInput.click()"
-                                [disabled]="habilitarSeleccionarArchivo"
-                                >Seleccionar boucher de pago: </button>
+                                [disabled]="habilitarSeleccionarArchivo">
+                                <h3><b>Subir boucher de pago:</b></h3></button>
                 
                         <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
                         <span *ngIf="fileName">{{fileName}}</span>
                         
                         <button id="uploadButton" mat-raised-button *ngIf="selectedFiles" [disabled]="habilitarSeleccionarArchivo"
                             (click)="cargarArchivos()">
-                            Guardar Archivo
+                            <h3><b>Guardar Archivo</b></h3>
                         </button>
                         <div class="col-sm-12" *ngIf="true">
                             <embed id="vistaPreviaDJ" type="application/pdf" with="120" height="120">
@@ -175,19 +175,19 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
-                                                        <th scope="col">Identificación</th>
+                                                        <!--<th scope="col">Identificación</th>-->
                                                         <th scope="col">Nombres</th>
                                                         <th scope="col">Fecha/hora Competencia</th>
                                                         <th scope="col">Categoría/Subcategoría</th>
                                                         <th scope="col">Estado Competencia</th>
-                                                        <th scope="col">Acciones</th>
+                                                        <th scope="col" [ngStyle]="{'display': displayNone}">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{participante?.identificacion}}</td>
+                                                        <!--<td>{{participante?.identificacion}}</td>-->
                                                         <td>{{participante?.firstName + ' - ' + participante?.lastName}}</td>
                                                         <td>{{participante?.desCategoria + ' / ' + participante?.desSubcategoria}}</td>
                                                         <td>{{participante?.dateLastActive}}</td>
@@ -205,7 +205,7 @@
                                                                 <i class="fa fa-pencil"></i>
                                                             </button>
                                                         </td>
-                                                        <td>
+                                                        <td  [ngStyle]="{'display': displayNone}">
                                                             <div class="btn-group" role="group" 
                                                                 aria-label="Basic example">
                                                                 <button (click)="openEditarDetail(participante)"

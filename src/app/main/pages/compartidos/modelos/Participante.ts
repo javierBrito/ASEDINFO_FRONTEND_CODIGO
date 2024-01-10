@@ -212,4 +212,10 @@ export class Participante implements Iparticipante {
         set(this, 'data.identificacion', value);
     }    
 
+    get nombreCancion(): string {
+        return get(this, 'data.nombreCancion');
+    }
+    set nombreCancion(value: string) {
+        set(this, 'data.nombreCancion', value);
+    }   
 }
