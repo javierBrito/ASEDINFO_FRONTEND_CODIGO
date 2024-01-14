@@ -161,7 +161,7 @@ export class ParticipantePrincipalComponent implements OnInit {
       this.disabledEstado = false;
       this.displayNone1 = 'none';
     }
-    this.listarIntegranteActivo();
+    //this.listarIntegranteActivo();
   }
 
   listarIntegranteActivo() {
@@ -263,7 +263,11 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length < this.itemsRegistros) {
+          this.page = 1;
+        }
         if (this.listaParticipante.length > 0) {
+          //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
             ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
@@ -491,7 +495,9 @@ export class ParticipantePrincipalComponent implements OnInit {
   cargarArchivo(index, file) {
     this.participanteService.cargarArchivo(file).subscribe(
       async (respuesta) => {
+        console.log("respuesta = ", respuesta);
       }, err => {
+        console.log("err = ", err);
         if (err == "OK") {
           this.habilitarAgregarParticipante = false;
           this.habilitarSeleccionarArchivo = true;
@@ -547,21 +553,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   mostrarModalInfo() {
     this.modalService.open(this.myModalInfo);
   }
-  /*
-  verModalIntegrante(codParticipante: number) {
-    this.participanteService.listarIntegrantePorParticipante(codParticipante).subscribe(
-      (respuesta) => {
-        this.listaIntegrante = respuesta['listado'];
-        console.log("this.listaIntegrante 2 = ", this.listaIntegrante)
-        this.modalService.open(this.modalIntegrante).result.then(r => {
-          console.log("Tu respuesta ha sido: " + r);
-        }, error => {
-          console.log(error);
-        });
-      }
-    )
-  }
-  */
+
   verListaIntegrante = async (codParticipante: number) => {
     //this.listaIntegrante = [];
     await this.listarIntegrantePorParticipante(codParticipante);
@@ -584,7 +576,6 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   async verModalIntegrante() {
-    console.log("verModalIntegrante()");
     this.modalService.open(this.modalIntegrante).result.then(r => {
       console.log("Tu respuesta ha sido: " + r);
     }, error => {

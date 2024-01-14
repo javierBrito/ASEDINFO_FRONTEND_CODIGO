@@ -117,7 +117,6 @@ export class ParticipanteService {
   descargarArchivo(filename: string, empCedulaRep: string): Observable<HttpEvent<any>> {
     let url_ws = `${environment.url_seguridad}/private/descargarArchivo/`;
     url_ws += filename + "/" + empCedulaRep;
-    console.log("url_ws = ", url_ws)
     return this.http.get(`${url_ws}`, {
       headers: new HttpHeaders().set(
         'Authorization',

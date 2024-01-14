@@ -322,7 +322,6 @@ export class FormTransaccionComponent implements OnInit {
           if (this.transaccionEditar?.estado == "R") {
             this.transaccionEditar.fechaInicio = dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")            
             this.transaccionEditar.fechaFin = dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS")            
-            console.log("this.transaccionEditarAux = ", this.transaccionEditarAux)
             this.transaccionService.guardarTransaccion(this.transaccionEditarAux).subscribe({
               next: async (response) => {
                 this.listarTransaccionPorDescripcion();

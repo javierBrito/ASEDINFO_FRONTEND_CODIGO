@@ -170,7 +170,6 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   adicionarIntegrante() {
-    console.log("Adicionar Integrante")
     // Receptar la codSubcategoria y codInstancia de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.nombreIntegrante = participanteTemp?.apellidos;
@@ -199,9 +198,7 @@ export class FormParticipanteComponent implements OnInit {
 
   mostrarModalConf() {
     this.modalService.open(this.myModalConf).result.then(r => {
-      console.log("Tu respuesta ha sido: " + r);
     }, error => {
-      console.log(error);
     });
   }
 
@@ -261,7 +258,6 @@ export class FormParticipanteComponent implements OnInit {
       (respuesta) => {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
         this.codCategoria = respuesta['objeto']?.codCategoria;
-        console.log("this.desSubcategoria = ", this.desSubcategoria)
         if (this.desSubcategoria.includes("PAREJA")) {
           this.displayNoneIntegrante2 = "";
         }
@@ -314,7 +310,7 @@ export class FormParticipanteComponent implements OnInit {
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
       (respuesta) => {
         this.listaParticipanteChild = respuesta['listado'];
-        if (this.listaParticipante.length > 0) {
+        if (this.listaParticipanteChild.length > 0) {
           for (const ele of this.listaParticipanteChild) {
             if (ele.identificacion == this.currentUser.identificacion) {
               ele.desCategoria = "DIRECTOR";
@@ -454,15 +450,12 @@ export class FormParticipanteComponent implements OnInit {
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
-          console.log("response = ", response)
-          console.log("this.listaIntegrante = ", this.listaIntegrante)
           if (this.listaIntegrante.length > 0) {
             for (const ele of this.listaIntegrante) {
               ele.codParticipante = this.participante.codigo;
             }
             this.participanteService.guardarListaIntegrante(this.listaIntegrante).subscribe({
               next: async (response) => {
-                console.log("response = ", response)
                 this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
                 this.parentDetail.closeDetail();
               },
@@ -559,16 +552,12 @@ export class FormParticipanteComponent implements OnInit {
     for (let i = 0; i < this.selectedFiles.length; i++) {
       this.cargarArchivo(i, this.selectedFiles[i]);
       this.previsualizarArchivo(i, this.selectedFiles[i]);
-      //this.descargarArchivo(this.selectedFiles[i].name);
-      //this.obtenerReporteTitulo25();
     }
   }
 
   previsualizarArchivo(index, file) {
     //Previsualizar documento
     this.pdfFileURL = URL.createObjectURL(file);
-    //window.open(this.pdfFileURL);
-    //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
     document.getElementById('vistaPreviaDJ1').setAttribute('src', this.pdfFileURL);
   }
 
@@ -580,8 +569,6 @@ export class FormParticipanteComponent implements OnInit {
       }, err => {
         console.log("err = ", err);
         if (err == "OK") {
-          //this.habilitarAgregarParticipante = false;
-          //this.habilitarSeleccionarArchivo = true;
           this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta');
         } else {
           this.message = 'No se puede subir el archivo ' + file.name;

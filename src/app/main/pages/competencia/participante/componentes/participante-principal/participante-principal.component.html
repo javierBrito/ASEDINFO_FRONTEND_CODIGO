@@ -290,7 +290,7 @@
 <app-form-participante [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
     [codSubcategoriaChild]="codSubcategoria" [codInstanciaChild]="codInstancia" [customerIdChild]="customerId"
     [userIdChild]="userId" [identificacionChild]="identificacion"
-    (listaPaticipante)="listarParticipanteActivoActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail">
+    (listaParticipante)="listarParticipanteActivoActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-participante>
 
 <ng-template #modal_confirm_delete let-modal>
