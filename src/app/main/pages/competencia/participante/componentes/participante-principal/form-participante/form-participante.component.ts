@@ -16,6 +16,8 @@ import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
 import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 
 @Component({
   selector: 'app-form-participante',
@@ -40,6 +42,8 @@ export class FormParticipanteComponent implements OnInit {
   @Input() customerIdChild: number;
   @Input() userIdChild: number;
 
+  @ViewChild("myModalInfo", { static: false }) myModalInfo: TemplateRef<any>;
+  @ViewChild("myModalConf", { static: false }) myModalConf: TemplateRef<any>;
 
   /*MODALES*/
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
@@ -53,11 +57,13 @@ export class FormParticipanteComponent implements OnInit {
   public displayNone: string = '';
   public displayNoneInstancia: string = '';
   public displayNoneIntegrante2: string = '';
+  public displayNoneIntegranteGrupo: string = '';
   public codCategoria: number;
   public codSubcategoria: number;
   public codInstancia: number;
   public desSubcategoria: string;
   public nombreCancion: string;
+  public nombreIntegrante: string;
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -91,6 +97,8 @@ export class FormParticipanteComponent implements OnInit {
   public listaCategoria: Categoria[] = [];
   public listaSubcategoria: Subcategoria[] = [];
   public listaInstancia: Instancia[] = [];
+  public listaIntegrante: Integrante[] = [];
+  public integrante: Integrante;
 
   /*CONSTRUCTOR*/
   constructor(
@@ -99,6 +107,7 @@ export class FormParticipanteComponent implements OnInit {
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
     private mensajeIzi: MensajesIziToastService,
+    private modalService: NgbModal
   ) {
     this.load_btn = false;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -153,10 +162,47 @@ export class FormParticipanteComponent implements OnInit {
     if (this.currentUser.cedula == "Suscriptor") {
       this.displayNone = 'none';
       this.displayNoneIntegrante2 = 'none';
+      this.displayNoneIntegranteGrupo = 'none';
       this.listarCategoriaActivo();
       //this.listarSubcategoriaPorCategoria();
       this.listarInstanciaActivo();
     }
+  }
+
+  adicionarIntegrante() {
+    console.log("Adicionar Integrante")
+    // Receptar la codSubcategoria y codInstancia de formParticipante.value
+    let participanteTemp = this.formParticipante.value;
+    this.nombreIntegrante = participanteTemp?.apellidos;
+    let auxBusqueda: any;
+    if (this.listaIntegrante.length > 0) {
+      auxBusqueda = this.listaIntegrante.find(obj => obj.nombre == this.nombreIntegrante)
+    }
+    if (this.nombreIntegrante.length > 0 && !auxBusqueda) {
+      this.integrante = new Integrante();
+      this.integrante = {
+        codigo: 0,
+        nombre: this.nombreIntegrante,
+        codParticipante: 0,
+        estado: "A",
+      }
+      this.listaIntegrante.push(this.integrante);
+      this.formParticipante.controls.apellidos.setValue("");
+    } else {
+      this.mensajeService.mensajeError('Ingrese nombre integrante, no repita...');
+    }
+  }
+
+  mostrarModalInfo() {
+    this.modalService.open(this.myModalInfo);
+  }
+
+  mostrarModalConf() {
+    this.modalService.open(this.myModalConf).result.then(r => {
+      console.log("Tu respuesta ha sido: " + r);
+    }, error => {
+      console.log(error);
+    });
   }
 
   listarCategoriaActivo() {
@@ -176,7 +222,9 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   listarSubcategoriaPorCategoria() {
-    // Receptar la descripción de formParticipanteParametro.value
+    this.displayNoneIntegrante2 = "none";
+    this.displayNoneIntegranteGrupo = "none";
+    // Receptar la descripción de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.codCategoria = participanteTemp?.codCategoria;
     this.participanteService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
@@ -195,7 +243,9 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   obtenerCodInstancia() {
-    // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
+    this.displayNoneIntegrante2 = "none";
+    this.displayNoneIntegranteGrupo = "none";
+    // Receptar la codSubcategoria y codInstancia de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.codSubcategoria = participanteTemp?.codSubcategoria;
     // obtener la subcategoria por codigo
@@ -211,8 +261,13 @@ export class FormParticipanteComponent implements OnInit {
       (respuesta) => {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
         this.codCategoria = respuesta['objeto']?.codCategoria;
+        console.log("this.desSubcategoria = ", this.desSubcategoria)
         if (this.desSubcategoria.includes("PAREJA")) {
           this.displayNoneIntegrante2 = "";
+        }
+        if (this.desSubcategoria.includes("GRUPOS")) {
+          this.displayNoneIntegrante2 = "";
+          this.displayNoneIntegranteGrupo = "";
         }
       }
     )
@@ -360,7 +415,7 @@ export class FormParticipanteComponent implements OnInit {
         lastName: participanteTemp?.apellidos,
         username: participanteTemp.username,
         customerId: this.customerIdChild,
-        userId: this.userIdChild, 
+        userId: this.userIdChild,
         //email: participanteTemp.identificacion,
         email: this.currentUser.identificacion,
         codSubcategoria: this.codSubcategoriaChild,
@@ -398,9 +453,29 @@ export class FormParticipanteComponent implements OnInit {
       this.participanteAux['data'].codPersona = this.persona.codigo;
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
-          this.listarParticipantePorSubcategoriaInstancia();
-          this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
-          this.parentDetail.closeDetail();
+          this.participante = response['objeto'];
+          console.log("response = ", response)
+          console.log("this.listaIntegrante = ", this.listaIntegrante)
+          if (this.listaIntegrante.length > 0) {
+            for (const ele of this.listaIntegrante) {
+              ele.codParticipante = this.participante.codigo;
+            }
+            this.participanteService.guardarListaIntegrante(this.listaIntegrante).subscribe({
+              next: async (response) => {
+                console.log("response = ", response)
+                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          } else {
+            this.listarParticipantePorSubcategoriaInstancia();
+            this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+            this.parentDetail.closeDetail();
+          }
         },
         error: (error) => {
           this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
@@ -543,6 +618,8 @@ export class FormParticipanteComponent implements OnInit {
       }
     );
   }
+
+
   get identificacionField() {
     return this.formParticipante.get('identificacion');
   }

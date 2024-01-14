@@ -21,6 +21,8 @@ import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/htt
 import { saveAs } from 'file-saver';
 import { AudioService } from 'app/main/pages/compartidos/servicios/audio.service';
 import { DataService } from 'app/main/pages/compartidos/servicios/data.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 
 @Component({
   selector: 'app-participante-principal',
@@ -34,6 +36,9 @@ export class ParticipantePrincipalComponent implements OnInit {
   @ViewChild("modal_confirm_delete", { static: false }) modal_confirm_delete: TemplateRef<any>;
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
   @ViewChild("modal_error", { static: false }) modal_error: TemplateRef<any>;
+
+  @ViewChild("myModalInfo", { static: false }) myModalInfo: TemplateRef<any>;
+  @ViewChild("modalIntegrante", { static: false }) modalIntegrante: TemplateRef<any>;
 
   /*VARIABLES*/
   public codigo: number;
@@ -49,9 +54,11 @@ export class ParticipantePrincipalComponent implements OnInit {
   public habilitarAgregarParticipante: boolean;
   public habilitarSeleccionarArchivo: boolean;
   public displayNone: string = '';
-  public disabledAcciones: boolean;
+  public displayNone1: string = '';
+  public disabledEstado: boolean;
   public customerId: number;
   public userId: number;
+  public urlCancion: string;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -60,6 +67,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public listaSubcategoria: Subcategoria[] = [];
   public listaInstancia: Instancia[] = [];
   public listaEstadoCompetencia: EstadoCompetencia[] = [];
+  public listaIntegrante: Integrante[] = [];
 
   // TRATAR ARCHIVOS
   // Lista de archivos seleccionados
@@ -117,8 +125,13 @@ export class ParticipantePrincipalComponent implements OnInit {
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
     private audioService: AudioService,
-    private dataService: DataService
+    private dataService: DataService,
+    private modalService: NgbModal
   ) {
+    //this.urlCancion = "./assets/musica/bachata_prueba.mpeg";
+    this.urlCancion = "./assets/musica/";
+    //this.urlCancion = "D:/upload/";
+    //this.descargarArchivo("comprobante.pdf");
     this.codigo = 0;
     this.codigoSede = 0;
     this.itemsRegistros = 5;
@@ -141,10 +154,22 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
     if (this.currentUser.cedula == "Suscriptor") {
-      this.disabledAcciones = true;
+      this.disabledEstado = true;
       this.displayNone = 'none';
       this.listarParticipantePorEmail();
+    } else {
+      this.disabledEstado = false;
+      this.displayNone1 = 'none';
     }
+    this.listarIntegranteActivo();
+  }
+
+  listarIntegranteActivo() {
+    this.participanteService.listarIntegranteActivo().subscribe(
+      (respuesta) => {
+        this.listaIntegrante = respuesta['listado'];
+      }
+    )
   }
 
   cargarParticipantes() {
@@ -239,13 +264,17 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length > 0) {
-          //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
+            ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
+            ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
-            if (ele.identificacion == this.currentUser.identificacion) {
+            if (ele?.identificacion == this.currentUser.identificacion) {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
+            }
+            if (ele?.desSubcategoria.includes("GRUPOS")) {
+              ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
@@ -265,7 +294,11 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
+          ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          if (ele.desSubcategoria.includes("GRUPOS")) {
+            ele.displayNoneGrupo = "";
+          }
         }
       }
     );
@@ -437,6 +470,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   cargarArchivos() {
+    //this.play();
     this.message = '';
     for (let i = 0; i < this.selectedFiles.length; i++) {
       this.cargarArchivo(i, this.selectedFiles[i]);
@@ -457,9 +491,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   cargarArchivo(index, file) {
     this.participanteService.cargarArchivo(file).subscribe(
       async (respuesta) => {
-        console.log("respuesta = ", respuesta);
       }, err => {
-        console.log("err = ", err);
         if (err == "OK") {
           this.habilitarAgregarParticipante = false;
           this.habilitarSeleccionarArchivo = true;
@@ -500,14 +532,6 @@ export class ParticipantePrincipalComponent implements OnInit {
     );
   }
 
-  play(): void {
-    this.audioService.play();
-  }
-
-  pause(): void {
-    this.audioService.pause();
-  }
-  
   compararCategoria(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
@@ -518,6 +542,54 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   compararInstancia(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
+  }
+
+  mostrarModalInfo() {
+    this.modalService.open(this.myModalInfo);
+  }
+  /*
+  verModalIntegrante(codParticipante: number) {
+    this.participanteService.listarIntegrantePorParticipante(codParticipante).subscribe(
+      (respuesta) => {
+        this.listaIntegrante = respuesta['listado'];
+        console.log("this.listaIntegrante 2 = ", this.listaIntegrante)
+        this.modalService.open(this.modalIntegrante).result.then(r => {
+          console.log("Tu respuesta ha sido: " + r);
+        }, error => {
+          console.log(error);
+        });
+      }
+    )
+  }
+  */
+  verListaIntegrante = async (codParticipante: number) => {
+    //this.listaIntegrante = [];
+    await this.listarIntegrantePorParticipante(codParticipante);
+    await this.verModalIntegrante();
+  }
+
+  listarIntegrantePorParticipante(codParticipante: number) {
+    return new Promise((resolve, rejects) => {
+      this.participanteService.listarIntegrantePorParticipante(codParticipante).subscribe({
+        next: (respuesta) => {
+          this.listaIntegrante = respuesta['listado'];
+          console.log("this.listaIntegrante 2 = ", this.listaIntegrante)
+          resolve(respuesta);
+        }, error: (error) => {
+          rejects("Error");
+          console.log("Error =", error);
+        }
+      })
+    })
+  }
+
+  async verModalIntegrante() {
+    console.log("verModalIntegrante()");
+    this.modalService.open(this.modalIntegrante).result.then(r => {
+      console.log("Tu respuesta ha sido: " + r);
+    }, error => {
+      console.log(error);
+    });
   }
 
   /* Variables del html, para receptar datos y validaciones*/

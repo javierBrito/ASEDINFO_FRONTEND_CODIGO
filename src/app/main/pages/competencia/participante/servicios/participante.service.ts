@@ -1,6 +1,7 @@
 import { HttpClient, HttpEvent, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
+import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
@@ -45,6 +46,15 @@ export class ParticipanteService {
   guardarParticipante(participante: Participante) {
     return this.http.post<Participante>(`${environment.url_seguridad}/competencia/guardarParticipante`, participante);
   }
+  guardarListaIntegrante(listaIntegrante: Integrante[]) {
+    return this.http.post<Integrante[]>(`${environment.url_seguridad}/competencia/guardarListaIntegrante`, listaIntegrante);
+  }
+  listarIntegranteActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarIntegranteActivo`);
+  }
+  listarIntegrantePorParticipante(codParticipante: number) {
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarIntegrantePorParticipante/${codParticipante}`);
+  }
 
   // Servicios de Categoria
   buscarCategoriaPorCodigo(codigo: number) {
@@ -80,7 +90,7 @@ export class ParticipanteService {
   migrarClienteWP(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/wordpress/migrarClienteWP`);
   }
-  
+
   // GESTIÓN DE ARCHIVOS
   // Cargar archivo PDF a una carpeta
   cargarArchivo(file: File): Observable<HttpEvent<any>> {
@@ -107,7 +117,8 @@ export class ParticipanteService {
   descargarArchivo(filename: string, empCedulaRep: string): Observable<HttpEvent<any>> {
     let url_ws = `${environment.url_seguridad}/private/descargarArchivo/`;
     url_ws += filename + "/" + empCedulaRep;
-    return this.http.get(url_ws, {
+    console.log("url_ws = ", url_ws)
+    return this.http.get(`${url_ws}`, {
       headers: new HttpHeaders().set(
         'Authorization',
         localStorage.getItem('token')
@@ -118,4 +129,6 @@ export class ParticipanteService {
     });
   }
 }
+
+
 

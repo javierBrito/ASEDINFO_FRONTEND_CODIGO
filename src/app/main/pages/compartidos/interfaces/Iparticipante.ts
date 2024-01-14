@@ -36,4 +36,5 @@ export interface Iparticipante {
     estadoCompetencia: any;
 
     colorBoton: string;
+    displayNoneGrupo: string;
 }

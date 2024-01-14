@@ -218,4 +218,11 @@ export class Participante implements Iparticipante {
     set nombreCancion(value: string) {
         set(this, 'data.nombreCancion', value);
     }   
+
+    get displayNoneGrupo(): string {
+        return get(this, 'data.displayNoneGrupo');
+    }
+    set displayNoneGrupo(value: string) {
+        set(this, 'data.displayNoneGrupo', value);
+    }   
 }

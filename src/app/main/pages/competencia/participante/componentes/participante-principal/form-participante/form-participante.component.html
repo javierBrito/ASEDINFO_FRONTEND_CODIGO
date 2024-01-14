@@ -100,17 +100,14 @@
                 </div>
                 <div class="col-6" [ngStyle]="{'display': displayNoneIntegrante2}">
                     <label for="apellidos">
-                        <h4><b>{{'Integrante-2(*): '}}</b></h4>
+                        <h4><b>{{'Integrante(*): '}}</b></h4>
                     </label>
                     <input type="text" name="apellidos" formControlName="apellidos" class="form-control" id="apellidos"
-                        oninput="apellidos.value = apellidos.value.toUpperCase()" placeholder="Nombres integrante-2"
+                        oninput="apellidos.value = apellidos.value.toUpperCase()" placeholder="Nombre integrante"
                         [ngClass]="{'is-valid': apellidosField?.dirty && !apellidosField?.invalid && !apellidosField?.errors, 'is-invalid': apellidosField?.dirty && apellidosField?.invalid && apellidosField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="apellidosField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
+                    <button [ngStyle]="{'display': displayNoneIntegranteGrupo}" matTooltip="Adicionar Integrante"
+                        type="button" class="btn btn-primary" rippleEffect round><i class="fa fa-plus"
+                            (click)="adicionarIntegrante()"></i></button>
                 </div>
             </div>
             <div class="row form-group">
@@ -137,16 +134,6 @@
                     </div>
                 </div>
             </div>
-            <!--
-            <div class="row">
-                <div class="col-6">
-                    <label for="idAudio"><h4><b>{{'Subir mp3: '}}</b></h4></label>
-                    <audio controls id="idAudio">
-                        <source src="./assets/musica/solista_salsa_javier_brito.mp3" type="audio/mpeg" />
-                    </audio>
-                </div>
-            </div>
-            -->
             <div class="row form-group">
                 <div class="col-12">
                     <button id="selectButton" mat-raised-button (click)="fileInput.click()"
@@ -155,8 +142,7 @@
                     <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
                     <span *ngIf="fileName">{{fileName}}</span>
                     <button id="uploadButton" mat-raised-button *ngIf="selectedFiles"
-                        [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()"
-                        class="btn btn-primary">
+                        [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()" class="btn btn-primary">
                         <b>Guardar</b>
                     </button>
                     <div class="col-sm-12" *ngIf="true">
@@ -238,15 +224,53 @@
         <br>
         <div class="row">
             <div class="col-12">
-                <button type="submit" class="btn btn-block btn-primary" 
-                        [disabled]="formParticipante?.invalid"
-                        (click)="addRegistroPersona()">
+                <button type="submit" class="btn btn-block btn-primary" [disabled]="formParticipante?.invalid"
+                    (click)="addRegistroPersona()">
                     {{participanteEditar?'GUARDAR':'GUARDAR'}}</button>
             </div>
         </div>
     </form>
-
 </app-detail>
+<div class="col-6">
+    <label for="apellidos">
+        <h4><b>{{'Integrante(*): '}}</b></h4>
+    </label>
+    <p><button (click)="mostrarModalConf()">Ingresar integrante</button></p>
+</div>
+
+<ng-template #myModalInfo let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Éxito</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            ¡Modal mostrado correctamente!
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #myModalConf let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Éxito</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modal.close('Cerrado desde la ventana')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            ¿Quieres confirmar la informacion? (Mira el resultado en consola)
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="modal.close('No')">No</button>
+            <button type="button" class="btn btn-primary" (click)="modal.close('Si')">Si</button>
+        </div>
+    </div>
+</ng-template>
+
 <ng-template #modal_success let-modal>
     <div class="modal-header">
         <h5 class="modal-title">{{'Éxito'}}</h5>
