@@ -279,6 +279,9 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   openRenovarDetail(transaccion: Transaccion) {
     this.transaccionSeleccionado = transaccion;
+    this.transaccionSeleccionado.numMes = 0;
+    this.transaccionSeleccionado.numProducto = 0;
+    this.transaccionSeleccionado.fechaInicio = this.transaccionSeleccionado.fechaFin;
     this.transaccionSeleccionado.estado = "R";
     this.showDetail = true;
   }
