@@ -48,7 +48,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public celularEnvioWhatsapp: string;
   public codigoPostal: string = '593';
   public descripcionProducto: string;
-  public mensaje: string;
+  public mensajeCaduca: string;
   public fechaFinMensaje: string;
   public nombreCliente: string;
   public enviarNotificacion: boolean;
@@ -56,12 +56,15 @@ export class TransaccionPrincipalComponent implements OnInit {
   public respuestaEnvioWhatsapp: string;
   public token: string;
   public celular: string;
+  public claveCuenta: string;
+  public codCliente: number;
 
   /*LISTAS*/
   public listaTransaccion: Transaccion[] = [];
   public listaTransaccionAux: Transaccion[] = [];
   public listaAplicacion: Aplicacion[] = [];
   public listaPeriodoRegAniLec: any[];
+  public listaCliente: Cliente[];
 
   /*TABS*/
   public selectedTab: number;
@@ -90,7 +93,6 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   /*FORMULARIOS*/
   public formTransaccion: FormGroup;
-  public formTransaccionDescripcion: FormGroup;
 
   /*CONSTRUCTOR */
   constructor(
@@ -109,6 +111,8 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.sede = this.currentUser.sede;
+    /*LISTAS*/
+    this.listarClienteActivoOrdenNombre();
   }
 
   ngOnInit() {
@@ -117,14 +121,33 @@ export class TransaccionPrincipalComponent implements OnInit {
     if (this.listaTransaccionChild != null) {
       this.listaTransaccion = this.listaTransaccionChild;
     }
-    this.formTransaccionDescripcion = this.formBuilder.group({
+    this.formTransaccion = this.formBuilder.group({
       descripcion: new FormControl('', Validators.required),
+      codCliente: new FormControl('', Validators.required),
+      claveCuenta: new FormControl('', Validators.required),
       fechaInicio: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
       fechaFin: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
     });
     this.obtenerParametros();
     //this.obtenerTransaccionACaducarse();
     this.listarTransaccionACaducarse();
+  }
+
+  listarClienteActivoOrdenNombre() {
+    this.clienteService.listarClienteActivoOrdenNombre().subscribe(
+      (respuesta) => {
+        this.listaCliente = respuesta['listado'];
+        for (const ele of this.listaCliente) {
+          // Obtener persona
+          this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
+            (respuesta) => {
+              this.persona = respuesta['objeto'];
+              ele.persona = this.persona;
+            }
+          )
+        };
+      }
+    );
   }
 
   obtenerParametros() {
@@ -183,43 +206,85 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   listarTransaccion() {
+    this.codCliente = 0;
     this.enviarNotificacion = false;
     this.listaTransaccion = [];
-    // Receptar la descripción de formTransaccionDescripcion.value
-    let transaccionDescripcionTemp = this.formTransaccionDescripcion.value;
+    // Receptar datos de formTransaccion.value
+    let transaccionDescripcionTemp = this.formTransaccion.value;
+    this.claveCuenta = transaccionDescripcionTemp?.claveCuenta;
+    this.codCliente = transaccionDescripcionTemp?.codCliente;
     this.fechaInicio = transaccionDescripcionTemp?.fechaInicio;
     this.fechaFin = transaccionDescripcionTemp?.fechaFin;
     this.descripcion = transaccionDescripcionTemp?.descripcion;
+    if (this.claveCuenta?.length != 0) {
+      this.listarTransaccionPorClaveCuenta();
+      return;
+    }
+    if (this.codCliente != 0) {
+      this.listarTransaccionPorCliente();
+      return;
+    }
     if (this.descripcion?.length != 0) {
-      this.transaccionService.listarTransaccionPorDescripcion(this.descripcion).subscribe(
-        (respuesta) => {
-          this.listaTransaccion = respuesta['listado'];
-          if (this.listaTransaccion?.length > 0) {
-            this.mostrarListaTransaccion();
-          }
+      this.listarTransaccionPorDescripcion();
+      return;
+    }
+    if (this.fechaInicio?.length != 0 && this.fechaFin?.length != 0) {
+      this.listarTransaccionPorRangoFechas();
+      return;
+    }
+
+    this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
+      (respuesta) => {
+        this.listaTransaccion = respuesta['listado'];
+        if (this.listaTransaccion?.length > 0) {
+          this.mostrarListaTransaccion();
         }
-      )
-    } else {
-      if (this.fechaInicio?.length != 0 && this.fechaFin?.length != 0) {
-        this.transaccionService.listarTransaccionPorRangoFechas('2023-09-21', this.fechaFin).subscribe(
-          (respuesta) => {
-            this.listaTransaccion = respuesta['listado'];
-            if (this.listaTransaccion?.length > 0) {
-              this.mostrarListaTransaccion();
-            }
-          }
-        )
-      } else {
-        this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
-          (respuesta) => {
-            this.listaTransaccion = respuesta['listado'];
-            if (this.listaTransaccion?.length > 0) {
-              this.mostrarListaTransaccion();
-            }
-          }
-        )
       }
-    };
+    )
+  }
+
+  listarTransaccionPorClaveCuenta() {
+    this.transaccionService.listarTransaccionPorClaveCuenta(this.claveCuenta).subscribe(
+      (respuesta) => {
+        this.listaTransaccion = respuesta['listado'];
+        if (this.listaTransaccion?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorCliente() {
+    this.transaccionService.listarTransaccionPorCliente(this.codCliente).subscribe(
+      (respuesta) => {
+        this.listaTransaccion = respuesta['listado'];
+        if (this.listaTransaccion?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorDescripcion() {
+    this.transaccionService.listarTransaccionPorDescripcion(this.descripcion).subscribe(
+      (respuesta) => {
+        this.listaTransaccion = respuesta['listado'];
+        if (this.listaTransaccion?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorRangoFechas() {
+    this.transaccionService.listarTransaccionPorRangoFechas('2023-09-21', this.fechaFin).subscribe(
+      (respuesta) => {
+        this.listaTransaccion = respuesta['listado'];
+        if (this.listaTransaccion?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
   }
 
   mostrarListaTransaccion = async () => {
@@ -285,7 +350,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.transaccionSeleccionado.estado = "R";
     this.showDetail = true;
   }
-  
+
   openRemoverDetail(transaccion: Transaccion) {
     Swal
       .fire({
@@ -402,12 +467,15 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   async enviarWhatsapp(ele: Transaccion) {
     this.seEnvioWhatsapp = true;
-    this.mensaje = "<b>*Mensaje Automático*</b> Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcionProducto + " que tiene contratado con nosotros está por caducar el " + ele.fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    let nombreCliente = ele.nombreCliente;
+    let descripcionProducto = ele.descripcionProducto;
+    let fechaFin = ele.fechaFin;
+    this.mensajeCaduca = "<b>*Mensaje Automático*</b> Estimado(a) " + nombreCliente + " el servicio de " + descripcionProducto + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
     var api = "https://script.google.com/macros/s/AKfycbyoBhxuklU5D3LTguTcYAS85klwFINHxxd-FroauC4CmFVvS0ua/exec";
     var payload = {
       "op": "registermessage", "token_qr": this.token, "mensajes": [
-        { "numero": this.celularEnvioWhatsapp, "mensaje": this.mensaje }
+        { "numero": this.celularEnvioWhatsapp, "mensaje": this.mensajeCaduca }
       ]
     };
     console.log(payload);
@@ -430,10 +498,10 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   async enviarWhatsappApi(ele: Transaccion) {
     this.seEnvioWhatsapp = true;
-    this.mensaje = "*Mensaje Automático* Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcion + " que tiene contratado con nosotros está por caducar el " + ele.fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcion + " que tiene contratado con nosotros está por caducar el " + ele.fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
 
-    this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
+    this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensajeCaduca).subscribe({
       next: async (response) => {
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
       },
@@ -443,15 +511,23 @@ export class TransaccionPrincipalComponent implements OnInit {
     });
   }
 
+  compararCliente(o1, o2) {
+    return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
+  }
   /* Variables del html, para receptar datos y validaciones*/
   get descripcionField() {
-    return this.formTransaccionDescripcion.get('descripcion');
+    return this.formTransaccion.get('descripcion');
   }
   get fechaInicioField() {
-    return this.formTransaccionDescripcion.get('fechaInicio');
+    return this.formTransaccion.get('fechaInicio');
   }
   get fechaFinField() {
-    return this.formTransaccionDescripcion.get('fechaFin');
+    return this.formTransaccion.get('fechaFin');
   }
-
+  get claveCuentaField() {
+    return this.formTransaccion.get('claveCuenta');
+  }
+  get codClienteField() {
+    return this.formTransaccion.get('codCliente');
+  }
 }

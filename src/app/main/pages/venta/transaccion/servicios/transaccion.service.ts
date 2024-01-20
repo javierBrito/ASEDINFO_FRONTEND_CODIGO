@@ -23,6 +23,12 @@ export class TransaccionService {
   listarTransaccionPorDescripcion(descripcion: string) {
     return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorDescripcion/${descripcion}`);
   }
+  listarTransaccionPorClaveCuenta(claveCuenta: string) {
+    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorClaveCuenta/${claveCuenta}`);
+  }
+  listarTransaccionPorCliente(codCliente: number) {
+    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorCliente/${codCliente}`);
+  }
   listarTransaccionACaducarse(numDias: number) {
     return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionACaducarse/${numDias}`);
   }
