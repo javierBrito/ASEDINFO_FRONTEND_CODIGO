@@ -75,8 +75,7 @@
                         <div class="col-2">
                             <label for="claveCuenta"><b>{{'Clave Cuenta(*): '}}</b></label>
                             <input type="text" name="claveCuenta" id="claveCuenta" formControlName="claveCuenta"
-                                oninput="claveCuenta.value = claveCuenta.value.toUpperCase()" maxlength="50"
-                                placeholder="Clave Cuenta" class="form-control"
+                                placeholder="Clave Cuenta" class="form-control" maxlength="50"
                                 [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors,'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
                             <div class="valid-feedback">
                                 <span>{{ "Exito"}}</span>
@@ -84,9 +83,8 @@
                         </div>
                         <div class="col-3">
                             <label for="codCliente"><b>{{'Cliente(*): '}}</b></label>
-                            <select name="codCliente" formControlName="codCliente" required
-                                placeholder="Nombre Cliente" class="form-control mr-sm-2" id="codCliente"
-                                [compareWith]="compararCliente">
+                            <select name="codCliente" formControlName="codCliente" required placeholder="Nombre Cliente"
+                                class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente">
                                 <option [value]="" selected>Seleccionar Cliente</option>
                                 <option *ngFor="let cliente of listaCliente" [value]="cliente.codigo">
                                     <span>{{cliente?.persona?.nombres + " " + cliente?.persona?.apellidos + " - "
@@ -146,10 +144,15 @@
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
+                                                                <button (click)="openClonarDetail(transaccion)"
+                                                                    matTooltip="Clonar Transaccion" type=" button"
+                                                                    class="btn btn-success" rippleEffect round><i
+                                                                        class="fas fa-copy"
+                                                                        (click)="openClonarDetail(transaccion)"></i></button>
                                                                 <button (click)="openRenovarDetail(transaccion)"
                                                                     matTooltip="Renovar Transaccion" type=" button"
                                                                     class="btn btn-info" rippleEffect round><i
-                                                                        class="fas fa-spinner fa-spin"
+                                                                        class="fas fa-paste"
                                                                         (click)="openRenovarDetail(transaccion)"></i></button>
                                                                 <button (click)="openEditarDetail(transaccion)"
                                                                     matTooltip="Editar Transaccion" type=" button"

@@ -220,7 +220,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       this.listarTransaccionPorClaveCuenta();
       return;
     }
-    if (this.codCliente != 0) {
+    if (this.codCliente != 0 && Number(this.codCliente)+"" != "NaN") {
       this.listarTransaccionPorCliente();
       return;
     }
@@ -288,6 +288,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   mostrarListaTransaccion = async () => {
+    console.log("this.listaTransaccion = ", this.listaTransaccion)
     for (const ele of this.listaTransaccion) {
       ele.colorFila = "green";
       ele.colorColumna = "white";
@@ -348,6 +349,12 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.transaccionSeleccionado.numProducto = 0;
     this.transaccionSeleccionado.fechaInicio = this.transaccionSeleccionado.fechaFin;
     this.transaccionSeleccionado.estado = "R";
+    this.showDetail = true;
+  }
+
+  openClonarDetail(transaccion: Transaccion) {
+    this.transaccionSeleccionado = transaccion;
+    this.transaccionSeleccionado.estado = "C";
     this.showDetail = true;
   }
 

@@ -313,15 +313,16 @@ export class FormTransaccionComponent implements OnInit {
     }
     if (this.transaccionEditar) {
       this.transaccion['data'].codigo = this.transaccionEditar.codigo;
-      if (this.transaccionEditar?.estado == "R") {
+      // Guardamos registro nuevo con R (renovacion) o C (Clonar) dependiendo
+      if (this.transaccionEditar?.estado == "R" || this.transaccionEditar?.estado == "R") {
         this.transaccion['data'].codigo = 0;
       }
       this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: (response) => {
           // Actualizamos registro existente con R de renovacion 
           if (this.transaccionEditar?.estado == "R") {
-            this.transaccionEditar.fechaInicio = dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")            
-            this.transaccionEditar.fechaFin = dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS")            
+            this.transaccionEditar.fechaInicio = dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")
+            this.transaccionEditar.fechaFin = dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS")
             this.transaccionService.guardarTransaccion(this.transaccionEditarAux).subscribe({
               next: async (response) => {
                 this.listarTransaccionPorDescripcion();
