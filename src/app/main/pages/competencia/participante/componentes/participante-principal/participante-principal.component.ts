@@ -129,7 +129,9 @@ export class ParticipantePrincipalComponent implements OnInit {
     private modalService: NgbModal
   ) {
     //this.urlCancion = "./assets/musica/bachata_prueba.mpeg";
+    //this.urlCancion = "./assets/musica/solista_salsa.mp3";
     this.urlCancion = "./assets/musica/";
+    //this.urlCancion = ".../upload/musica/";
     //this.urlCancion = "D:/upload/";
     //this.descargarArchivo("comprobante.pdf");
     this.codigo = 0;
@@ -298,6 +300,7 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
+          ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           if (ele.desSubcategoria.includes("GRUPOS")) {
@@ -565,7 +568,6 @@ export class ParticipantePrincipalComponent implements OnInit {
       this.participanteService.listarIntegrantePorParticipante(codParticipante).subscribe({
         next: (respuesta) => {
           this.listaIntegrante = respuesta['listado'];
-          console.log("this.listaIntegrante 2 = ", this.listaIntegrante)
           resolve(respuesta);
         }, error: (error) => {
           rejects("Error");

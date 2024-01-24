@@ -308,21 +308,27 @@ export class FormTransaccionComponent implements OnInit {
         fechaCambia: fechaCambia,
         fechaFin: dayjs(fechaFinString).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaRegistra: dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        numDiasRenovar: 0,
         estado: 'A',
       });
     }
     if (this.transaccionEditar) {
       this.transaccion['data'].codigo = this.transaccionEditar.codigo;
-      // Guardamos registro nuevo con R (renovacion) o C (Clonar) dependiendo
-      if (this.transaccionEditar?.estado == "R" || this.transaccionEditar?.estado == "R") {
+      // Guardamos registro nuevo con estado A al realizar (renovacion=R) o C (Clonar=C)
+      if (this.transaccionEditar?.estado == "R" || this.transaccionEditar?.estado == "C") {
         this.transaccion['data'].codigo = 0;
       }
       this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: (response) => {
           // Actualizamos registro existente con R de renovacion 
           if (this.transaccionEditar?.estado == "R") {
-            this.transaccionEditar.fechaInicio = dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")
-            this.transaccionEditar.fechaFin = dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS")
+            this.transaccionEditarAux.fechaInicio = dayjs(this.transaccionEditarAux.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")
+            this.transaccionEditarAux.fechaFin = dayjs(this.transaccionEditarAux.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS")
+            if (this.transaccionEditarAux?.fechaCambia != null && this.transaccionEditarAux?.fechaCambia != "" && this.transaccionEditarAux?.fechaCambia != 'Invalid Date') {
+              this.transaccionEditarAux.fechaCambia = dayjs(this.transaccionEditarAux.fechaCambia).format("YYYY-MM-DD HH:mm:ss.SSS")
+            } else {
+              this.transaccionEditarAux.fechaCambia = "";
+            }
             this.transaccionService.guardarTransaccion(this.transaccionEditarAux).subscribe({
               next: async (response) => {
                 this.listarTransaccionPorDescripcion();
@@ -401,6 +407,7 @@ export class FormTransaccionComponent implements OnInit {
       fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
       fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
       this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+      
       // Calcular monto de la transacción
       this.calcularMonto();
     }
@@ -412,11 +419,11 @@ export class FormTransaccionComponent implements OnInit {
       let transaccionTemp = this.formTransaccion.value;
       let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       var fechaFinString = "";
-      //this.numMes = Number(event.target.value);
       this.numMes = transaccionTemp?.numMes;
       fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
       fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
       this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+
       // Calcular monto de la transacción
       this.calcularMonto();
     }
@@ -430,6 +437,7 @@ export class FormTransaccionComponent implements OnInit {
     fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
     fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
     this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+
     // Calcular monto de la transacción
     this.calcularMonto();
   }
@@ -438,6 +446,7 @@ export class FormTransaccionComponent implements OnInit {
   onKeyPrecio(event) {
     if (event.target.value.length != 0) {
       this.precio = Number(event.target.value);
+
       // Calcular monto de la transacción
       this.calcularMonto();
     }

@@ -15,9 +15,10 @@ import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
 import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-form-participante',
@@ -167,6 +168,7 @@ export class FormParticipanteComponent implements OnInit {
       //this.listarSubcategoriaPorCategoria();
       this.listarInstanciaActivo();
     }
+    this.verpdf();
   }
 
   adicionarIntegrante() {
@@ -606,6 +608,72 @@ export class FormParticipanteComponent implements OnInit {
     );
   }
 
+  //métod temporal para vizualizar un pdf a partir de un código en base64
+  //nombreArchivoDescarga = "";
+  async verpdf() {
+    // this.nombreArchivoDescarga = this.amieRegex + ".pdf";
+    this.participanteService.vizualizarArchivo("solista_salsa.mp3").subscribe(
+      event => {
+        this.resportProgress(event);
+      },
+      (error: HttpErrorResponse) => {
+        console.log(error);
+        this.mensajeService.mensajeError("Error: No se pudo descargar el documento")
+      }
+    );
+ 
+    // const base64Response = await fetch(`${this.previzualizacion}`);
+    // const blob = await base64Response.blob();
+    // //comvierto el blob a tipo archivo pdf
+    // // const file = new Blob([blob], { type: 'application/pdf' });
+    // const file = new File([blob], `my-file-name`, { type: 'application/pdf' })
+    // // console.log(file)
+    // const fileURL = URL.createObjectURL(file);
+    // //abro una nueva ventana con el archivo
+    // window.open(fileURL);
+  }
+
+  //filenames: string[] = [];
+  private resportProgress(httpEvent: HttpEvent<string[] | Blob>): void {
+    switch (httpEvent.type) {
+       case HttpEventType.UploadProgress:
+        this.updateStatus(httpEvent.loaded, httpEvent.total!, 'Uploading... ');
+        break;
+      case HttpEventType.DownloadProgress:
+        this.updateStatus(httpEvent.loaded, httpEvent.total!, 'Downloading... ');
+        break;
+      case HttpEventType.ResponseHeader:
+        // console.log('Header returned', httpEvent);
+        break;
+      case HttpEventType.Response:
+        if (httpEvent.body instanceof Array) {
+          this.fileStatus.status = 'done';
+          for (const filename of httpEvent.body) {
+            this.filenames.unshift(filename);
+          }
+        } else {
+          console.log("httpEvent.url = ", httpEvent.url)
+          console.log("httpEvent.body = ", httpEvent.body)
+          saveAs(new Blob([httpEvent.body!],
+            { type: `${httpEvent.headers.get('Content-Type')};charset=utf-8` }),
+            "solista_salsa.mp3");
+        }
+        this.fileStatus.status = 'done';
+        break;
+      default:
+        //console.log(httpEvent);
+        break;
+ 
+    }
+  }
+
+  //fileStatus = { status: '', requestType: '', percent: 0 };
+  private updateStatus(loaded: number, total: number, requestType: string): void {
+    this.fileStatus.status = 'progress';
+    this.fileStatus.requestType = requestType;
+    this.fileStatus.percent = Math.round(100 * loaded / total);
+ 
+  }
 
   get identificacionField() {
     return this.formParticipante.get('identificacion');

@@ -189,4 +189,11 @@ export class Transaccion implements Itransaccion {
     set fechaCambia(value: string) {
         set(this, 'data.fechaCambia', value);
     }
+
+    get numDiasRenovar(): number {
+        return get(this, 'data.numDiasRenovar');
+    }
+    set numDiasRenovar(value: number) {
+        set(this, 'data.numDiasRenovar', value);
+    }
 }

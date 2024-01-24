@@ -117,12 +117,13 @@
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Cliente</th>
-                                                        <th scope="col">Producto</th>
+                                                        <!--<th scope="col">Producto</th>-->
                                                         <th scope="col">Descripción</th>
                                                         <th scope="col">Monto</th>
                                                         <th scope="col">Cantidad</th>
-                                                        <th scope="col">Inicio</th>
+                                                        <!--<th scope="col">Inicio</th>-->
                                                         <th scope="col">Fin</th>
+                                                        <th scope="col">Días Renovar</th>
                                                         <th scope="col">Cambiar</th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
@@ -133,12 +134,13 @@
                                                         <td>{{index+1}}</td>
                                                         <!--<td>{{transaccion?.nombreCliente + " - " + transaccion?.celular}}</td>-->
                                                         <td>{{transaccion?.nombreCliente}}</td>
-                                                        <td>{{transaccion?.descripcionProducto}}</td>
+                                                        <!--<td>{{transaccion?.descripcionProducto}}</td>-->
                                                         <td>{{transaccion?.descripcion}}</td>
                                                         <td>{{transaccion?.monto}}</td>
                                                         <td>{{transaccion?.numProducto}}</td>
-                                                        <td>{{transaccion?.fechaInicio}}</td>
+                                                        <!--<td>{{transaccion?.fechaInicio}}</td>-->
                                                         <td>{{transaccion?.fechaFin}}</td>
+                                                        <td>{{transaccion?.numDiasRenovar}}</td>
                                                         <td [ngStyle]="{'background-color': transaccion?.colorColumna}">
                                                             {{transaccion?.fechaCambia}}</td>
                                                         <td>

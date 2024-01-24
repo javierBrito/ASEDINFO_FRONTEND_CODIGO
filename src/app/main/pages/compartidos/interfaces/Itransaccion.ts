@@ -28,4 +28,5 @@ export interface Itransaccion {
     precioMayoreo?: number;
     nombreCliente?: string;
     celular?: string;
+    numDiasRenovar: number;
 }

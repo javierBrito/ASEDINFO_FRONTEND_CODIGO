@@ -127,6 +127,16 @@ export class ParticipanteService {
       responseType: 'blob'
     });
   }
+
+  //Visualizar Archivo
+  vizualizarArchivo(nombreArchivo: string): Observable<HttpEvent<Blob>> {
+    let codigo = 1;
+    return this.http.get(`${environment.url_seguridad}/private/descargarArchivo/${nombreArchivo}/${codigo}`, {
+      reportProgress: true,
+      observe: 'events',
+      responseType: 'blob'
+    });
+  }
 }
 
 

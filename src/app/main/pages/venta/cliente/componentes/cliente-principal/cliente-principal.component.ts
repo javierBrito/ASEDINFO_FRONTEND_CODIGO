@@ -165,7 +165,7 @@ export class ClientePrincipalComponent implements OnInit {
   }
 
   openEditarDetail(cliente: Cliente) {
-    this.identificacion = cliente?.persona?.identificacion;
+    this.identificacion = cliente?.identificacion;
     this.clienteSeleccionado = cliente;
     this.showDetail = true;
   }
