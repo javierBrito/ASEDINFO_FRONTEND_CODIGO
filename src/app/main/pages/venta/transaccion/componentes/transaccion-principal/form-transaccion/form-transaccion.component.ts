@@ -103,17 +103,6 @@ export class FormTransaccionComponent implements OnInit {
     this.nombreProceso = this.nombreProcesoChild;
     if (this.transaccionEditar) {
       this.transaccionEditarAux = this.transaccionEditar;
-      /*
-      if (this.transaccionEditarAux?.estado == "R") {
-        this.nombreProceso = "RENOVAR";
-      } else {
-        if (this.transaccionEditarAux?.estado == "C") {
-          this.nombreProceso = "CLONAR";
-        } else {
-          this.nombreProceso = "EDITAR";
-        }
-      }
-      */
       this.codProducto = this.transaccionEditar?.codProducto;
       this.numMes = this.transaccionEditar?.numMes;
       this.precio = this.transaccionEditar?.precio;

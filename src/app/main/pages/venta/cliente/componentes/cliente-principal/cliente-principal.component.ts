@@ -33,6 +33,7 @@ export class ClientePrincipalComponent implements OnInit {
   public institucion: any;
   public codigoSede = null;
   public identificacion: string;
+  public nombre: string;
 
   /*LISTAS*/
   public listaCliente: Cliente[] = [];
@@ -84,6 +85,7 @@ export class ClientePrincipalComponent implements OnInit {
       this.listaPersona = this.listaPersonaChild;
     }
     this.formClienteIdentificacion = this.formBuilder.group({
+      nombre: new FormControl('', Validators.required),
       identificacion: new FormControl('', Validators.required),
       /*
         identificacion: new FormControl('', Validators.compose([
@@ -107,19 +109,6 @@ export class ClientePrincipalComponent implements OnInit {
           if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
             ele.prefijoTelefonico = '593';
           }
-    
-          /*
-          if (ele.codPersona != null) {
-            this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
-              (respuesta) => {
-                ele.persona = respuesta['objeto'];                                                            
-                if (ele?.persona != undefined) {
-                  ele.persona.fechaNacimiento = dayjs(ele.persona.fechaNacimiento).format("YYYY-MM-DD")
-                }
-              }
-            )
-          }
-          */
         }
         if (this.listaCliente.length < this.itemsRegistros) {
           this.page = 1;
@@ -128,10 +117,25 @@ export class ClientePrincipalComponent implements OnInit {
     );
   }
 
-  listarClientePorPersonaIdentificacion() {
-    // Receptar la identificación de formInscripcionCedula.value
+  listarCliente() {
+    // Receptar la identificación y/o nombre de formInscripcionCedula.value
     let clienteIdentificacionTemp = this.formClienteIdentificacion.value;
     this.identificacion = clienteIdentificacionTemp.identificacion;
+    this.nombre = clienteIdentificacionTemp.nombre;
+    if (this.nombre?.length != 0) {
+      this.listarClientePorPersonaNombre();
+      return;
+    }
+    if (this.identificacion?.length != 0) {
+      this.listarClientePorPersonaIdentificacion();
+      return;
+    }
+  }
+
+  listarClientePorPersonaIdentificacion() {
+    // Receptar la identificación de formInscripcionCedula.value
+    //let clienteIdentificacionTemp = this.formClienteIdentificacion.value;
+    //this.identificacion = clienteIdentificacionTemp.identificacion;
     this.clienteService.listarClientePorPersonaIdentificacion(this.identificacion).subscribe(
       (respuesta) => {
         this.listaCliente = respuesta['listado'];
@@ -140,18 +144,26 @@ export class ClientePrincipalComponent implements OnInit {
           if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
             ele.prefijoTelefonico = '593';
           }
-          /*
-          if (ele.codPersona != null) {
-            this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
-              (respuesta) => {
-                ele.persona = respuesta['objeto'];                                                            
-                if (ele?.persona != undefined) {
-                  ele.persona.fechaNacimiento = dayjs(ele.persona.fechaNacimiento).format("YYYY-MM-DD")
-                }
-              }
-            )
+        }
+        if (this.listaCliente.length < this.itemsRegistros) {
+          this.page = 1;
+        }
+      }
+    );
+  }
+
+  listarClientePorPersonaNombre() {
+    // Receptar el nombre de formClienteIdentificacion.value
+    //let clienteIdentificacionTemp = this.formClienteIdentificacion.value;
+    //this.nombre = clienteIdentificacionTemp.nombre;
+    this.clienteService.listarClientePorPersonaNombre(this.nombre).subscribe(
+      (respuesta) => {
+        this.listaCliente = respuesta['listado'];
+        for (const ele of this.listaCliente) {
+          ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+          if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
+            ele.prefijoTelefonico = '593';
           }
-          */
         }
         if (this.listaCliente.length < this.itemsRegistros) {
           this.page = 1;
@@ -246,6 +258,9 @@ export class ClientePrincipalComponent implements OnInit {
   /* Variables del html, para receptar datos y validaciones*/
   get identificacionField() {
     return this.formClienteIdentificacion.get('identificacion');
+  }
+  get nombreField() {
+    return this.formClienteIdentificacion.get('nombre');
   }
 
 }

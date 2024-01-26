@@ -26,6 +26,9 @@ export class ClienteService {
   listarClientePorPersonaIdentificacion(identificacion: string) {
     return this.http.get<Cliente[]>(`${environment.url_seguridad}/venta/listarClientePorPersonaIdentificacion/${identificacion}`);
   }
+  listarClientePorPersonaNombre(nombre: string) {
+    return this.http.get<Cliente[]>(`${environment.url_seguridad}/venta/listarClientePorPersonaNombre/${nombre}`);
+  }
   listarTodosCliente(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/venta/listarTodosCliente`);
   }

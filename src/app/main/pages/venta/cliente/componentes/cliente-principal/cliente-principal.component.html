@@ -10,7 +10,7 @@
                 <form detail-content [formGroup]="formClienteIdentificacion"
                     (ngSubmit)="listarClientePorPersonaIdentificacion()">
                     <div class="row form-group">
-                        <div class="col-md-6 col-12 form-group">
+                        <div class="col-md-6 col-3 form-group">
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                             <input type="text" name="identificacion" id="identificacion"
                                 formControlName="identificacion" maxlength="60"
@@ -20,29 +20,18 @@
                             <div class="valid-feedback">
                                 <span>{{ "Exito"}}</span>
                             </div>
-                            <!--
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
-                                    valida."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['minlength']">{{"Debe ingresar al menos 10
-                                    dígitos."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['maxlength']">{{"Solo puede ingresar 10
-                                    dígitos."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
-                                    números."}}</span>
-                            </div>
-                            -->
                         </div>
-                        <div class="col-md-2 col-12 form-group">
+                        <div class="col-md-4 col-3 form-group">
+                            <label for="nombre"><b>{{'Nombre cliente(*): '}}</b></label>
+                            <input type="text" name="nombre" id="nombre" formControlName="nombre"
+                                oninput="nombre.value = nombre.value.toUpperCase()" maxlength="50"
+                                placeholder="Por favor, ingrese la clave de la cuenta." class="form-control"
+                                [ngClass]="{'is-valid': nombreField?.dirty && !nombreField?.invalid && !nombreField?.errors,'is-invalid': nombreField?.dirty && nombreField?.invalid && nombreField?.errors}">
+                            <div class="valid-feedback">
+                                <span>{{ "Exito"}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-3 form-group">
                             <div class="my-2 text-left table-responsive">
                                 <button type="submit" [disabled]="formClienteIdentificacion.invalid"
                                     class="btn btn-info btn-rounded">
