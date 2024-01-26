@@ -201,7 +201,8 @@
 
 <app-form-transaccion [transaccionEditar]="transaccionSeleccionado" [codigoChild]="codigo"
     [descripcionChild]="descripcion" [listaTransaccionChild]="listaTransaccion"
-    (listaTransaccion)="listaTransaccionActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail">
+    (listaTransaccion)="listaTransaccionActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail"
+    [nombreProcesoChild]="nombreProceso">
 </app-form-transaccion>
 
 <ng-template #modal_confirm_delete let-modal>

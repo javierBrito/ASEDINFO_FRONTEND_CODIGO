@@ -58,6 +58,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public celular: string;
   public claveCuenta: string;
   public codCliente: number;
+  public nombreProceso: string;
 
   /*LISTAS*/
   public listaTransaccion: Transaccion[] = [];
@@ -315,6 +316,10 @@ export class TransaccionPrincipalComponent implements OnInit {
         ele.colorFila = "red";
       }
 
+      if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
+        ele.prefijoTelefonico = '593';
+      }
+
       // Confirmar si se envia o no las Notificaciones
       if (this.enviarNotificacion) {
         this.enviarWhatsappApi(ele);
@@ -339,11 +344,13 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   openEditarDetail(transaccion: Transaccion) {
+    this.nombreProceso = "EDITAR";
     this.transaccionSeleccionado = transaccion;
     this.showDetail = true;
   }
 
   openRenovarDetail(transaccion: Transaccion) {
+    this.nombreProceso = "RENOVAR";
     this.transaccionSeleccionado = transaccion;
     this.transaccionSeleccionado.numMes = 0;
     this.transaccionSeleccionado.numProducto = 0;
@@ -353,6 +360,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   openClonarDetail(transaccion: Transaccion) {
+    this.nombreProceso = "CLONAR";
     this.transaccionSeleccionado = transaccion;
     this.transaccionSeleccionado.estado = "C";
     this.showDetail = true;
@@ -507,7 +515,8 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.seEnvioWhatsapp = true;
     let fechaFin = dayjs(ele.fechaFin).format("DD-MM-YYYY");
     this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
-    this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
+    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
+    this.celularEnvioWhatsapp = ele.prefijoTelefonico + ele.celular.substring(1, 10);
 
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensajeCaduca).subscribe({
       next: async (response) => {

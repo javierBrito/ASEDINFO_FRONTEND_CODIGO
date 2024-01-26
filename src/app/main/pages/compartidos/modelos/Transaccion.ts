@@ -196,4 +196,11 @@ export class Transaccion implements Itransaccion {
     set numDiasRenovar(value: number) {
         set(this, 'data.numDiasRenovar', value);
     }
+
+    get prefijoTelefonico(): string {
+        return get(this, 'data.prefijoTelefonico');
+    }
+    set prefijoTelefonico(value: string) {
+        set(this, 'data.prefijoTelefonico', value);
+    }
 }

@@ -27,6 +27,7 @@ export interface Itransaccion {
     precioCosto?: number;
     precioMayoreo?: number;
     nombreCliente?: string;
+    prefijoTelefonico?: string;
     celular?: string;
     numDiasRenovar: number;
 }

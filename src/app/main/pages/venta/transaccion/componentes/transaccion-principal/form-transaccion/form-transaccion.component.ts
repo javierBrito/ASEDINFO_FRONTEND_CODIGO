@@ -34,6 +34,7 @@ export class FormTransaccionComponent implements OnInit {
   @Input() transaccionEditar: Transaccion;
   @Input() codigoChild: number;
   @Input() descripcionChild: string;
+  @Input() nombreProcesoChild: string;
 
   /*MODALES*/
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
@@ -53,6 +54,7 @@ export class FormTransaccionComponent implements OnInit {
   public nemonicoModulo: string = 'VEN';
   public nemonicoOperacion: string = 'CRE';
   public fechaHoy: string = dayjs(new Date).format("YYYY-MM-DD");
+  public nombreProceso: string;
 
   /*FORMULARIOS*/
   public formTransaccion: FormGroup;
@@ -98,8 +100,20 @@ export class FormTransaccionComponent implements OnInit {
   ngOnInit() {
     this.buscarModuloPorNemonico();
     this.buscarOperacionPorNemonico();
+    this.nombreProceso = this.nombreProcesoChild;
     if (this.transaccionEditar) {
       this.transaccionEditarAux = this.transaccionEditar;
+      /*
+      if (this.transaccionEditarAux?.estado == "R") {
+        this.nombreProceso = "RENOVAR";
+      } else {
+        if (this.transaccionEditarAux?.estado == "C") {
+          this.nombreProceso = "CLONAR";
+        } else {
+          this.nombreProceso = "EDITAR";
+        }
+      }
+      */
       this.codProducto = this.transaccionEditar?.codProducto;
       this.numMes = this.transaccionEditar?.numMes;
       this.precio = this.transaccionEditar?.precio;

@@ -1,5 +1,5 @@
 <app-detail (close)="closeDetail($event)">
-    <h1 detail-title><strong>{{transaccionEditar ?'EDITAR':'AGREGAR'}}{{ ' Transacción'}}</strong></h1>
+    <h1 detail-title><strong>{{transaccionEditar ? nombreProceso :'AGREGAR'}}{{ ' Transacción'}}</strong></h1>
     <form detail-content [formGroup]="formTransaccion" (ngSubmit)="addRegistro()">
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
