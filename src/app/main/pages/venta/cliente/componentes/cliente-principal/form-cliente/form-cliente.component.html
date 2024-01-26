@@ -76,7 +76,20 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-12">
+                <div class="col-6">
+                    <label for="correo"><b>{{'Correo(*): '}}</b></label>
+                    <input type="text" name="correo" formControlName="correo" class="form-control"
+                        id="correo"
+                        [ngClass]="{'is-valid': correoField?.dirty && !correoField?.invalid && !correoField?.errors, 'is-invalid': correoField?.dirty && correoField?.invalid && correoField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="correoField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+
+                <div class="col-6">
                     <label for="direccion"><b>{{'Dirección: '}}</b></label>
                     <input type="text" name="direccion" formControlName="direccion"
                         class="form-control" id="direccion"
@@ -91,7 +104,20 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-4">
+                <div class="col-6">
+                    <label for="codigo"><b>{{"Prefijo(*): "}}</b></label>
+                    <select name="codigo" formControlName="codigo" required [compareWith]="compararPrefijoTelefonico"
+                        placeholder="Prefijo telefónico" class="form-control mr-sm-2" id="codigo"
+                        (change)="buscarPrefijoTelefonico()">
+                        <option [value]="" selected>Prefijo telefónico</option>
+                        <option *ngFor="let prefijoTelefonico of listaPrefijoTelefonico" [value]="prefijoTelefonico.codigo">
+                            <span>{{prefijoTelefonico?.nombrePais+" / "+prefijoTelefonico?.codigo}}</span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+                <div class="col-6">
                     <label for="celular"><b>{{'Celular(*): '}}</b></label>
                     <input type="text" name="celular" formControlName="celular" class="form-control" id="celular"
                         [ngClass]="{'is-valid': celularField?.dirty && !celularField?.invalid && !celularField?.errors, 'is-invalid': celularField?.dirty && celularField?.invalid && celularField?.errors}">
@@ -100,18 +126,6 @@
                     </div>
                     <div class="invalid-feedback">
                         <span *ngIf="celularField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
-                </div>
-                <div class="col-8">
-                    <label for="correo"><b>{{'Correo(*): '}}</b></label>
-                    <input type="text" name="correo" formControlName="correo" class="form-control"
-                        id="correo"
-                        [ngClass]="{'is-valid': correoField?.dirty && !correoField?.invalid && !correoField?.errors, 'is-invalid': correoField?.dirty && correoField?.invalid && correoField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="correoField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
             </div>

@@ -77,6 +77,13 @@ export class Cliente implements Icliente {
     set identificacion(value: string) {
         set(this, 'data.identificacion', value);
     }    
+
+    get prefijoTelefonico(): string {
+        return get(this, 'data.prefijoTelefonico');
+    }
+    set prefijoTelefonico(value: string) {
+        set(this, 'data.prefijoTelefonico', value);
+    }
     get celular(): string {
         return get(this, 'data.celular');
     }

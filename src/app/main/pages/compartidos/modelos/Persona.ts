@@ -62,6 +62,13 @@ export class Persona implements Ipersona {
     set celular(value: string) {
         set(this, 'data.celular', value);
     }
+    
+    get prefijoTelefonico(): string {
+        return get(this, 'data.prefijoTelefonico');
+    }
+    set prefijoTelefonico(value: string) {
+        set(this, 'data.prefijoTelefonico', value);
+    }
 
     get correo(): string {
         return get(this, 'data.correo');

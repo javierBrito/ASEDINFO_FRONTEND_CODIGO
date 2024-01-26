@@ -7,6 +7,7 @@ export interface Ipersona {
     fechaNacimiento: string;
     direccion?: string;
     celular?: string;
+    prefijoTelefonico: string;
     correo?: string;
     estado?: string;
 

@@ -103,7 +103,11 @@ export class ClientePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaCliente = respuesta['listado'];
         for (const ele of this.listaCliente) {
-          ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+          ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
+          if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
+            ele.prefijoTelefonico = '593';
+          }
+    
           /*
           if (ele.codPersona != null) {
             this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(
@@ -133,6 +137,9 @@ export class ClientePrincipalComponent implements OnInit {
         this.listaCliente = respuesta['listado'];
         for (const ele of this.listaCliente) {
           ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD")
+          if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
+            ele.prefijoTelefonico = '593';
+          }
           /*
           if (ele.codPersona != null) {
             this.personaService.buscarPersonaPorCodigo(ele.codPersona).subscribe(

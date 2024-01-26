@@ -8,6 +8,7 @@ export interface Icliente {
     persona: any;
     nombrePersona: string;
     celular: string;
+    prefijoTelefonico: string;
     correo: string;
     nombres: string;
     apellidos: string;

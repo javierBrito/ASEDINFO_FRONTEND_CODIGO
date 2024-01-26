@@ -44,5 +44,8 @@ export class ClienteService {
   guardarCliente(cliente) {
     return this.http.post<Cliente>(`${environment.url_seguridad}/venta/guardarCliente`, cliente);
   }
+  listarPrefijoTelefonico(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarPrefijoTelefonico`);
+  }
 
 }
