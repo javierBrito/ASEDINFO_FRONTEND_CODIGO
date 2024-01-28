@@ -8,9 +8,9 @@
                     </div>
                 </div>
                 <form detail-content [formGroup]="formClienteIdentificacion"
-                    (ngSubmit)="listarClientePorPersonaIdentificacion()">
+                    (ngSubmit)="listarCliente()">
                     <div class="row form-group">
-                        <div class="col-md-6 col-3 form-group">
+                        <div class="col-2">
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                             <input type="text" name="identificacion" id="identificacion"
                                 formControlName="identificacion" maxlength="60"
@@ -21,7 +21,7 @@
                                 <span>{{ "Exito"}}</span>
                             </div>
                         </div>
-                        <div class="col-md-4 col-3 form-group">
+                        <div class="col-3">
                             <label for="nombre"><b>{{'Nombre cliente(*): '}}</b></label>
                             <input type="text" name="nombre" id="nombre" formControlName="nombre"
                                 oninput="nombre.value = nombre.value.toUpperCase()" maxlength="50"
@@ -31,9 +31,9 @@
                                 <span>{{ "Exito"}}</span>
                             </div>
                         </div>
-                        <div class="col-md-2 col-3 form-group">
+                        <div class="col-2">
                             <div class="my-2 text-left table-responsive">
-                                <button type="submit" [disabled]="formClienteIdentificacion.invalid"
+                                <button type="submit" 
                                     class="btn btn-info btn-rounded">
                                     <b>{{ "Buscar"}}</b>
                                     <b>{{ " "}}</b>

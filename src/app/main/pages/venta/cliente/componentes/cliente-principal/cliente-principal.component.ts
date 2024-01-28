@@ -85,8 +85,8 @@ export class ClientePrincipalComponent implements OnInit {
       this.listaPersona = this.listaPersonaChild;
     }
     this.formClienteIdentificacion = this.formBuilder.group({
-      nombre: new FormControl('', Validators.required),
-      identificacion: new FormControl('', Validators.required),
+      nombre: new FormControl(''),
+      identificacion: new FormControl(''),
       /*
         identificacion: new FormControl('', Validators.compose([
         MyValidators.isCedulaValid,
