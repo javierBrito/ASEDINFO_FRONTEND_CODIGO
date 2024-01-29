@@ -143,6 +143,17 @@
                     </div>
                 </div>
             </div>
+            <div class="row form-group">
+                <div class="col-3">
+                    <label for="numDiasExtra"><b>{{'Días Extra(*):'}}</b></label>
+                    <input type="number" name="numDiasExtra" formControlName="numDiasExtra" class="form-control" id="numDiasExtra"
+                        placeholder="999" step="01" min="000" (keyup)="onKeyDiasExtra($event)"
+                        [ngClass]="{'is-valid': numDiasExtraField?.dirty && !numDiasExtraField?.invalid && !numDiasExtraField?.errors && (numDiasExtraField?.value > numDiasExtraField?.value), 'is-invalid': numDiasExtraField?.dirty && numDiasExtraField?.invalid && numDiasExtraField?.errors  && !(numDiasExtraField?.value > numDiasExtraField?.value)}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12">
                     <button type="submit" class="btn btn-block btn-primary" [disabled]="formTransaccion?.invalid">

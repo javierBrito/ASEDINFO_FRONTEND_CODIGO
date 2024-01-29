@@ -46,6 +46,7 @@ export class FormTransaccionComponent implements OnInit {
   private amieRegex: string;
   private currentUser: any;
   private numMes: number = 0;
+  private numDiasExtra: number = 0;
   private precio: number = 0;
   private numProducto: number = 0;
   private monto: number;
@@ -105,6 +106,7 @@ export class FormTransaccionComponent implements OnInit {
       this.transaccionEditarAux = this.transaccionEditar;
       this.codProducto = this.transaccionEditar?.codProducto;
       this.numMes = this.transaccionEditar?.numMes;
+      this.numDiasExtra = this.transaccionEditar?.numDiasExtra;
       this.precio = this.transaccionEditar?.precio;
       this.numProducto = this.transaccionEditar?.numProducto;
       this.numExistenciaActual = this.transaccionEditar?.numExistenciaActual;
@@ -120,6 +122,7 @@ export class FormTransaccionComponent implements OnInit {
         numProducto: new FormControl(this.transaccionEditar.numProducto, Validators.required),
         numExistenciaActual: new FormControl(this.transaccionEditar.numExistenciaActual),
         numMes: new FormControl(this.transaccionEditar.numMes),
+        numDiasExtra: new FormControl(this.transaccionEditar.numDiasExtra),
         precioMayoreo: new FormControl(this.transaccionEditar.precioMayoreo, Validators.required),
         monto: new FormControl(this.transaccionEditar.monto),
       })
@@ -137,6 +140,7 @@ export class FormTransaccionComponent implements OnInit {
         numProducto: new FormControl('', Validators.required),
         numExistenciaActual: new FormControl(''),
         numMes: new FormControl(''),
+        numDiasExtra: new FormControl(''),
         precioMayoreo: new FormControl(''),
         monto: new FormControl(''),
       })
@@ -291,6 +295,12 @@ export class FormTransaccionComponent implements OnInit {
         fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes)
         fechaFinString = fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate();
       }
+      if (transaccionTemp?.numDiasExtra != "" && transaccionTemp?.numDiasExtra != 0) {
+        this.numDiasExtra = transaccionTemp?.numDiasExtra;
+        // Sumar los días a la fecha final
+        fechaFinDate.setDate(fechaFinDate.getDate() + this.numDiasExtra);
+        fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
+      }
       let fechaCambia = "";
       if (transaccionTemp?.fechaCambia != null && transaccionTemp?.fechaCambia != "" && transaccionTemp?.fechaCambia != 'Invalid Date') {
         fechaCambia = dayjs(transaccionTemp?.fechaCambia).format("YYYY-MM-DD HH:mm:ss.SSS");
@@ -307,6 +317,7 @@ export class FormTransaccionComponent implements OnInit {
         monto: transaccionTemp?.monto,
         numProducto: transaccionTemp?.numProducto,
         numMes: this.numMes,
+        numDiasExtra: this.numDiasExtra,
         fechaInicio: dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaCambia: fechaCambia,
         fechaFin: dayjs(fechaFinString).format("YYYY-MM-DD HH:mm:ss.SSS"),
@@ -410,12 +421,28 @@ export class FormTransaccionComponent implements OnInit {
       fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
       fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
       this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
-      
+
       // Calcular monto de la transacción
       this.calcularMonto();
     }
   }
 
+  // Tomar el valor de meses para obtener la fecha fin y el monto
+  onKeyDiasExtra(event) {
+    if (event.target.value.length != 0) {
+      let transaccionTemp = this.formTransaccion.value;
+      let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS"));
+      var fechaFinString = "";
+      this.numDiasExtra = Number(event.target.value);
+      // Sumar los días a la fecha final
+      fechaFinDate.setDate(fechaFinDate.getDate() + this.numDiasExtra);
+      fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
+      this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+
+      // Calcular monto de la transacción
+      this.calcularMonto();
+    }
+  }
   // Tomar el valor de meses para obtener la fecha fin y el monto
   onKeyFechaInicio(event) {
     if (event.target.value.length != 0) {
@@ -515,6 +542,9 @@ export class FormTransaccionComponent implements OnInit {
   }
   get claveCuentaField() {
     return this.formTransaccion.get('claveCuenta');
+  }
+  get numDiasExtraField() {
+    return this.formTransaccion.get('numDiasExtra');
   }
 
 }

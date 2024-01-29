@@ -11,6 +11,7 @@ export interface Itransaccion {
     numProducto?: number;
     numExistenciaActual?: number;
     numMes?: number;
+    numDiasExtra?: number;
     fechaInicio?: string;
     fechaFin?: string;
     fechaRegistra?: string;
