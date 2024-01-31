@@ -24,7 +24,7 @@
                         <div class="col-3">
                             <label for="nombre"><b>{{'Nombre cliente(*): '}}</b></label>
                             <input type="text" name="nombre" id="nombre" formControlName="nombre"
-                                oninput="nombre.value = nombre.value.toUpperCase()" maxlength="50"
+                                maxlength="50"
                                 placeholder="Por favor, ingrese la clave de la cuenta." class="form-control"
                                 [ngClass]="{'is-valid': nombreField?.dirty && !nombreField?.invalid && !nombreField?.errors,'is-invalid': nombreField?.dirty && nombreField?.invalid && nombreField?.errors}">
                             <div class="valid-feedback">

@@ -53,7 +53,6 @@
                 <div class="col-6">
                     <label for="nombres"><b>{{'Nombre(*): '}}</b></label>
                     <input type="text" name="nombres" formControlName="nombres" class="form-control" id="nombres"
-                        oninput="nombres.value = nombres.value.toUpperCase()"
                         [ngClass]="{'is-valid': nombresField?.dirty && !nombresField?.invalid && !nombresField?.errors, 'is-invalid': nombresField?.dirty && nombresField?.invalid && nombresField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -65,7 +64,6 @@
                 <div class="col-6">
                     <label for="apellidos"><b>{{'Apellido(*): '}}</b></label>
                     <input type="text" name="apellidos" formControlName="apellidos" class="form-control" id="apellidos"
-                        oninput="apellidos.value = apellidos.value.toUpperCase()"
                         [ngClass]="{'is-valid': apellidosField?.dirty && !apellidosField?.invalid && !apellidosField?.errors, 'is-invalid': apellidosField?.dirty && apellidosField?.invalid && apellidosField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>

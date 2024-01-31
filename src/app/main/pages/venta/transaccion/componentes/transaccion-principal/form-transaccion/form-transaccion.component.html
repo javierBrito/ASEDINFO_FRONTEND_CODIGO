@@ -34,7 +34,6 @@
                     <label for="descripcion"><b>{{'Descripción(*): '}}</b></label>
                     <input type="text" name="descripcion" formControlName="descripcion" class="form-control"
                         id="descripcion" placeholder="Por favor, ingrese la descripción."
-                        oninput="descripcion.value = descripcion.value.toUpperCase()"
                         [ngClass]="{'is-valid': descripcionField?.dirty && !descripcionField?.invalid && !descripcionField?.errors, 'is-invalid': descripcionField?.dirty && descripcionField?.invalid && descripcionField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>

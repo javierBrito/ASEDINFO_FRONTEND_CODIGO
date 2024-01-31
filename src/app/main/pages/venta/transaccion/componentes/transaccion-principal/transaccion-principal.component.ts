@@ -516,7 +516,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     let fechaFin = dayjs(ele.fechaFin).format("DD-MM-YYYY");
     this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    this.celularEnvioWhatsapp = ele.prefijoTelefonico + ele.celular.substring(1, 10);
+    this.celularEnvioWhatsapp = ele.prefijoTelefonico + ele.celular.substring(1, 15).trim();
 
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensajeCaduca).subscribe({
       next: async (response) => {
