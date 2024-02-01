@@ -168,7 +168,7 @@ export class FormParticipanteComponent implements OnInit {
       //this.listarSubcategoriaPorCategoria();
       this.listarInstanciaActivo();
     }
-    this.verpdf();
+    //this.verpdf();
   }
 
   adicionarIntegrante() {
@@ -558,14 +558,16 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   previsualizarArchivo(index, file) {
-    //Previsualizar documento
+    //Previsualizar archivo
     this.pdfFileURL = URL.createObjectURL(file);
     document.getElementById('vistaPreviaDJ1').setAttribute('src', this.pdfFileURL);
   }
 
   cargarArchivo(index, file) {
-    this.nombreCancion = file.name
-    this.participanteService.cargarArchivo(file).subscribe(
+    // Receptar identificacion de formParticipante.value
+    let participanteTemp = this.formParticipante.value;
+    this.nombreCancion = participanteTemp?.identificacion+"_"+file?.name;
+    this.participanteService.cargarArchivo(file, participanteTemp?.identificacion).subscribe(
       async (respuesta) => {
         console.log("respuesta = ", respuesta);
       }, err => {

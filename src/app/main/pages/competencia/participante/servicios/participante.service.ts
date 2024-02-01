@@ -93,10 +93,10 @@ export class ParticipanteService {
 
   // GESTIÓN DE ARCHIVOS
   // Cargar archivo PDF a una carpeta
-  cargarArchivo(file: File): Observable<HttpEvent<any>> {
+  cargarArchivo(file: File, nombreArchivo: string): Observable<HttpEvent<any>> {
     const formData: FormData = new FormData();
     formData.append('files', file);
-    const req = new HttpRequest('POST', `${environment.url_seguridad}/private/cargarArchivo`, formData, {
+    const req = new HttpRequest('POST', `${environment.url_seguridad}/private/cargarArchivo/${nombreArchivo}`, formData, {
       reportProgress: true,
       responseType: 'json'
     });

@@ -54,7 +54,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public habilitarAgregarParticipante: boolean;
   public habilitarSeleccionarArchivo: boolean;
   public displayNone: string = '';
-  public displayNone1: string = '';
+  public displayNone1: string = 'none';
   public disabledEstado: boolean;
   public customerId: number;
   public userId: number;
@@ -261,7 +261,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     let participanteParametroTemp = this.formParticipanteParametro.value;
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
     this.codInstancia = participanteParametroTemp?.codInstancia;
-    this.habilitarAgregarParticipante = true;
+    //this.habilitarAgregarParticipante = true;
+    this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
@@ -496,7 +497,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   cargarArchivo(index, file) {
-    this.participanteService.cargarArchivo(file).subscribe(
+    this.participanteService.cargarArchivo(file, "").subscribe(
       async (respuesta) => {
         console.log("respuesta = ", respuesta);
       }, err => {
