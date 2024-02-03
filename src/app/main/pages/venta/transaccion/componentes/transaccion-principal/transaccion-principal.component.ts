@@ -9,7 +9,6 @@ import { TransaccionService } from '../../servicios/transaccion.service';
 import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
 import dayjs from "dayjs";
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
-import { ProductoService } from 'app/main/pages/catalogo/producto/servicios/producto.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { Cliente } from 'app/main/pages/compartidos/modelos/Cliente';
 import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
@@ -19,6 +18,8 @@ import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model';
 import { ajax } from 'jquery';
 import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
+import moment from 'moment';
+
 
 @Component({
   selector: 'app-transaccion-principal',
@@ -52,6 +53,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public fechaFinMensaje: string;
   public nombreCliente: string;
   public enviarNotificacion: boolean;
+  public enviarNotificacionIndividual: boolean;
   public seEnvioWhatsapp: boolean;
   public respuestaEnvioWhatsapp: string;
   public token: string;
@@ -74,8 +76,6 @@ export class TransaccionPrincipalComponent implements OnInit {
   private currentUser: LoginAplicacion;
   private sede: Sede;
   private persona: Persona;
-  private cliente: Cliente;
-  private producto: Producto;
   public modulo: Modulo;
   public parametro: Parametro;
   public operacion: Operacion;
@@ -101,7 +101,6 @@ export class TransaccionPrincipalComponent implements OnInit {
     private readonly transaccionService: TransaccionService,
     private readonly clienteService: ClienteService,
     private readonly personaService: PersonaService,
-    private readonly productoService: ProductoService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder
   ) {
@@ -114,6 +113,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.sede = this.currentUser.sede;
     /*LISTAS*/
     this.listarClienteActivoOrdenNombre();
+    moment.locale("es");
   }
 
   ngOnInit() {
@@ -132,6 +132,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.obtenerParametros();
     //this.obtenerTransaccionACaducarse();
     this.listarTransaccionACaducarse();
+    this.enviarNotificacionIndividual = false;
   }
 
   listarClienteActivoOrdenNombre() {
@@ -186,7 +187,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   obtenerTransaccionACaducarse = async () => {
     this.enviarNotificacion = false;
-    await this.confirmarEnviarNotificacion();
+    await this.confirmarEnviarNotificacion(null);
   }
 
   listarTransaccionACaducarse() {
@@ -221,7 +222,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       this.listarTransaccionPorClaveCuenta();
       return;
     }
-    if (this.codCliente != 0 && Number(this.codCliente)+"" != "NaN") {
+    if (this.codCliente != 0 && Number(this.codCliente) + "" != "NaN") {
       this.listarTransaccionPorCliente();
       return;
     }
@@ -291,6 +292,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   mostrarListaTransaccion = async () => {
     for (const ele of this.listaTransaccion) {
       ele.colorFila = "green";
+      ele.visibleBoton = "none";
       ele.colorColumna = "white";
       ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
       ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
@@ -300,7 +302,7 @@ export class TransaccionPrincipalComponent implements OnInit {
         var diff1 = new Date(ele.fechaCambia).getTime() - new Date(this.fechaHoy).getTime();
         var numDias1 = diff1 / (1000 * 60 * 60 * 24);
 
-        if (numDias1 == 0) {
+        if (numDias1 <= 0) {
           ele.colorColumna = "yellow";
         }
       }
@@ -314,7 +316,8 @@ export class TransaccionPrincipalComponent implements OnInit {
       ele.numDiasRenovar = numDias;
       if (!(numDias > 0 && numDias > 5)) {
         ele.colorFila = "red";
-      }
+        ele.visibleBoton = ""
+      } 
 
       if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
         ele.prefijoTelefonico = '593';
@@ -395,6 +398,12 @@ export class TransaccionPrincipalComponent implements OnInit {
       });
   }
 
+  openNotificarDetail = async (transaccion: Transaccion) => {
+    this.enviarNotificacion = false;
+    this.enviarNotificacionIndividual = true;
+    await this.confirmarEnviarNotificacion(transaccion);
+  }
+
   closeDetail($event) {
     this.showDetail = $event;
     this.transaccionSeleccionado = null;
@@ -432,7 +441,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     }
   }
 
-  async confirmarEnviarNotificacion() {
+  async confirmarEnviarNotificacion(transaccion: Transaccion) {
     this.enviarNotificacion = false;
     Swal
       .fire({
@@ -445,8 +454,18 @@ export class TransaccionPrincipalComponent implements OnInit {
       })
       .then(async resultado => {
         if (resultado.isConfirmed) {
-          this.enviarNotificacion = true;
-          this.listarTransaccionACaducarse();
+          if (this.enviarNotificacionIndividual) {
+            this.seEnvioWhatsapp = false;
+            this.enviarWhatsappApi(transaccion);
+            if (this.seEnvioWhatsapp) {
+              this.mensajeService.mensajeCorrecto('Las notificación se envió con éxito...');
+            } else {
+              this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
+            }
+          } else {
+            this.enviarNotificacion = true;
+            this.listarTransaccionACaducarse();
+          }
         } else if (resultado.isDismissed) {
           console.log("No envia notificaciones");
         }
@@ -511,15 +530,20 @@ export class TransaccionPrincipalComponent implements OnInit {
     });
   }
 
-  async enviarWhatsappApi(ele: Transaccion) {
-    this.seEnvioWhatsapp = true;
-    let fechaFin = dayjs(ele.fechaFin).format("DD-MM-YYYY");
-    this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + ele.nombreCliente + " el servicio de " + ele.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+  async enviarWhatsappApi(transaccion: Transaccion) {
+    //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
+    let dia = moment(transaccion?.fechaFin).format("D");
+    let mes = moment(transaccion?.fechaFin).format("MMMM");
+    let año = moment(transaccion?.fechaFin).format("YYYY");
+    transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
+    //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar en " + transaccion?.numDiasRenovar +" día(s) el " + dia + " de "+ mes + " de " + año + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    this.celularEnvioWhatsapp = ele.prefijoTelefonico + ele.celular.substring(1, 15).trim();
+    this.celularEnvioWhatsapp = transaccion.prefijoTelefonico + transaccion.celular.substring(1, 15).trim();
 
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensajeCaduca).subscribe({
       next: async (response) => {
+        this.seEnvioWhatsapp = true;
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
       },
       error: (error) => {

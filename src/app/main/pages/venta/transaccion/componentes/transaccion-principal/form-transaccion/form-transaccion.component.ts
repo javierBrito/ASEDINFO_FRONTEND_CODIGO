@@ -239,7 +239,7 @@ export class FormTransaccionComponent implements OnInit {
         var diff1 = new Date(ele.fechaCambia).getTime() - new Date(this.fechaHoy).getTime();
         var numDias1 = diff1 / (1000 * 60 * 60 * 24);
 
-        if (numDias1 == 0) {
+        if (numDias1 <= 0) {
           ele.colorColumna = "yellow";
         }
       }

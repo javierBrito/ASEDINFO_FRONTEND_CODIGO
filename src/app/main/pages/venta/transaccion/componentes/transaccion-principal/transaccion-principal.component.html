@@ -31,8 +31,8 @@
                         <div class="col-md-4 col-3 form-group">
                             <label for="descripcion"><b>{{'Descripción(*): '}}</b></label>
                             <input type="text" name="descripcion" id="descripcion" formControlName="descripcion"
-                                maxlength="50"
-                                placeholder="Por favor, ingrese la clave de la cuenta." class="form-control"
+                                maxlength="50" placeholder="Por favor, ingrese la clave de la cuenta."
+                                class="form-control"
                                 [ngClass]="{'is-valid': descripcionField?.dirty && !descripcionField?.invalid && !descripcionField?.errors,'is-invalid': descripcionField?.dirty && descripcionField?.invalid && descripcionField?.errors}">
                             <div class="valid-feedback">
                                 <span>{{ "Exito"}}</span>
@@ -117,8 +117,9 @@
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Cliente</th>
-                                                        <!--<th scope="col">Producto</th>-->
-                                                        <th scope="col">Descripción</th>
+                                                        <th scope="col">Producto</th>
+                                                        <th scope="col">Clave Cuenta</th>
+                                                        <!--<th scope="col">Descripción</th>-->
                                                         <th scope="col">Monto</th>
                                                         <th scope="col">Cantidad</th>
                                                         <!--<th scope="col">Inicio</th>-->
@@ -134,8 +135,9 @@
                                                         <td>{{index+1}}</td>
                                                         <!--<td>{{transaccion?.nombreCliente + " - " + transaccion?.celular}}</td>-->
                                                         <td>{{transaccion?.nombreCliente}}</td>
-                                                        <!--<td>{{transaccion?.descripcionProducto}}</td>-->
-                                                        <td>{{transaccion?.descripcion}}</td>
+                                                        <td>{{transaccion?.descripcionProducto}}</td>
+                                                        <td>{{transaccion?.claveCuenta}}</td>
+                                                        <!--<td>{{transaccion?.descripcion}}</td>-->
                                                         <td>{{transaccion?.monto}}</td>
                                                         <td>{{transaccion?.numProducto}}</td>
                                                         <!--<td>{{transaccion?.fechaInicio}}</td>-->
@@ -147,25 +149,30 @@
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
                                                                 <button (click)="openClonarDetail(transaccion)"
-                                                                    matTooltip="Clonar Transaccion" type=" button"
+                                                                    matTooltip="Clonar Transacción" type=" button"
                                                                     class="btn btn-success" rippleEffect round><i
                                                                         class="fas fa-copy"
                                                                         (click)="openClonarDetail(transaccion)"></i></button>
                                                                 <button (click)="openRenovarDetail(transaccion)"
-                                                                    matTooltip="Renovar Transaccion" type=" button"
+                                                                    matTooltip="Renovar Transacción" type=" button"
                                                                     class="btn btn-info" rippleEffect round><i
                                                                         class="fas fa-paste"
                                                                         (click)="openRenovarDetail(transaccion)"></i></button>
                                                                 <button (click)="openEditarDetail(transaccion)"
-                                                                    matTooltip="Editar Transaccion" type=" button"
+                                                                    matTooltip="Editar Transacción" type=" button"
                                                                     class="btn btn-primary" rippleEffect round><i
                                                                         class="fa fa-pencil"
                                                                         (click)="openEditarDetail(transaccion)"></i></button>
                                                                 <button (click)="openRemoverDetail(transaccion)"
-                                                                    matTooltip="Eliminar Transaccion" type="button"
+                                                                    matTooltip="Eliminar Transacción" type="button"
                                                                     class="btn btn-danger" rippleEffect><i
                                                                         class="fa fa-trash"
                                                                         (click)="openRemoverDetail(transaccion)"></i></button>
+                                                                <button (click)="openNotificarDetail(transaccion)" [ngStyle]="{'display': transaccion?.visibleBoton}"
+                                                                    matTooltip="Enviar Notificación" type="button"
+                                                                    class="btn btn-success btn-submit waves-effect waves-float waves-light" rippleEffect><i
+                                                                        class="fa fa-envelope" style="font-size:14px;color:red"
+                                                                        (click)="openNotificarDetail(transaccion)"></i></button>
                                                             </div>
                                                         </td>
                                                     </tr>

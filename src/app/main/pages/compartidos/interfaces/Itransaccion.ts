@@ -23,6 +23,7 @@ export interface Itransaccion {
     modulo?: any,
     operacion?: any,
     colorFila?: string;
+    visibleBoton?: string;
     colorColumna?: string;
     descripcionProducto?: string;
     precioCosto?: number;

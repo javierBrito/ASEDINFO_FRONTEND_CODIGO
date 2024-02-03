@@ -203,13 +203,19 @@ export class Transaccion implements Itransaccion {
     set prefijoTelefonico(value: string) {
         set(this, 'data.prefijoTelefonico', value);
     }
-
     
     get numDiasExtra(): number {
         return get(this, 'data.numDiasExtra');
     }
     set numDiasExtra(value: number) {
         set(this, 'data.numDiasExtra', value);
+    }
+
+    get visibleBoton(): string {
+        return get(this, 'data.visibleBoton');
+    }
+    set visibleBoton(value: string) {
+        set(this, 'data.visibleBoton', value);
     }
 
 }
