@@ -33,6 +33,7 @@ import { CategoriaModule } from './catalogo/categoria/modulos/categoria.module';
 import { SubcategoriaModule } from './catalogo/subcategoria/modulos/subcategoria.module';
 import { ParametroModule } from './catalogo/parametro/modulos/parametro.module';
 import { ResultadoModule } from './competencia/resultado/modulos/resultado.module';
+import { EstadoModule } from './competencia/estado/modulos/estado.module';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { ResultadoModule } from './competencia/resultado/modulos/resultado.modul
     CategoriaModule,
     SubcategoriaModule,
     ParametroModule,
-    ResultadoModule
+    ResultadoModule,
+    EstadoModule,
   ],
   providers: []
 })

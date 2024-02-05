@@ -2,13 +2,12 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MensajesIziToastService } from 'app/main/pages/compartidos/servicios/iziToast/mensajesIziToast.service';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
-import { DetailComponent } from 'app/main/pages/competencia/participante/componentes/detail/detail.component';
+import { DetailComponent } from 'app/main/pages/competencia/estado/componentes/detail/detail.component';
 import dayjs from "dayjs";
 import { MyValidators } from 'app/utils/validators';
-import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
-import { ParticipanteService } from '../../../servicios/participante.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
+import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
 import { delay } from 'rxjs/operators';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
@@ -18,13 +17,15 @@ import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/htt
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { saveAs } from 'file-saver';
+import { ParticipanteService } from 'app/main/pages/competencia/participante/servicios/participante.service';
+import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 
 @Component({
-  selector: 'app-form-participante',
-  templateUrl: './form-participante.component.html',
-  styleUrls: ['./form-participante.component.scss']
+  selector: 'app-form-estado',
+  templateUrl: './form-estado.component.html',
+  styleUrls: ['./form-estado.component.scss']
 })
-export class FormParticipanteComponent implements OnInit {
+export class FormEstadoComponent implements OnInit {
   /*SPINNER*/
   public load_btn: boolean;
 
@@ -66,7 +67,7 @@ export class FormParticipanteComponent implements OnInit {
   public nombreIntegrante: string;
 
   /*FORMULARIOS*/
-  public formParticipante: FormGroup;
+  public formEstado: FormGroup;
 
   // TRATAR ARCHIVOS
   // Lista de archivos seleccionados
@@ -89,6 +90,7 @@ export class FormParticipanteComponent implements OnInit {
   public participanteAux: Participante;
   public personaEditar: Persona;
   public persona: Persona;
+  public listaEstadoCompetencia: EstadoCompetencia[];
   public listaRespuesta = [
     { valor: "SI" },
     { valor: "NO" },
@@ -118,11 +120,11 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listarEstadoCompetenciaActivo();
+    this.listarEstadoActivo();
     if (this.participanteEditar) {
       this.codSubcategoriaChild = this.participanteEditar.codSubcategoria;
       this.codInstanciaChild = this.participanteEditar.codInstancia;
-      this.formParticipante = this.formBuilder.group({
+      this.formEstado = this.formBuilder.group({
         identificacion: new FormControl(this.participanteEditar?.email, Validators.required),
         nombres: new FormControl(this.participanteEditar?.nombres, Validators.required),
         apellidos: new FormControl(this.participanteEditar?.apellidos),
@@ -140,7 +142,7 @@ export class FormParticipanteComponent implements OnInit {
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
-      this.formParticipante = this.formBuilder.group({
+      this.formEstado = this.formBuilder.group({
         identificacion: new FormControl('', Validators.required),
         nombres: new FormControl('', Validators.required),
         apellidos: new FormControl(''),
@@ -150,7 +152,7 @@ export class FormParticipanteComponent implements OnInit {
         //correo: new FormControl('', Validators.required),
         dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD HH:mm")),
         username: new FormControl(''),
-        codEstadoCompetencia: new FormControl(1),
+        codEstado: new FormControl(1),
         numPuntajeJuez: new FormControl(''),
         codCategoria: new FormControl('', Validators.required),
         codSubcategoria: new FormControl('', Validators.required),
@@ -170,9 +172,9 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   adicionarIntegrante() {
-    // Receptar la codSubcategoria y codInstancia de formParticipante.value
-    let participanteTemp = this.formParticipante.value;
-    this.nombreIntegrante = participanteTemp?.apellidos;
+    // Receptar la codSubcategoria y codInstancia de formEstado.value
+    let estadoTemp = this.formEstado.value;
+    this.nombreIntegrante = estadoTemp?.apellidos;
     let auxBusqueda: any;
     if (this.listaIntegrante.length > 0) {
       auxBusqueda = this.listaIntegrante.find(obj => obj.nombre == this.nombreIntegrante)
@@ -186,7 +188,7 @@ export class FormParticipanteComponent implements OnInit {
         estado: "A",
       }
       this.listaIntegrante.push(this.integrante);
-      this.formParticipante.controls.apellidos.setValue("");
+      this.formEstado.controls.apellidos.setValue("");
     } else {
       this.mensajeService.mensajeError('Ingrese nombre integrante, no repita...');
     }
@@ -221,9 +223,9 @@ export class FormParticipanteComponent implements OnInit {
   listarSubcategoriaPorCategoria() {
     this.displayNoneIntegrante2 = "none";
     this.displayNoneIntegranteGrupo = "none";
-    // Receptar la descripción de formParticipante.value
-    let participanteTemp = this.formParticipante.value;
-    this.codCategoria = participanteTemp?.codCategoria;
+    // Receptar la descripción de formEstado.value
+    let estadoTemp = this.formEstado.value;
+    this.codCategoria = estadoTemp?.codCategoria;
     this.participanteService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
         this.listaSubcategoria = respuesta['listado'];
@@ -231,10 +233,10 @@ export class FormParticipanteComponent implements OnInit {
     )
   }
 
-  listarEstadoCompetenciaActivo() {
+  listarEstadoActivo() {
     this.participanteService.listarEstadoCompetenciaActivo().subscribe(
       (respuesta) => {
-        this.listaParticipante = respuesta['listado'];
+        this.listaEstadoCompetencia = respuesta['listado'];
       }
     )
   }
@@ -242,13 +244,13 @@ export class FormParticipanteComponent implements OnInit {
   obtenerCodInstancia() {
     this.displayNoneIntegrante2 = "none";
     this.displayNoneIntegranteGrupo = "none";
-    // Receptar la codSubcategoria y codInstancia de formParticipante.value
-    let participanteTemp = this.formParticipante.value;
-    this.codSubcategoria = participanteTemp?.codSubcategoria;
+    // Receptar la codSubcategoria y codInstancia de formEstado.value
+    let estadoTemp = this.formEstado.value;
+    this.codSubcategoria = estadoTemp?.codSubcategoria;
     // obtener la subcategoria por codigo
     this.buscarSubcategoriaPorCodigo();
     this.codSubcategoriaChild = this.codSubcategoria;
-    //this.codInstancia = participanteTemp?.codInstancia;
+    //this.codInstancia = estadoTemp?.codInstancia;
     this.codInstancia = 1;
     this.codInstanciaChild = this.codInstancia;
   }
@@ -270,9 +272,9 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   listarInstanciaActivo() {
-    // Receptar codCategoria de formParticipanteParametro.value
-    let participanteTemp = this.formParticipante.value;
-    this.codSubcategoria = participanteTemp?.codSubcategoria;
+    // Receptar codCategoria de formEstadoParametro.value
+    let estadoTemp = this.formEstado.value;
+    this.codSubcategoria = estadoTemp?.codSubcategoria;
     this.participanteService.listarInstanciaActivo().subscribe(
       (respuesta) => {
         this.listaInstancia = respuesta['listado'];
@@ -329,12 +331,12 @@ export class FormParticipanteComponent implements OnInit {
       next: (response) => {
         this.personaEditar = response['objeto'];
         /*
-        this.formParticipante.controls.fechaNacimiento.setValue(dayjs(this.participante?.fechaNacimiento).format("YYYY-MM-DD"));
-        this.formParticipante.controls.nombres.setValue(this.participante?.nombres);
-        this.formParticipante.controls.apellidos.setValue(this.participante?.apellidos);
-        this.formParticipante.controls.country.setValue(this.participante?.country);
-        this.formParticipante.controls.correo.setValue(this.participante?.correo);
-        this.formParticipante.controls.celular.setValue(this.participante?.celular);
+        this.formEstado.controls.fechaNacimiento.setValue(dayjs(this.participante?.fechaNacimiento).format("YYYY-MM-DD"));
+        this.formEstado.controls.nombres.setValue(this.participante?.nombres);
+        this.formEstado.controls.apellidos.setValue(this.participante?.apellidos);
+        this.formEstado.controls.country.setValue(this.participante?.country);
+        this.formEstado.controls.correo.setValue(this.participante?.correo);
+        this.formEstado.controls.celular.setValue(this.participante?.celular);
         */
       },
       error: (error) => {
@@ -351,26 +353,26 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   addRegistroPersona() {
-    if (this.formParticipante?.valid) {
-      let participanteTemp = this.formParticipante.value;
+    if (this.formEstado?.valid) {
+      let estadoTemp = this.formEstado.value;
       /*
       if (this.currentUser.cedula == "Suscriptor") {
-        if (this.currentUser.identificacion != participanteTemp?.identificacion) {
+        if (this.currentUser.identificacion != estadoTemp?.identificacion) {
         }
       }
       */
-      if (participanteTemp?.fechaNacimiento != "") {
-        participanteTemp.fechaNacimiento = dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
+      if (estadoTemp?.fechaNacimiento != "") {
+        estadoTemp.fechaNacimiento = dayjs(estadoTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
       }
       this.persona = new Persona({
         codigo: 0,
-        identificacion: participanteTemp?.identificacion,
-        nombres: participanteTemp?.nombres,
-        apellidos: participanteTemp?.apellidos,
-        //fechaNacimiento: dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        fechaNacimiento: participanteTemp?.fechaNacimiento,
-        celular: participanteTemp?.celular,
-        correo: participanteTemp?.identificacion,
+        identificacion: estadoTemp?.identificacion,
+        nombres: estadoTemp?.nombres,
+        apellidos: estadoTemp?.apellidos,
+        //fechaNacimiento: dayjs(estadoTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        fechaNacimiento: estadoTemp?.fechaNacimiento,
+        celular: estadoTemp?.celular,
+        correo: estadoTemp?.identificacion,
         cedula: this.currentUser.cedula,
         estado: 'A',
       });
@@ -403,22 +405,22 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   addRegistroParticipante() {
-    if (this.formParticipante?.valid) {
-      let participanteTemp = this.formParticipante.value;
+    if (this.formEstado?.valid) {
+      let estadoTemp = this.formEstado.value;
       this.participanteAux = new Participante({
         codigo: 0,
-        firstName: participanteTemp?.nombres,
-        lastName: participanteTemp?.apellidos,
-        username: participanteTemp.username,
+        firstName: estadoTemp?.nombres,
+        lastName: estadoTemp?.apellidos,
+        username: estadoTemp.username,
         customerId: this.customerIdChild,
         userId: this.userIdChild,
-        //email: participanteTemp.identificacion,
+        //email: estadoTemp.identificacion,
         email: this.currentUser.identificacion,
         codSubcategoria: this.codSubcategoriaChild,
         codInstancia: this.codInstanciaChild,
-        country: participanteTemp?.country,
-        dateLastActive: dayjs(participanteTemp.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        codEstadoCompetencia: participanteTemp?.codEstadoCompetencia,
+        country: estadoTemp?.country,
+        dateLastActive: dayjs(estadoTemp.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        codEstado: estadoTemp?.codEstado,
         nombreCancion: this.nombreCancion,
       });
     }
@@ -482,7 +484,7 @@ export class FormParticipanteComponent implements OnInit {
     this.close.emit($event);
   }
 
-  compararEstadoCompetencia(o1, o2) {
+  compararParticipante(o1, o2) {
     return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
   }
 
@@ -498,15 +500,15 @@ export class FormParticipanteComponent implements OnInit {
   // Tomar el valor nombres y convertirlo en identificacion
   blurIdentificacion(event) {
     if (event.target.value.length != 0) {
-      let participanteTemp = this.formParticipante.value;
-      if (participanteTemp?.identificacion == "") {
-        this.formParticipante.controls.identificacion.setValue((event.target.value.replace(" ", ".")).toLowerCase());
+      let estadoTemp = this.formEstado.value;
+      if (estadoTemp?.identificacion == "") {
+        this.formEstado.controls.identificacion.setValue((event.target.value.replace(" ", ".")).toLowerCase());
       }
     }
   }
 
   resetTheForm(): void {
-    this.formParticipante.reset = null;
+    this.formEstado.reset = null;
   }
 
   validateFormat(event) {
@@ -562,10 +564,10 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   cargarArchivo(index, file) {
-    // Receptar identificacion de formParticipante.value
-    let participanteTemp = this.formParticipante.value;
-    this.nombreCancion = participanteTemp?.identificacion+"_"+file?.name;
-    this.participanteService.cargarArchivo(file, participanteTemp?.identificacion).subscribe(
+    // Receptar identificacion de formEstado.value
+    let estadoTemp = this.formEstado.value;
+    this.nombreCancion = estadoTemp?.identificacion+"_"+file?.name;
+    this.participanteService.cargarArchivo(file, estadoTemp?.identificacion).subscribe(
       async (respuesta) => {
         console.log("respuesta = ", respuesta);
       }, err => {
@@ -676,46 +678,46 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   get identificacionField() {
-    return this.formParticipante.get('identificacion');
+    return this.formEstado.get('identificacion');
   }
   get nombresField() {
-    return this.formParticipante.get('nombres');
+    return this.formEstado.get('nombres');
   }
   get apellidosField() {
-    return this.formParticipante.get('apellidos');
+    return this.formEstado.get('apellidos');
   }
   get fechaNacimientoField() {
-    return this.formParticipante.get('fechaNacimiento');
+    return this.formEstado.get('fechaNacimiento');
   }
   get countryField() {
-    return this.formParticipante.get('country');
+    return this.formEstado.get('country');
   }
   get celularField() {
-    return this.formParticipante.get('celular');
+    return this.formEstado.get('celular');
   }
   get correoField() {
-    return this.formParticipante.get('correo');
+    return this.formEstado.get('correo');
   }
   get usernameField() {
-    return this.formParticipante.get('username');
+    return this.formEstado.get('username');
   }
   get dateLastActiveField() {
-    return this.formParticipante.get('dateLastActive');
+    return this.formEstado.get('dateLastActive');
   }
-  get codEstadoCompetenciaField() {
-    return this.formParticipante.get('codEstadoCompetencia');
+  get codEstadoField() {
+    return this.formEstado.get('codEstado');
   }
   get numPuntajeJuezField() {
-    return this.formParticipante.get('numPuntajeJuez');
+    return this.formEstado.get('numPuntajeJuez');
   }
   get codCategoriaField() {
-    return this.formParticipante.get('codCategoria');
+    return this.formEstado.get('codCategoria');
   }
   get codSubcategoriaField() {
-    return this.formParticipante.get('codSubcategoria');
+    return this.formEstado.get('codSubcategoria');
   }
   get codInstanciaField() {
-    return this.formParticipante.get('codInstancia');
+    return this.formEstado.get('codInstancia');
   }
 
 }

@@ -40,6 +40,7 @@ const appRoutes: Routes = [
     redirectTo: '/pages/miscellaneous/error' //Error 404 - Page not found
   }
 ];
+console.log("appRoutes = ", appRoutes)
 
 @NgModule({
   declarations: [
