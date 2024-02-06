@@ -296,7 +296,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
     this.codInstancia = participanteParametroTemp?.codInstancia;
     this.buscarInstanciaPorCodigo();
-    //this.habilitarAgregarParticipante = false;
+    this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];

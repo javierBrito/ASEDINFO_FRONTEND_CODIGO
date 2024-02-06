@@ -55,10 +55,11 @@ export class FormParticipanteComponent implements OnInit {
   public showDetail: boolean;
   private amieRegex: string;
   private currentUser: any;
-  public displayNone: string = '';
-  public displayNoneInstancia: string = '';
-  public displayNoneIntegrante2: string = '';
-  public displayNoneIntegranteGrupo: string = '';
+  public displayParticipante: string = '';
+  public displayInstancia: string = '';
+  public displayIntegrante2: string = '';
+  public displayIntegranteGrupo: string = '';
+  public displayCategoria: string = '';
   public codCategoria: number;
   public codSubcategoria: number;
   public codInstancia: number;
@@ -121,6 +122,7 @@ export class FormParticipanteComponent implements OnInit {
 
   ngOnInit() {
     this.listarEstadoCompetenciaActivo();
+    console.log("this.codSubcategoriaChild = ", this.codSubcategoriaChild)
     if (this.participanteEditar) {
       this.codSubcategoriaChild = this.participanteEditar.codSubcategoria;
       this.codInstanciaChild = this.participanteEditar.codInstancia;
@@ -159,14 +161,21 @@ export class FormParticipanteComponent implements OnInit {
         codInstancia: new FormControl(''),
       })
     }
-    this.displayNoneInstancia = 'none';
+    this.displayInstancia = 'none';
     if (this.currentUser.cedula == "Suscriptor") {
-      this.displayNone = 'none';
-      this.displayNoneIntegrante2 = 'none';
-      this.displayNoneIntegranteGrupo = 'none';
+      this.displayParticipante = 'none';
+      this.displayIntegrante2 = 'none';
+      this.displayIntegranteGrupo = 'none';
+      this.displayCategoria = '';
       this.listarCategoriaActivo();
       //this.listarSubcategoriaPorCategoria();
       this.listarInstanciaActivo();
+    } else {
+      this.displayCategoria = 'none';
+      this.displayIntegrante2 = 'none';
+      this.displayIntegranteGrupo = 'none';
+      this.codSubcategoria = this.codSubcategoriaChild;
+      this.buscarSubcategoriaPorCodigo();
     }
     //this.verpdf();
   }
@@ -221,8 +230,8 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   listarSubcategoriaPorCategoria() {
-    this.displayNoneIntegrante2 = "none";
-    this.displayNoneIntegranteGrupo = "none";
+    this.displayIntegrante2 = "none";
+    this.displayIntegranteGrupo = "none";
     // Receptar la descripción de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.codCategoria = participanteTemp?.codCategoria;
@@ -242,8 +251,8 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   obtenerCodInstancia() {
-    this.displayNoneIntegrante2 = "none";
-    this.displayNoneIntegranteGrupo = "none";
+    this.displayIntegrante2 = "none";
+    this.displayIntegranteGrupo = "none";
     // Receptar la codSubcategoria y codInstancia de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.codSubcategoria = participanteTemp?.codSubcategoria;
@@ -261,11 +270,11 @@ export class FormParticipanteComponent implements OnInit {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
         this.codCategoria = respuesta['objeto']?.codCategoria;
         if (this.desSubcategoria.includes("PAREJA")) {
-          this.displayNoneIntegrante2 = "";
+          this.displayIntegrante2 = "";
         }
         if (this.desSubcategoria.includes("GRUPOS")) {
-          this.displayNoneIntegrante2 = "";
-          this.displayNoneIntegranteGrupo = "";
+          this.displayIntegrante2 = "";
+          this.displayIntegranteGrupo = "";
         }
       }
     )
@@ -431,10 +440,12 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.username = this.participanteAux['data'].username;
       this.participante.email = this.participanteAux['data'].email;
       this.participante.codSubcategoria = this.codSubcategoriaChild,
-        this.participante.codInstancia = this.codInstanciaChild,
-        this.participante.country = this.participanteAux['data'].country;
+      this.participante.codInstancia = this.codInstanciaChild,
+      this.participante.country = this.participanteAux['data'].country;
       this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
+      this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
+      console.log("this.participante = ", this.participante)
       this.participanteService.guardarParticipante(this.participante).subscribe({
         next: (response) => {
           this.listarParticipantePorSubcategoriaInstancia();
@@ -449,6 +460,7 @@ export class FormParticipanteComponent implements OnInit {
     } else {
       // Si es nuevo el participante
       this.participanteAux['data'].codPersona = this.persona.codigo;
+      console.log("this.participanteAux['data'] = ", this.participanteAux['data'])
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
@@ -566,7 +578,8 @@ export class FormParticipanteComponent implements OnInit {
   cargarArchivo(index, file) {
     // Receptar identificacion de formParticipante.value
     let participanteTemp = this.formParticipante.value;
-    this.nombreCancion = participanteTemp?.identificacion+"_"+file?.name;
+    this.nombreCancion = participanteTemp?.identificacion + "_" + file?.name;
+    console.log("this.nombreCancion = ", this.nombreCancion)
     this.participanteService.cargarArchivo(file, participanteTemp?.identificacion).subscribe(
       async (respuesta) => {
         console.log("respuesta = ", respuesta);
@@ -623,7 +636,7 @@ export class FormParticipanteComponent implements OnInit {
         this.mensajeService.mensajeError("Error: No se pudo descargar el documento")
       }
     );
- 
+
     // const base64Response = await fetch(`${this.previzualizacion}`);
     // const blob = await base64Response.blob();
     // //comvierto el blob a tipo archivo pdf
@@ -638,7 +651,7 @@ export class FormParticipanteComponent implements OnInit {
   //filenames: string[] = [];
   private resportProgress(httpEvent: HttpEvent<string[] | Blob>): void {
     switch (httpEvent.type) {
-       case HttpEventType.UploadProgress:
+      case HttpEventType.UploadProgress:
         this.updateStatus(httpEvent.loaded, httpEvent.total!, 'Uploading... ');
         break;
       case HttpEventType.DownloadProgress:
@@ -665,7 +678,7 @@ export class FormParticipanteComponent implements OnInit {
       default:
         //console.log(httpEvent);
         break;
- 
+
     }
   }
 
@@ -674,7 +687,7 @@ export class FormParticipanteComponent implements OnInit {
     this.fileStatus.status = 'progress';
     this.fileStatus.requestType = requestType;
     this.fileStatus.percent = Math.round(100 * loaded / total);
- 
+
   }
 
   get identificacionField() {
