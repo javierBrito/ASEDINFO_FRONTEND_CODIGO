@@ -504,7 +504,10 @@ export class TransaccionPrincipalComponent implements OnInit {
     let nombreCliente = ele.nombreCliente;
     let descripcionProducto = ele.descripcionProducto;
     let fechaFin = ele.fechaFin;
-    this.mensajeCaduca = "<b>*Mensaje Automático*</b> Estimado(a) " + nombreCliente + " el servicio de " + descripcionProducto + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    this.mensajeCaduca = "<b>*Mensaje Automático*</b> Estimado(a) " 
+    + nombreCliente + " el servicio de " + descripcionProducto 
+    + " que tiene contratado con nosotros está por caducar el " + fechaFin 
+    + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
     var api = "https://script.google.com/macros/s/AKfycbyoBhxuklU5D3LTguTcYAS85klwFINHxxd-FroauC4CmFVvS0ua/exec";
     var payload = {
@@ -537,7 +540,11 @@ export class TransaccionPrincipalComponent implements OnInit {
     let año = moment(transaccion?.fechaFin).format("YYYY");
     transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
     //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
-    this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar en " + transaccion?.numDiasRenovar +" día(s) el " + dia + " de "+ mes + " de " + año + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente 
+    + " el servicio de " + transaccion.descripcion 
+    + " que tiene contratado con nosotros está por caducar en " 
+    + transaccion?.numDiasRenovar +" día(s) el " + dia + " de "+ mes + " de " + año 
+    + ", favor su ayuda confirmando la renovación con el pago correspondiente para poder registrarlo, caso contrario el día de corte procederemos con la suspención del servicio... Un excelente dia, tarde o noche....";
     //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
     this.celularEnvioWhatsapp = transaccion.prefijoTelefonico + transaccion.celular.substring(1, 15).trim();
 
