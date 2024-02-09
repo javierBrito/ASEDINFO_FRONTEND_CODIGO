@@ -34,6 +34,12 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
+    // Inicio - Para acceder directamente a la página de inscripción
+    if (state.url.localeCompare("pages/competencia/estado") != 0) {
+      return true;
+    }
+    // Fin - Para acceder directamente a la página de inscripción
+
     // not logged in so redirect to login page with the return url
     this._router.navigate(['/pages/authentication/login-v2'], { queryParams: { returnUrl: state.url } });
     return false;

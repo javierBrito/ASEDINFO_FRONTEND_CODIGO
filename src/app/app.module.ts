@@ -30,6 +30,12 @@ const appRoutes: Routes = [
     path: 'pages',
     loadChildren: () => import('./main/pages/pages.module').then(m => m.PagesModule)
   },
+  // Inicio - Para acceder directamente a la página de inscripción
+  {
+    path: 'pages/competencia/estado',
+    redirectTo: '/pages/competencia/estado',
+    pathMatch: 'full'
+  },
   {
     path: '',
     redirectTo: '/pages/inicio',

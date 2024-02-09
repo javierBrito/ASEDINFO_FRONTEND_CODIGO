@@ -21,6 +21,7 @@ import { DataService } from 'app/main/pages/compartidos/servicios/data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
+import { AuthenticationService } from 'app/auth/service';
 
 @Component({
   selector: 'app-estado-principal',
@@ -120,8 +121,17 @@ export class EstadoPrincipalComponent implements OnInit {
     private readonly participanteService: ParticipanteService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private autenticacion: AuthenticationService,
   ) {
+    // Inicio - Para acceder directamente a la página de estado
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    console.log("this.currentUser = ", this.currentUser);
+    if (this.currentUser == null) {
+      this.iniciarSesion();
+    };
+    console.log("this.currentUser = ", this.currentUser)
+    // Fin - Para acceder directamente a la página de inscripción  }
     //this.urlCancion = "./assets/musica/bachata_prueba.mpeg";
     //this.urlCancion = "./assets/musica/solista_salsa.mp3";
     this.urlCancion = "./assets/musica/";
@@ -135,7 +145,7 @@ export class EstadoPrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    this.sede = this.currentUser.sede;
+    //this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;
   }
@@ -159,6 +169,17 @@ export class EstadoPrincipalComponent implements OnInit {
     }
     //this.listarIntegranteActivo();
   }
+
+  // Inicio - Para acceder directamente a la página de inscripción
+  // Crear usuario para acceso directo a la página de inscripción
+  iniciarSesion() {
+    this.autenticacion.login('1707025746', '1512').subscribe(
+      (respuesta) => {
+        console.log("respuesta = " + respuesta);
+      }
+    );
+  }
+  // Fin - Para acceder directamente a la página de inscripción
 
   listarIntegranteActivo() {
     this.participanteService.listarIntegranteActivo().subscribe(
