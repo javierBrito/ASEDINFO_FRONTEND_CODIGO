@@ -83,7 +83,7 @@ export class AuthenticationService {
         })
       );
       */
-     // Para obtener todos los aplicativo y sus recursos asignados
+     // Para obtener todos los aplicativos y sus recursos asignados
      // jbrito-20230821
       return this._http
       .post<Rol[]>(`${environment.url_seguridad}/seguridad/listarAplicacionMenu`, JsonEnvio)

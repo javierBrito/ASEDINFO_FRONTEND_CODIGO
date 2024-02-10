@@ -17,8 +17,8 @@ export class AuthGuard implements CanActivate {
   // canActivate
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const currentUser = this._authenticationService.currentUserValue;
+    console.log("auth.guards currentUser.identificacion = ", currentUser.identificacion)
     if (currentUser) {
-
       //verificar acceso a las paginas por el menu asignado excepto la pagina de inicio
       if (state.url.localeCompare("/pages/inicio") != 0) {
         let acceso = this.permitirAcceso(state.url);
@@ -34,11 +34,11 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // Inicio - Para acceder directamente a la página de inscripción
+    // Inicio - Para acceder directamente a la página de estado
     if (state.url.localeCompare("pages/competencia/estado") != 0) {
       return true;
     }
-    // Fin - Para acceder directamente a la página de inscripción
+    // Fin - Para acceder directamente a la página de estado
 
     // not logged in so redirect to login page with the return url
     this._router.navigate(['/pages/authentication/login-v2'], { queryParams: { returnUrl: state.url } });

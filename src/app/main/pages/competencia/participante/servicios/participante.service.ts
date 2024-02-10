@@ -34,8 +34,8 @@ export class ParticipanteService {
   listarTodosParticipante(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarTodosParticipante`);
   }
-  listarParticipanteActivo(): Observable<any> | undefined {
-    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipanteActivo`);
+  listarParticipantePorEstado(estado: string): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorEstado/${estado}`);
   }
   listarParticipantePadre(codigoAplicacion: number) {
     return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePadre/${codigoAplicacion}`);

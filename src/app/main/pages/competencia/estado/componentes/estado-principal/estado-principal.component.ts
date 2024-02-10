@@ -124,13 +124,17 @@ export class EstadoPrincipalComponent implements OnInit {
     private modalService: NgbModal,
     private autenticacion: AuthenticationService,
   ) {
-    // Inicio - Para acceder directamente a la página de estado
+    // Inicio - Para acceder directamente a la página de inscripción
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    console.log("this.currentUser = ", this.currentUser);
+    //console.log("this.currentUser Estado I = ", this.currentUser);
     if (this.currentUser == null) {
       this.iniciarSesion();
     };
-    console.log("this.currentUser = ", this.currentUser)
+    //console.log("this.currentUser Estado F = ", this.currentUser)
+    // Fin - Para acceder directamente a la página de inscripción
+  }
+
+  ngOnInit() {
     // Fin - Para acceder directamente a la página de inscripción  }
     //this.urlCancion = "./assets/musica/bachata_prueba.mpeg";
     //this.urlCancion = "./assets/musica/solista_salsa.mp3";
@@ -140,17 +144,15 @@ export class EstadoPrincipalComponent implements OnInit {
     //this.descargarArchivo("comprobante.pdf");
     this.codigo = 0;
     this.codigoSede = 0;
-    this.itemsRegistros = 5;
+    this.itemsRegistros = 10;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    //this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     //this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;
-  }
 
-  ngOnInit() {
     this.formEstado = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
@@ -159,15 +161,16 @@ export class EstadoPrincipalComponent implements OnInit {
     })
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
-    if (this.currentUser.cedula == "Suscriptor") {
+    //if (this.currentUser.cedula == "Suscriptor") {
       this.disabledEstado = true;
       this.displayNone = 'none';
-      this.listarParticipantePorEmail();
-    } else {
-      this.disabledEstado = false;
+      //this.listarParticipantePorEmail();
+    //} else {
+      //this.disabledEstado = false;
       this.displayNone1 = 'none';
-    }
+    //}
     //this.listarIntegranteActivo();
+    this.listarParticipantePorEstado();
   }
 
   // Inicio - Para acceder directamente a la página de inscripción
@@ -279,6 +282,40 @@ export class EstadoPrincipalComponent implements OnInit {
     //this.habilitarAgregarParticipante = true;
     this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length < this.itemsRegistros) {
+          this.page = 1;
+        }
+        if (this.listaParticipante.length > 0) {
+          //this.habilitarAgregarParticipante = false;
+          for (const ele of this.listaParticipante) {
+            ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
+            ele.displayNoneGrupo = "none";
+            this.customerId = ele.customerId;
+            this.userId = ele.userId;
+            if (ele?.identificacion == this.currentUser.identificacion) {
+              ele.desCategoria = "DIRECTOR";
+              ele.desSubcategoria = "ACADEMIA";
+            }
+            if (ele?.desSubcategoria.includes("GRUPOS")) {
+              ele.displayNoneGrupo = "";
+            }
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          }
+        }
+      }
+    );
+  }
+
+  listarParticipantePorEstado() {
+    // Receptar la codSubcategoria y codInstancia de formEstado.value
+    //let estadoCompetenciaParametroTemp = this.formEstado.value;
+    //this.codSubcategoria = estadoCompetenciaParametroTemp?.codSubcategoria;
+    //this.codInstancia = estadoCompetenciaParametroTemp?.codInstancia;
+    //this.habilitarAgregarParticipante = true;
+    this.habilitarAgregarParticipante = true;
+    this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length < this.itemsRegistros) {

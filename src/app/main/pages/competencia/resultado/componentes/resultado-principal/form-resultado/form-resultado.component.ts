@@ -142,7 +142,7 @@ export class FormResultadoComponent implements OnInit {
   }
 
   listarParticipante() {
-    this.participanteService.listarParticipanteActivo().subscribe(
+    this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {

@@ -69,72 +69,9 @@
                                 </button>
                             </div>
                         </div>
-                        <!--
-                        <div class="col-md-2 col-3 form-group">
-                            <div class="my-2 text-left table-responsive">
-                                <button type="submit" [disabled]="formEstado.invalid"
-                                    class="btn btn-info btn-rounded">
-                                    <b>{{ "Buscar"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                            <div class="col-12 form-group">
-                                <button [disabled]=""
-                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                    (click)="enviarCorreo()">
-                                    <b>{{ "Enviar Correo"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-envelope" style="font-size:14px;color:red"></i>
-                                </button>
-                            </div>
-                        </div>
-                        -->
                     </div>
-                    <!--
-                    <div class="row form-group">
-                        <div class="col-md-6 col-12 form-group">
-                            <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
-                            <input type="text" name="identificacion" id="identificacion"
-                                formControlName="identificacion" placeholder="Por favor, ingrese el número de cédula."
-                                class="form-control"
-                                [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors,'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
-                            <div class="valid-feedback">
-                                <span>{{ "Exito"}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
-                                    valida."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['minlength']">{{"Debe ingresar al menos 10
-                                    dígitos."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['maxlength']">{{"Solo puede ingresar 10
-                                    dígitos."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
-                                    números."}}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-12 form-group">
-                            <div class="my-2 text-left table-responsive">
-                                <button type="submit" [disabled]="formEstado.invalid"
-                                    class="btn btn-info btn-rounded">
-                                    <b>{{ "Buscar"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    -->
                 </form>
+
                 <div class="row">
                     <div class="col-12" [ngStyle]="{'display': displayNone1}">
                         <button id="selectButton" mat-raised-button (click)="fileInput.click()"
@@ -164,15 +101,17 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
+                                            <!--
                                             <h3><b>{{'Lista Participantes: '}} {{desCategoria}}
                                                     - {{desSubcategoria}} - {{desInstancia}}
                                                 </b></h3>
+                                            -->
                                             <button type="submit" (click)="openDetail(1)"
                                                 [disabled]="habilitarAgregarParticipante"
                                                 matTooltip="Agregar participante"
                                                 class="btn btn-block btn-primary form-control mt-2">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
-                                                {{'Agregar Participante'}}
+                                                {{'Minuto a minuto / Sigue a tus competidores favoritos...'}}
                                             </button>
                                             <table class="table" *ngIf="listaParticipante?.length > 0"
                                                 id="tablaParticipante">
@@ -185,7 +124,7 @@
                                                         <th scope="col">Categoría/Subcategoría</th>
                                                         <th scope="col">Fecha/hora Competencia</th>
                                                         <th scope="col">Estado Competencia</th>
-                                                        <th scope="col">Pista / Canción</th>
+                                                        <th scope="col" [ngStyle]="{'display': displayNone}">Pista / Canción</th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone}">Acciones
                                                         </th>
                                                     </tr>
@@ -215,12 +154,12 @@
                                                                 [disabled]="disabledEstado"
                                                                 [ngStyle]="{'background-color': participante?.colorBoton}"
                                                                 style="color: black;" class="btn btn-rounded">
-                                                                <b>{{participante?.desEstado}}</b>
+                                                                <b>{{participante?.desEstadoCompetencia}}</b>
                                                                 <b>{{ " "}}</b>
                                                                 <i class="fa fa-pencil"></i>
                                                             </button>
                                                         </td>
-                                                        <td>
+                                                        <td [ngStyle]="{'display': displayNone}">
                                                             <audio #ref src="{{participante?.nombreCancion}}" type="audio/mpeg"></audio>
                                                             <button (click)="ref.play()">▶️ play</button>
                                                             <button (click)="ref.pause()">⏸ pause</button>
