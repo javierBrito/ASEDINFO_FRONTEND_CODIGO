@@ -2,11 +2,13 @@
     <div class="col-12">
         <div class="card box-shadow-sm">
             <div class="card-footer">
+                <!--
                 <div class="row form-group" [ngStyle]="{'display': displayNone}">
                     <div class="col-12">
                         <h4><b>Parámetros busqueda :</b></h4>
                     </div>
                 </div>
+                -->
                 <form detail-content [formGroup]="formSorteo">
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
                         <div class="col-3">
@@ -57,28 +59,24 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-1">
-                        </div>
-                        <div class="col-md-2 col-3 form-group">
-                            <div class="my-2 text-left">
-                                <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                    (click)="actualizarListaParticipante()">
-                                    <b>{{ "Guardar Sorteo..."}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-save" style="font-size:14px;color:red"></i>
-                                </button>
-                            </div>
+                    </div>
+                    <div class="row form-group" [ngStyle]="{'display': displayBotonGuardar}">
+                        <div class="col-12" align="center">
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="actualizarListaParticipante()">
+                                <b>{{ "Guardar Sorteo..."}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fa fa-save" style="font-size:14px;color:red"></i>
+                            </button>
                         </div>
                     </div>
                 </form>
-
                 <div class="row">
                     <div class="col-12" [ngStyle]="{'display': displayNone1}">
                         <button id="selectButton" mat-raised-button (click)="fileInput.click()"
                             [disabled]="habilitarSeleccionarArchivo">
                             <h3><b>Subir boucher de pago:</b></h3>
                         </button>
-
                         <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
                         <span *ngIf="fileName">{{fileName}}</span>
 
@@ -107,8 +105,7 @@
                                                 </b></h3>
                                             -->
                                             <button type="submit" (click)="sortearParticipante()"
-                                                [disabled]="habilitarAgregarParticipante"
-                                                matTooltip="Procesar Sorteo"
+                                                [disabled]="habilitarAgregarParticipante" matTooltip="Procesar Sorteo"
                                                 class="btn btn-block btn-primary form-control mt-2">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                                 <b>{{'Procesar Sorteo por Subcategoría'}}</b>
@@ -122,10 +119,15 @@
                                                         <th scope="col">Nombres</th>
                                                         <th scope="col">Grupo</th>
                                                         <th scope="col">Categoría / Subcategoría</th>
-                                                        <th scope="col"><div align="center">Fecha/hora Competencia</div></th>
+                                                        <th scope="col">
+                                                            <div align="center">Fecha/hora Competencia</div>
+                                                        </th>
                                                         <th scope="col">Estado Competencia</th>
-                                                        <th scope="col"><div align="center">Número Participante</div></th>
-                                                        <th scope="col" [ngStyle]="{'display': displayNone1}">Pista / Canción</th>
+                                                        <th scope="col">
+                                                            <div align="center">Número Participante</div>
+                                                        </th>
+                                                        <th scope="col" [ngStyle]="{'display': displayNone1}">Pista /
+                                                            Canción</th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone1}">Acciones
                                                         </th>
                                                     </tr>
@@ -160,9 +162,12 @@
                                                                 <i class="fa fa-pencil"></i>
                                                             </button>
                                                         </td>
-                                                        <td><div align="center">{{participante?.numParticipante}}</div></td>
+                                                        <td>
+                                                            <div align="center">{{participante?.numParticipante}}</div>
+                                                        </td>
                                                         <td [ngStyle]="{'display': displayNone1}">
-                                                            <audio #ref src="{{participante?.nombreCancion}}" type="audio/mpeg"></audio>
+                                                            <audio #ref src="{{participante?.nombreCancion}}"
+                                                                type="audio/mpeg"></audio>
                                                             <button (click)="ref.play()">▶️ play</button>
                                                             <button (click)="ref.pause()">⏸ pause</button>
                                                         </td>

@@ -85,6 +85,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public filenames: string[] = [];
   public listaBase64: any;
   public nombreArchivoDescarga: string;
+  public nombreSubscriptor: string;
 
   /*TABS*/
   public selectedTab: number;
@@ -141,6 +142,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    console.log("this.currentUser = ", this.currentUser)
+    this.nombreSubscriptor = this.currentUser.nombre;
     this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;

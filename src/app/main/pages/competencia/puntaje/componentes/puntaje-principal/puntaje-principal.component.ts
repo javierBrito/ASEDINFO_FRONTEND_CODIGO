@@ -65,6 +65,8 @@ export class PuntajePrincipalComponent implements OnInit {
   public desSubcategoria: string;
   public desInstancia: string;
   public codEstadoCompetencia: number;
+  public nombreUsuario: string;
+  public siActualizaNumJuez: boolean = false;
 
   /*LISTAS*/
   public listaPuntaje: Puntaje[] = [];
@@ -121,6 +123,7 @@ export class PuntajePrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    this.nombreUsuario = this.currentUser.nombre;
     this.sede = this.currentUser.sede;
   }
 
@@ -147,6 +150,9 @@ export class PuntajePrincipalComponent implements OnInit {
       (respuesta) => {
         this.parametro = respuesta['objeto'];
         this.codSubcategoria = this.parametro?.valor;
+        if (this.codSubcategoria == undefined || this.codSubcategoria == 0) {
+          this.mensajeService.mensajeError('Ingrese parámetros de SUBCATEGORÍA E INSTANCIA, para ingreso de puntaje..');
+        }
         // Obtener la denominación de la subcategoria
         this.buscarSubcategoriaPorCodigo();
         // Obtener codInstancia para obtener el participante
@@ -154,7 +160,10 @@ export class PuntajePrincipalComponent implements OnInit {
           (respuesta) => {
             this.parametro = respuesta['objeto'];
             this.codInstancia = this.parametro?.valor;
-            // Obtener la denominación de la instancia
+            if (this.codInstancia == undefined || this.codInstancia == 0) {
+              this.mensajeService.mensajeError('Ingrese parámetros de SUBCATEGORÍA E INSTANCIA, para ingreso de puntaje..');
+            }
+                // Obtener la denominación de la instancia
             this.buscarInstanciaPorCodigo();
             this.listarPuntajePorParticipante();
           }
@@ -198,8 +207,13 @@ export class PuntajePrincipalComponent implements OnInit {
         next: (respuesta) => {
           this.participanteAux = respuesta['objeto'];
           this.participanteAux.numPuntajeJuez = this.participanteAux?.numPuntajeJuez + 1;
+          if (this.participanteAux.numPuntajeJuez == 2) {
+            // Cambiar el estado de la competencia a Completado
+            this.participanteAux.codEstadoCompetencia = 5;
+          }
           this.participanteService.guardarParticipante(this.participanteAux).subscribe({
             next: (response) => {
+              this.listarPuntajePorParticipante();
               this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
             },
             error: (error) => {
@@ -265,7 +279,8 @@ export class PuntajePrincipalComponent implements OnInit {
       this.buscarInstanciaPorCodigo();
       this.codEstadoCompetencia = 0;
     } else {
-      this.codEstadoCompetencia = 2;
+      // Estado de Competencia "En Escenario"
+      this.codEstadoCompetencia = 4;
     }
 
     if (this.activarInput) {
@@ -346,6 +361,7 @@ export class PuntajePrincipalComponent implements OnInit {
       this.datosEditar = null;
       return;
     }
+    this.siActualizaNumJuez = true;
     if (this.idInput != indexSelec) {
       await this.verificarGuardarPendiente();
       if (this.continuarGuardarPendiente) {
@@ -373,6 +389,9 @@ export class PuntajePrincipalComponent implements OnInit {
       if (puntajeAux.puntaje > 0 &&
         puntajeAux.puntaje <= 10 &&
         puntajeAux.puntaje != 0) {
+        if (puntajeAux?.codigo != 0) {
+          //this.siActualizaNumJuez = false;
+        }
         this.puntajeAuxTotal = puntajeAux;
         puntajeTotal = puntajeTotal + (puntajeAux.porcentaje / 100) * Number(puntajeAux ? puntajeAux.puntaje : 0);
         await new Promise((resolve, rejects) => {
@@ -404,7 +423,6 @@ export class PuntajePrincipalComponent implements OnInit {
       if (puntajeTotal > 0 && this.puntajeAuxTotal != null) {
         // Verificar si ya existe el total por participante, instancia y modelo puntaje = 99
         await this.verificarExistenciaRegistroTotal();
-
         this.puntajeAuxTotal.codigo = this.codPuntaje;
         this.puntajeAuxTotal.codModeloPuntaje = 99;
         this.puntajeAuxTotal.puntaje = puntajeTotal;
@@ -414,7 +432,9 @@ export class PuntajePrincipalComponent implements OnInit {
         puntajeTotalEntidad = this.moverDatosPuntaje(this.puntajeAuxTotal);
         this.puntajeService.guardarPuntaje(puntajeTotalEntidad).subscribe({
           next: (response) => {
-            this.actualizarNumPuntajeJuez(participante?.codigo);
+            if (this.siActualizaNumJuez) {
+              this.actualizarNumPuntajeJuez(participante?.codigo);
+            }
             this.mensajeService.mensajeCorrecto('Se ha actualizado el registro de totales correctamente...');
           },
           error: (error) => {
@@ -430,7 +450,7 @@ export class PuntajePrincipalComponent implements OnInit {
   async verificarExistenciaRegistroTotal() {
     this.codPuntaje = 0;
     return new Promise((resolve, rejects) => {
-      this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal.codParticipante, this.puntajeAuxTotal.codInstancia, this.currentUser.codigoUsuario, 99).subscribe({
+      this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal.codParticipante, this.codSubcategoria, this.puntajeAuxTotal.codInstancia, this.currentUser.codigoUsuario, 99).subscribe({
         next: (respuesta) => {
           this.listaPuntajeAux = respuesta['listado'];
           if (this.listaPuntajeAux.length > 0) {

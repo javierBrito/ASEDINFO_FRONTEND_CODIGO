@@ -164,8 +164,7 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <h3><b>{{'Lista Participantes: '}} {{desCategoria}}
-                                                    - {{desSubcategoria}} - {{desInstancia}}
+                                            <h3><b>{{'Lista Participantes del Subscriptor: '}} {{nombreSubscriptor}}
                                                 </b></h3>
                                             <button type="submit" (click)="openDetail(1)"
                                                 [disabled]="habilitarAgregarParticipante"
@@ -182,10 +181,10 @@
                                                         <!--<th scope="col">Identificación</th>-->
                                                         <th scope="col">Nombres</th>
                                                         <th scope="col">Grupo</th>
-                                                        <th scope="col">Categoría/Subcategoría</th>
-                                                        <th scope="col">Fecha/hora Competencia</th>
-                                                        <th scope="col">Estado Competencia</th>
-                                                        <th scope="col">Pista / Canción</th>
+                                                        <th scope="col"><div align="center">Categoría / Subcategoría</div></th>
+                                                        <th scope="col"><div align="center">Fecha/hora Competencia</div></th>
+                                                        <th scope="col"><div align="center">Estado Competencia</div></th>
+                                                        <th scope="col"><div align="center">Pista / Canción</div></th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone}">Acciones
                                                         </th>
                                                     </tr>

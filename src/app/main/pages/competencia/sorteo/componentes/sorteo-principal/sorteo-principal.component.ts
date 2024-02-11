@@ -54,6 +54,7 @@ export class SorteoPrincipalComponent implements OnInit {
   public habilitarSeleccionarArchivo: boolean;
   public displayNone: string = '';
   public displayNone1: string = 'none';
+  public displayBotonGuardar: string = 'none';
   public disabledEstado: boolean;
   public customerId: number;
   public userId: number;
@@ -214,6 +215,7 @@ export class SorteoPrincipalComponent implements OnInit {
 
   listarSubcategoriaPorCategoria() {
     this.habilitarAgregarParticipante = true;
+    this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codCategoria de formSorteo.value
     let sorteoCompetenciaParametroTemp = this.formSorteo.value;
@@ -236,6 +238,7 @@ export class SorteoPrincipalComponent implements OnInit {
 
   listarInstanciaActivo() {
     this.habilitarAgregarParticipante = false;
+    this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codSubcategoria de formSorteo.value
     let sorteoCompetenciaParametroTemp = this.formSorteo.value;
@@ -335,6 +338,7 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   sortearParticipante() {
+    this.displayBotonGuardar = "";
     return this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
   }
 
@@ -405,6 +409,8 @@ export class SorteoPrincipalComponent implements OnInit {
     console.log("this.listaParticipante", this.listaParticipante)
     this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
       next: (response) => {
+        this.displayBotonGuardar = "none";
+        this.habilitarAgregarParticipante = true;
         this.listarParticipantePorSubcategoriaInstancia();
         this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
       },
