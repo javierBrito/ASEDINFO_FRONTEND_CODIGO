@@ -1,0 +1,297 @@
+<app-detail (close)="closeDetail($event)">
+    <h1 detail-title><strong>{{participanteEditar ?'EDITAR':'AGREGAR'}}{{' Participante'}}</strong></h1>
+    <form detail-content [formGroup]="formSorteo">
+        <div class="container" style="border: 0px solid blue; box-shadow: 0px 2px 2px black">
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="codCategoria">
+                        <h4><b>{{'Categoría(*): '}}</b></h4>
+                    </label>
+                    <select name="codCategoria" formControlName="codCategoria" required
+                        [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
+                        class="form-control mr-sm-2" id="codCategoria" (change)="listarSubcategoriaPorCategoria()">
+                        <option [value]="''" selected>Seleccionar categoría</option>
+                        <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
+                            <span><b>{{categoria?.denominacion}}</b></span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+                <div class="col-6">
+                    <label for="codSubcategoria">
+                        <h4><b>{{'Subcategoría(*): '}}</b></h4>
+                    </label>
+                    <select name="codSubcategoria" formControlName="codSubcategoria" required required
+                        [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
+                        class="form-control mr-sm-2 custom-select" id="codSubcategoria"
+                        (change)="obtenerCodInstancia()">
+                        <option [value]="''" selected>Seleccionar subcategoría</option>
+                        <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
+                            <span><b>{{subcategoria?.denominacion}}</b></span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+            </div>
+            <div class="row form-group" [ngStyle]="{'display': displayNoneInstancia}">
+                <div class="col-6">
+                    <label for="codInstancia">
+                        <h4><b>{{'Instancia(*): '}}</b></h4>
+                    </label>
+                    <select name="codInstancia" formControlName="codInstancia" [compareWith]="compararInstancia"
+                        placeholder="Seleccione instancia..." class="form-control mr-sm-2 custom-select"
+                        id="codInstancia" (change)="obtenerCodInstancia()">
+                        <option [value]="''" selected>Seleccionar subcategoría</option>
+                        <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
+                            <span><b>{{instancia?.denominacion}}</b></span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="identificacion">
+                        <h4><b>{{'Correo electrónico(*): '}}</b></h4>
+                    </label>
+                    <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
+                        maxlength="60" id="identificacion" placeholder="Correo electrónico"
+                        [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label for="fechaNacimiento">
+                        <h4><b>{{'Nacimiento: '}}</b></h4>
+                    </label>
+                    <input type="date" name="fechaNacimiento" formControlName="fechaNacimiento" class="form-control"
+                        id="fechaNacimiento"
+                        [ngClass]="{'is-valid': fechaNacimientoField?.dirty && !fechaNacimientoField?.invalid && !fechaNacimientoField?.errors,'is-invalid': fechaNacimientoField?.dirty && fechaNacimientoField?.invalid && fechaNacimientoField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="fechaNacimientoField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="nombres">
+                        <h4><b>{{'Nombre & Apellido(*): '}}</b></h4>
+                    </label>
+                    <input type="text" name="nombres" formControlName="nombres" class="form-control" id="nombres"
+                        oninput="nombres.value = nombres.value.toUpperCase()" placeholder="Nombre & Apellido"
+                        (blur)="blurIdentificacion($event)"
+                        [ngClass]="{'is-valid': nombresField?.dirty && !nombresField?.invalid && !nombresField?.errors, 'is-invalid': nombresField?.dirty && nombresField?.invalid && nombresField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="nombresField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+                <div class="col-6" [ngStyle]="{'display': displayNoneIntegrante2}">
+                    <label for="apellidos">
+                        <h4><b>{{'Integrante(*): '}}</b></h4>
+                    </label>
+                    <input type="text" name="apellidos" formControlName="apellidos" class="form-control" id="apellidos"
+                        oninput="apellidos.value = apellidos.value.toUpperCase()" placeholder="Nombre integrante"
+                        [ngClass]="{'is-valid': apellidosField?.dirty && !apellidosField?.invalid && !apellidosField?.errors, 'is-invalid': apellidosField?.dirty && apellidosField?.invalid && apellidosField?.errors}">
+                    <button [ngStyle]="{'display': displayNoneIntegranteGrupo}" matTooltip="Adicionar Integrante"
+                        type="button" class="btn btn-primary" rippleEffect round><i class="fa fa-plus"
+                            (click)="adicionarIntegrante()"></i></button>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-8">
+                    <label for="country">
+                        <h4><b>{{'País: '}}</b></h4>
+                    </label>
+                    <input type="text" name="country" formControlName="country" class="form-control" id="country"
+                        oninput="country.value = country.value.toUpperCase()" placeholder="Nombre país"
+                        [ngClass]="{'is-valid': countryField?.dirty && !countryField?.invalid && !countryField?.errors, 'is-invalid': countryField?.dirty && countryField?.invalid && countryField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <label for="celular">
+                        <h4><b>{{'Celular(*): '}}</b></h4>
+                    </label>
+                    <input type="text" name="celular" formControlName="celular" class="form-control" id="celular"
+                        placeholder="Celular"
+                        [ngClass]="{'is-valid': celularField?.dirty && !celularField?.invalid && !celularField?.errors, 'is-invalid': celularField?.dirty && celularField?.invalid && celularField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-12">
+                    <button id="selectButton" mat-raised-button (click)="fileInput.click()"
+                        class="btn btn-primary">Subir mp3:
+                    </button>
+                    <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
+                    <span *ngIf="fileName">{{fileName}}</span>
+                    <button id="uploadButton" mat-raised-button *ngIf="selectedFiles"
+                        [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()" class="btn btn-primary">
+                        <b>Guardar</b>
+                    </button>
+                    <div class="col-sm-12" *ngIf="true">
+                        <embed id="vistaPreviaDJ1" type="application/pdf" with="60" height="60">
+                        <!--
+                        <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
+                        <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
+                        -->
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+        <br>
+        <div [ngStyle]="{'display': displayNone}" class="container"
+            style="border: 0px solid black; box-shadow: 0px 10px 10px black">
+            <div class="row form-group">
+                <div class="col-5">
+                    <label for="codParticipante">
+                        <h4><b>{{'Sorteo Competencia(*):'}}</b></h4>
+                    </label>
+                    <select class="custom-select" formControlName="codParticipante" name="codParticipante"
+                        id="codParticipante" [compareWith]="compararParticipante">
+                        <option [value]="''" selected>Seleccionar estado competencia</option>
+                        <option *ngFor="let participante of listaParticipante"
+                            [value]="participante.codigo">
+                            {{participante?.denominacion}}</option>
+                    </select>
+                </div>
+                <div class="col-7">
+                    <label for="dateLastActive">
+                        <h4><b>{{'Fecha / Hora Competencia: '}}</b></h4>
+                    </label>
+                    <input type="datetime-local" name="dateLastActive" formControlName="dateLastActive"
+                        class="form-control" id="dateLastActive"
+                        [ngClass]="{'is-valid': dateLastActiveField?.dirty && !dateLastActiveField?.invalid && !dateLastActiveField?.errors,'is-invalid': dateLastActiveField?.dirty && dateLastActiveField?.invalid && dateLastActiveField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-5">
+                    <label for="username">
+                        <h4><b>{{'Usuario WP: '}}</b></h4>
+                    </label>
+                    <input type="text" name="username" formControlName="username" class="form-control" id="username"
+                        placeholder="Usuario WP"
+                        [ngClass]="{'is-valid': usernameField?.dirty && !usernameField?.invalid && !usernameField?.errors, 'is-invalid': usernameField?.dirty && usernameField?.invalid && usernameField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="usernameField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+                <div class="col-7">
+                    <label for="numPuntajeJuez">
+                        <h4><b>{{'Número Puntaje Juez: '}}</b></h4>
+                    </label>
+                    <input type="text" name="numPuntajeJuez" formControlName="numPuntajeJuez" class="form-control"
+                        id="numPuntajeJuez" [attr.disabled]="true" placeholder="9"
+                        [ngClass]="{'is-valid': numPuntajeJuezField?.dirty && !numPuntajeJuezField?.invalid && !numPuntajeJuezField?.errors, 'is-invalid': numPuntajeJuezField?.dirty && numPuntajeJuezField?.invalid && numPuntajeJuezField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="numPuntajeJuezField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-block btn-primary" [disabled]="formSorteo?.invalid"
+                    (click)="addRegistroPersona()">
+                    {{participanteEditar?'GUARDAR':'GUARDAR'}}</button>
+            </div>
+        </div>
+    </form>
+</app-detail>
+<div class="col-6">
+    <label for="apellidos">
+        <h4><b>{{'Integrante(*): '}}</b></h4>
+    </label>
+    <p><button (click)="mostrarModalConf()">Ingresar integrante</button></p>
+</div>
+
+<ng-template #myModalInfo let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Éxito</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            ¡Modal mostrado correctamente!
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #myModalConf let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Éxito</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modal.close('Cerrado desde la ventana')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            ¿Quieres confirmar la informacion? (Mira el resultado en consola)
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="modal.close('No')">No</button>
+            <button type="button" class="btn btn-primary" (click)="modal.close('Si')">Si</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Éxito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{participanteEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro
+        correctamente.'}}
+    </div>
+</ng-template>
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{participanteEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
+        registro.'}}
+    </div>
+</ng-template>

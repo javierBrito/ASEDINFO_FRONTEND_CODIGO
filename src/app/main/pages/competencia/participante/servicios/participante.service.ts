@@ -49,6 +49,9 @@ export class ParticipanteService {
   guardarListaIntegrante(listaIntegrante: Integrante[]) {
     return this.http.post<Integrante[]>(`${environment.url_seguridad}/competencia/guardarListaIntegrante`, listaIntegrante);
   }
+  actualizarListaParticipante(listaParticipante: Participante[]) {
+    return this.http.post<Participante[]>(`${environment.url_seguridad}/competencia/actualizarListaParticipante`, listaParticipante);
+  }
   listarIntegranteActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarIntegranteActivo`);
   }

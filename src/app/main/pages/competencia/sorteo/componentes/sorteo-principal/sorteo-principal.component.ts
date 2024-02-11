@@ -24,11 +24,11 @@ import { ParticipanteService } from '../../../participante/servicios/participant
 import { AuthenticationService } from 'app/auth/service';
 
 @Component({
-  selector: 'app-estado-principal',
-  templateUrl: './estado-principal.component.html',
-  styleUrls: ['./estado-principal.component.scss']
+  selector: 'app-sorteo-principal',
+  templateUrl: './sorteo-principal.component.html',
+  styleUrls: ['./sorteo-principal.component.scss']
 })
-export class EstadoPrincipalComponent implements OnInit {
+export class SorteoPrincipalComponent implements OnInit {
   /*INPUT RECIBEN*/
 
   /*MODALES*/
@@ -104,7 +104,7 @@ export class EstadoPrincipalComponent implements OnInit {
   public participante: Participante;
 
   /*FORMULARIOS*/
-  public formEstado: FormGroup;
+  public formSorteo: FormGroup;
 
   // Inicio - Audio
   state;
@@ -153,7 +153,7 @@ export class EstadoPrincipalComponent implements OnInit {
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;
 
-    this.formEstado = this.formBuilder.group({
+    this.formSorteo = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
       codInstancia: new FormControl('', Validators.required),
@@ -162,15 +162,15 @@ export class EstadoPrincipalComponent implements OnInit {
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
     //if (this.currentUser.cedula == "Suscriptor") {
-      this.disabledEstado = true;
-      this.displayNone = 'none';
-      //this.listarParticipantePorEmail();
+    this.disabledEstado = true;
+    this.displayNone = '';
+    //this.listarParticipantePorEmail();
     //} else {
-      //this.disabledEstado = false;
-      this.displayNone1 = 'none';
+    //this.disabledEstado = false;
+    this.displayNone1 = 'none';
     //}
     //this.listarIntegranteActivo();
-    this.listarParticipantePorEstado();
+    //this.listarParticipantePorEstado();
   }
 
   // Inicio - Para acceder directamente a la página de inscripción
@@ -215,9 +215,9 @@ export class EstadoPrincipalComponent implements OnInit {
   listarSubcategoriaPorCategoria() {
     this.habilitarAgregarParticipante = true;
     this.listaParticipante = [];
-    // Receptar la descripción de formEstado.value
-    let estadoCompetenciaParametroTemp = this.formEstado.value;
-    this.codCategoria = estadoCompetenciaParametroTemp?.codCategoria;
+    // Receptar codCategoria de formSorteo.value
+    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
+    this.codCategoria = sorteoCompetenciaParametroTemp?.codCategoria;
     this.buscarCategoriaPorCodigo();
     this.participanteService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
@@ -235,11 +235,11 @@ export class EstadoPrincipalComponent implements OnInit {
   }
 
   listarInstanciaActivo() {
-    this.habilitarAgregarParticipante = true;
+    this.habilitarAgregarParticipante = false;
     this.listaParticipante = [];
-    // Receptar codCategoria de formEstado.value
-    let estadoCompetenciaParametroTemp = this.formEstado.value;
-    this.codSubcategoria = estadoCompetenciaParametroTemp?.codSubcategoria;
+    // Receptar codSubcategoria de formSorteo.value
+    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
+    this.codSubcategoria = sorteoCompetenciaParametroTemp?.codSubcategoria;
     this.buscarSubcategoriaPorCodigo();
     this.participanteService.listarInstanciaActivo().subscribe(
       (respuesta) => {
@@ -275,11 +275,10 @@ export class EstadoPrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEmail() {
-    // Receptar la codSubcategoria y codInstancia de formEstado.value
-    let estadoCompetenciaParametroTemp = this.formEstado.value;
-    this.codSubcategoria = estadoCompetenciaParametroTemp?.codSubcategoria;
-    this.codInstancia = estadoCompetenciaParametroTemp?.codInstancia;
-    //this.habilitarAgregarParticipante = true;
+    // Receptar la codSubcategoria y codInstancia de formSorteo.value
+    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
+    this.codSubcategoria = sorteoCompetenciaParametroTemp?.codSubcategoria;
+    this.codInstancia = sorteoCompetenciaParametroTemp?.codInstancia;
     this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
       (respuesta) => {
@@ -288,8 +287,8 @@ export class EstadoPrincipalComponent implements OnInit {
           this.page = 1;
         }
         if (this.listaParticipante.length > 0) {
-          //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
             ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
@@ -301,7 +300,6 @@ export class EstadoPrincipalComponent implements OnInit {
             if (ele?.desSubcategoria.includes("GRUPOS")) {
               ele.displayNoneGrupo = "";
             }
-            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
         }
       }
@@ -309,31 +307,16 @@ export class EstadoPrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEstado() {
-    // Receptar la codSubcategoria y codInstancia de formEstado.value
-    //let estadoCompetenciaParametroTemp = this.formEstado.value;
-    //this.codSubcategoria = estadoCompetenciaParametroTemp?.codSubcategoria;
-    //this.codInstancia = estadoCompetenciaParametroTemp?.codInstancia;
-    //this.habilitarAgregarParticipante = true;
     this.habilitarAgregarParticipante = true;
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
-        console.log("respuesta = ", respuesta)
         this.listaParticipante = respuesta['listado'];
-        // Ordenar lista por codigo
-        //this.listaCategoria.sort((firstItem, secondItem) => firstItem.participante.codigo - secondItem.participante.codigo);
-        
-        var arr = this.listaParticipante;
-        console.log("this.listaParticipante A = ", arr)
-        //arr.sort((firstItem, secondItem) => firstItem?.codigo - secondItem?.codigo);
-        //arr.sort((firstItem, secondItem) => Math.random() - 0.5);
-        console.log("this.listaParticipante D = ", arr)
-
         if (this.listaParticipante.length < this.itemsRegistros) {
           this.page = 1;
         }
         if (this.listaParticipante.length > 0) {
-          //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
             ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
@@ -345,35 +328,36 @@ export class EstadoPrincipalComponent implements OnInit {
             if (ele?.desSubcategoria.includes("GRUPOS")) {
               ele.displayNoneGrupo = "";
             }
-            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
         }
       }
     );
   }
 
-  ordenarLista(listaOrdenar: Participante[]) : Participante[] {
-    return listaOrdenar.sort((firstItem, secondItem) => Math.random() - 0.5);
+  sortearParticipante() {
+    return this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
   }
 
   listarParticipantePorSubcategoriaInstancia() {
-    // Receptar la descripción de formEstado.value
-    let estadoCompetenciaParametroTemp = this.formEstado.value;
-    this.codSubcategoria = estadoCompetenciaParametroTemp?.codSubcategoria;
-    this.codInstancia = estadoCompetenciaParametroTemp?.codInstancia;
+    // Receptar codSubcategoria y codInstancia de formSorteo.value
+    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
+    this.codSubcategoria = sorteoCompetenciaParametroTemp?.codSubcategoria;
+    this.codInstancia = sorteoCompetenciaParametroTemp?.codInstancia;
     this.buscarInstanciaPorCodigo();
-    //this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
+          ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
           ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
           ele.displayNoneGrupo = "none";
-          ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           if (ele.desSubcategoria.includes("GRUPOS")) {
             ele.displayNoneGrupo = "";
           }
         }
+        // Ordenar lista por numParticipante
+        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
+
       }
     );
   }
@@ -415,6 +399,20 @@ export class EstadoPrincipalComponent implements OnInit {
         break;
       }
     }
+  }
+
+  actualizarListaParticipante() {
+    console.log("this.listaParticipante", this.listaParticipante)
+    this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
+      next: (response) => {
+        this.listarParticipantePorSubcategoriaInstancia();
+        this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+      },
+      error: (error) => {
+        this.listarParticipantePorSubcategoriaInstancia();
+        this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
+      }
+    });
   }
 
   addRegistroParticipante() {
@@ -654,16 +652,16 @@ export class EstadoPrincipalComponent implements OnInit {
 
   /* Variables del html, para receptar datos y validaciones*/
   get identificacionField() {
-    return this.formEstado.get('identificacion');
+    return this.formSorteo.get('identificacion');
   }
   get codCategoriaField() {
-    return this.formEstado.get('codCategoria');
+    return this.formSorteo.get('codCategoria');
   }
   get codSubcategoriaField() {
-    return this.formEstado.get('codSubcategoria');
+    return this.formSorteo.get('codSubcategoria');
   }
   get codInstanciaField() {
-    return this.formEstado.get('codInstancia');
+    return this.formSorteo.get('codInstancia');
   }
 
 }

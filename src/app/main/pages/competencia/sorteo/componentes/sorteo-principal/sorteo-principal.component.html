@@ -1,0 +1,321 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card box-shadow-sm">
+            <div class="card-footer">
+                <div class="row form-group" [ngStyle]="{'display': displayNone}">
+                    <div class="col-12">
+                        <h4><b>Parámetros busqueda :</b></h4>
+                    </div>
+                </div>
+                <form detail-content [formGroup]="formSorteo">
+                    <div class="row form-group" [ngStyle]="{'display': displayNone}">
+                        <div class="col-3">
+                            <label for="codCategoria">
+                                <h4><b>{{'Categoría(*): '}}</b></h4>
+                            </label>
+                            <select name="codCategoria" formControlName="codCategoria" required
+                                [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
+                                class="form-control mr-sm-2" id="codCategoria"
+                                (change)="listarSubcategoriaPorCategoria()">
+                                <option [value]="''" selected>Seleccionar categoría</option>
+                                <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
+                                    <span><b>{{categoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codSubcategoria">
+                                <h4><b>{{'Subcategoría(*): '}}</b></h4>
+                            </label>
+                            <select name="codSubcategoria" formControlName="codSubcategoria" required required
+                                [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
+                                class="form-control mr-sm-2 custom-select" id="codSubcategoria"
+                                (change)="listarInstanciaActivo()">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
+                                    <span><b>{{subcategoria?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codInstancia">
+                                <h4><b>{{'Instancia(*): '}}</b></h4>
+                            </label>
+                            <select name="codInstancia" formControlName="codInstancia" required required
+                                [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
+                                class="form-control mr-sm-2 custom-select" id="codInstancia"
+                                (change)="listarParticipanteGeneral()">
+                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
+                                    <span><b>{{instancia?.denominacion}}</b></span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-1">
+                        </div>
+                        <div class="col-md-2 col-3 form-group">
+                            <div class="my-2 text-left">
+                                <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="actualizarListaParticipante()">
+                                    <b>{{ "Guardar Sorteo..."}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-save" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="row">
+                    <div class="col-12" [ngStyle]="{'display': displayNone1}">
+                        <button id="selectButton" mat-raised-button (click)="fileInput.click()"
+                            [disabled]="habilitarSeleccionarArchivo">
+                            <h3><b>Subir boucher de pago:</b></h3>
+                        </button>
+
+                        <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
+                        <span *ngIf="fileName">{{fileName}}</span>
+
+                        <button id="uploadButton" mat-raised-button *ngIf="selectedFiles"
+                            [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()">
+                            <h3><b>Guardar Archivo</b></h3>
+                        </button>
+                        <div class="col-sm-12" *ngIf="true">
+                            <embed id="vistaPreviaDJ" type="application/pdf" with="120" height="120">
+                            <!--
+                            <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
+                            <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
+                            -->
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <ng-container>
+                            <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
+                                [(selectedIndex)]="selectedTab">
+                                <mat-tab>
+                                    <section class="tab-container">
+                                        <div>
+                                            <!--
+                                            <h3><b>{{'Lista Participantes: '}} {{desCategoria}}
+                                                    - {{desSubcategoria}} - {{desInstancia}}
+                                                </b></h3>
+                                            -->
+                                            <button type="submit" (click)="sortearParticipante()"
+                                                [disabled]="habilitarAgregarParticipante"
+                                                matTooltip="Procesar Sorteo"
+                                                class="btn btn-block btn-primary form-control mt-2">
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                <b>{{'Procesar Sorteo por Subcategoría'}}</b>
+                                            </button>
+                                            <table class="table" *ngIf="listaParticipante?.length > 0"
+                                                id="tablaParticipante">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <!--<th scope="col">Identificación</th>-->
+                                                        <th scope="col">Nombres</th>
+                                                        <th scope="col">Grupo</th>
+                                                        <th scope="col">Categoría / Subcategoría</th>
+                                                        <th scope="col"><div align="center">Fecha/hora Competencia</div></th>
+                                                        <th scope="col">Estado Competencia</th>
+                                                        <th scope="col"><div align="center">Número Participante</div></th>
+                                                        <th scope="col" [ngStyle]="{'display': displayNone1}">Pista / Canción</th>
+                                                        <th scope="col" [ngStyle]="{'display': displayNone1}">Acciones
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        *ngFor="let participante of listaParticipante | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        <td>{{index+1}}</td>
+                                                        <!--<td>{{participante?.identificacion}}</td>-->
+                                                        <td>{{participante?.firstName + ' - ' + participante?.lastName}}
+                                                        </td>
+                                                        <td>
+                                                            <button type="button"
+                                                                [ngStyle]="{'display': participante?.displayNoneGrupo}"
+                                                                matTooltip="Ver Integrantes" class="btn btn-primary"
+                                                                rippleEffect round><i class="fa fa-search"
+                                                                    (click)="verListaIntegrante(participante?.codigo)"></i></button>
+                                                        </td>
+                                                        <td>{{participante?.desCategoria + ' / ' +
+                                                            participante?.desSubcategoria}}</td>
+                                                        <td>{{participante?.dateLastActive}}</td>
+                                                        <!--<td>{{participante?.desEstadoCompetencia}}</td>-->
+                                                        <td>
+                                                            <!--style="{'background-color': participante?.dateLastActive}"-->
+                                                            <!--[disabled]="formSorteo.invalid"-->
+                                                            <button type="button" (click)="cambiarEstado(participante)"
+                                                                [disabled]="disabledEstado"
+                                                                [ngStyle]="{'background-color': participante?.colorBoton}"
+                                                                style="color: black;" class="btn btn-rounded">
+                                                                <b>{{participante?.desEstadoCompetencia}}</b>
+                                                                <b>{{ " "}}</b>
+                                                                <i class="fa fa-pencil"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td><div align="center">{{participante?.numParticipante}}</div></td>
+                                                        <td [ngStyle]="{'display': displayNone1}">
+                                                            <audio #ref src="{{participante?.nombreCancion}}" type="audio/mpeg"></audio>
+                                                            <button (click)="ref.play()">▶️ play</button>
+                                                            <button (click)="ref.pause()">⏸ pause</button>
+                                                        </td>
+                                                        <td [ngStyle]="{'display': displayNone1}">
+                                                            <div class="btn-group" role="group"
+                                                                aria-label="Basic example">
+                                                                <button (click)="openEditarDetail(participante)"
+                                                                    matTooltip="Editar Participante" type="button"
+                                                                    class="btn btn-primary" rippleEffect round><i
+                                                                        class="fa fa-pencil"
+                                                                        (click)="openEditarDetail(participante)"></i></button>
+                                                                <button (click)="openRemoverDetail(participante)"
+                                                                    matTooltip="Eliminar Participante" type="button"
+                                                                    class="btn btn-danger" rippleEffect><i
+                                                                        class="fa fa-trash"
+                                                                        (click)="openRemoverDetail(participante)"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="row mt-5" *ngIf="listaParticipante?.length > itemsRegistros">
+                                                <div class="col-12 text-center">
+                                                    <pagination-controls id="paginar" class="paginacion"
+                                                        [responsive]="true" [autoHide]="true" previousLabel="Anterior"
+                                                        nextLabel="Siguiente" (pageChange)="page = $event"
+                                                        screenReaderCurrentLabel="Tú estas en la página:">
+                                                    </pagination-controls>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngIf="listaParticipante?.length === 0">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>No hay datos disponibles</p>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </section>
+                                </mat-tab>
+                            </mat-tab-group>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!--
+    <audio controls>
+        <source src="./assets/musica/solista_salsa_javier_brito.ogg" type="audio/ogg"/>
+        <source src="./assets/musica/solista_salsa_javier_brito.mp3" type="audio/mpeg"/>
+        <source src="{{urlCancion}}" type="audio/mpeg"/>
+        Your browser does not support the audio element.
+    </audio>
+    -->
+    <!--
+    <audio #ref src="{{urlCancion}}" type="audio/mpeg"></audio>
+    <button (click)="ref.play()">▶️ play</button>
+    <button (click)="ref.pause()">⏸ pause</button>
+    -->
+</div>
+
+<app-form-sorteo [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
+    [codSubcategoriaChild]="codSubcategoria" [codInstanciaChild]="codInstancia" [customerIdChild]="customerId"
+    [userIdChild]="userId" [identificacionChild]="identificacion"
+    (listaParticipante)="listarParticipanteActivoActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail">
+</app-form-sorteo>
+
+<ng-template #modal_confirm_delete let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Confirmar borrado.'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close('no')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'¿Quieres borrar el registro?'}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('yes')">{{'Si'}}</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('no')">{{'No'}}</button>
+    </div>
+</ng-template>
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Exito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'El registro ha sido borrada con éxito'}}
+    </div>
+</ng-template>
+
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'Ha habido un problema al borrar el registro'}}
+    </div>
+</ng-template>
+
+<ng-template #myModalInfo let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Éxito</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            ¡Modal mostrado correctamente!
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #modalIntegrante let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Lista Integrantes</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modal.close('Cerrado desde la ventana')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            {{listaIntegrante}}
+            <table class="table" *ngIf="listaIntegrante?.length > 0" id="tablaIntegrante">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombres</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let integrante of listaIntegrante ; let index=index">
+                        <td>{{index+1}}</td>
+                        <td>{{integrante?.nombre}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <!--<button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="modal.close('No')">No</button>-->
+            <button type="button" class="btn btn-primary" (click)="modal.close()">Cerrar</button>
+        </div>
+    </div>
+</ng-template>

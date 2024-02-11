@@ -170,6 +170,13 @@ export class Participante implements Iparticipante {
         set(this, 'data.numPuntajeJuez', value);
     }
 
+    get numParticipante(): number {
+        return get(this, 'data.numParticipante');
+    }
+    set numParticipante(value: number) {
+        set(this, 'data.numParticipante', value);
+    }
+
     get colorBoton(): string {
         return get(this, 'data.colorBoton');
     }
