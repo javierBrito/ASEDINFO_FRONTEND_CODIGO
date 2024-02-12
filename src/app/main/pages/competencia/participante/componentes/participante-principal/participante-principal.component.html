@@ -9,7 +9,7 @@
                 </div>
                 <form detail-content [formGroup]="formParticipanteParametro">
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codCategoria">
                                 <h4><b>{{'Categoría(*): '}}</b></h4>
                             </label>
@@ -25,7 +25,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codSubcategoria">
                                 <h4><b>{{'Subcategoría(*): '}}</b></h4>
                             </label>
@@ -41,7 +41,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codInstancia">
                                 <h4><b>{{'Instancia(*): '}}</b></h4>
                             </label>
@@ -59,7 +59,17 @@
                         </div>
                         <div class="col-1">
                         </div>
-                        <div class="col-md-2 col-3 form-group" [ngStyle]="{'display': displayNone}">
+                        <div class="col-md-2 col-2 form-group" [ngStyle]="{'display': displayNone}">
+                            <div class="my-2 text-left">
+                                <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="listarParticipantePorEstado()">
+                                    <b>{{ "Generer Archivo PDF"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-2 form-group" [ngStyle]="{'display': displayNone}">
                             <div class="my-2 text-left">
                                 <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                     (click)="cargarParticipantes()">
@@ -69,71 +79,7 @@
                                 </button>
                             </div>
                         </div>
-                        <!--
-                        <div class="col-md-2 col-3 form-group">
-                            <div class="my-2 text-left table-responsive">
-                                <button type="submit" [disabled]="formParticipanteParametro.invalid"
-                                    class="btn btn-info btn-rounded">
-                                    <b>{{ "Buscar"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                            <div class="col-12 form-group">
-                                <button [disabled]=""
-                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                    (click)="enviarCorreo()">
-                                    <b>{{ "Enviar Correo"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-envelope" style="font-size:14px;color:red"></i>
-                                </button>
-                            </div>
-                        </div>
-                        -->
                     </div>
-                    <!--
-                    <div class="row form-group">
-                        <div class="col-md-6 col-12 form-group">
-                            <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
-                            <input type="text" name="identificacion" id="identificacion"
-                                formControlName="identificacion" placeholder="Por favor, ingrese el número de cédula."
-                                class="form-control"
-                                [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors,'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
-                            <div class="valid-feedback">
-                                <span>{{ "Exito"}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
-                                    valida."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['minlength']">{{"Debe ingresar al menos 10
-                                    dígitos."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['maxlength']">{{"Solo puede ingresar 10
-                                    dígitos."}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
-                                    números."}}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-12 form-group">
-                            <div class="my-2 text-left table-responsive">
-                                <button type="submit" [disabled]="formParticipanteParametro.invalid"
-                                    class="btn btn-info btn-rounded">
-                                    <b>{{ "Buscar"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    -->
                 </form>
                 <div class="row">
                     <div class="col-12" [ngStyle]="{'display': displayNone1}">
@@ -181,10 +127,18 @@
                                                         <!--<th scope="col">Identificación</th>-->
                                                         <th scope="col">Nombres</th>
                                                         <th scope="col">Grupo</th>
-                                                        <th scope="col"><div align="center">Categoría / Subcategoría</div></th>
-                                                        <th scope="col"><div align="center">Fecha/hora Competencia</div></th>
-                                                        <th scope="col"><div align="center">Estado Competencia</div></th>
-                                                        <th scope="col"><div align="center">Pista / Canción</div></th>
+                                                        <th scope="col">
+                                                            <div align="center">Categoría / Subcategoría</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Fecha/hora Competencia</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Estado Competencia</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Pista / Canción</div>
+                                                        </th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone}">Acciones
                                                         </th>
                                                     </tr>
@@ -220,7 +174,8 @@
                                                             </button>
                                                         </td>
                                                         <td>
-                                                            <audio #ref src="{{participante?.nombreCancion}}" type="audio/mpeg"></audio>
+                                                            <audio #ref src="{{participante?.nombreCancion}}"
+                                                                type="audio/mpeg"></audio>
                                                             <button (click)="ref.play()">▶️ play</button>
                                                             <button (click)="ref.pause()">⏸ pause</button>
                                                         </td>

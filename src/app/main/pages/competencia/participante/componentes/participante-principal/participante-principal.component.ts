@@ -23,6 +23,9 @@ import { AudioService } from 'app/main/pages/compartidos/servicios/audio.service
 import { DataService } from 'app/main/pages/compartidos/servicios/data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-participante-principal',
@@ -310,6 +313,7 @@ export class ParticipantePrincipalComponent implements OnInit {
           if (ele.desSubcategoria.includes("GRUPOS")) {
             ele.displayNoneGrupo = "";
           }
+          this.generarPDF();
         }
       }
     );
@@ -587,6 +591,68 @@ export class ParticipantePrincipalComponent implements OnInit {
     }, error => {
       console.log(error);
     });
+  }
+
+  listarParticipantePorEstado() {
+    this.participanteService.listarParticipantePorEstado("A").subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length > 0) {
+          for (const ele of this.listaParticipante) {
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
+            if (ele?.identificacion == this.currentUser.identificacion) {
+              ele.desCategoria = "DIRECTOR";
+              ele.desSubcategoria = "ACADEMIA";
+            }
+          }
+          // Ordenar lista por numParticipante
+          this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
+          this.generarPDF();
+        }
+      }
+    );
+  }
+
+  generarPDF() {
+    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.identificacion, participante?.desCategoria + "/" + participante?.desSubcategoria]);
+    const pdfDefinition: any = {
+      content: [
+        { text: 'Reporte Participante', style: 'datoTituloGeneral' },
+        {
+          table: {
+            body: [
+              ['#', 'Nombre', 'Identificación', 'Categoría/Subcategoría'],
+              ...bodyData
+            ],
+          },
+          style: 'datosTabla'
+        },
+      ],
+      styles: {
+        datosTabla: {
+          fontSize: 10,
+          margin: [10, 10, 10, 10], // Margen inferior para separar la tabla de otros elementos
+          fillColor: '#F2F2F2', // Color de fondo de la tabla
+        },
+        datoTitulo: {
+          fontSize: 10
+        },
+        datoTituloGeneral: {
+          fontSize: 16,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 0, 0, 10], // Puedes ajustar el margen según tus preferencias
+        },
+        datoSubtitulo: {
+          fontSize: 10,
+          bold: true,
+          alignment: 'left', // Alineado a la izquierda
+          margin: [0, 0, 0, 10], // Ajusta el margen según tus preferencias
+        }
+      },
+    }
+    const pdf = pdfMake.createPdf(pdfDefinition);
+    pdf.open();
   }
 
   /* Variables del html, para receptar datos y validaciones*/

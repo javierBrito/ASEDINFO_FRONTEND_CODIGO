@@ -361,7 +361,6 @@ export class SorteoPrincipalComponent implements OnInit {
         }
         // Ordenar lista por numParticipante
         this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
-
       }
     );
   }

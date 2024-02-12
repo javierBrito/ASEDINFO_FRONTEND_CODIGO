@@ -2,7 +2,7 @@
   <div class="auth-inner row m-0">
     <!-- Brand logo--><a class="brand-logo" href="javascript:void(0);">
       <!-- <img src="{{ coreConfig.app.appLogoImage }}" alt="brand-logo" height="28" /> -->
-      <h2 class="brand-text ml-1" style="color: #130591;">AsedInfo</h2>
+      <h2 class="brand-text ml-1" style="color: #130591;">Bienvenido a AsedInfo!</h2>
     </a>
     <!-- /Brand logo-->
     <!-- Left Text-->
@@ -12,9 +12,8 @@
           <div class="card-header">
           </div>
           <div class="card-body">
-            <h5 class="card-title" style="color: #130591;">Bienvenido a Asedinfo!</h5>
-            <p class="card-text">Asedinfo es una plataforma que se encuentra desarrollado y sirve para el manejo y
-              administración de los aplicativos publicados</p>
+            <h5 class="card-title" style="color: #130591;">AsedInfo-Sistemas</h5>
+            <p class="card-text">Es una plataforma de sistemas, para la gestión y administración de procesos de VENTAS y COMPETENCIAS</p>
             <img class="img-fluid" style="width: 400px;" [src]="
             coreConfig.layout.skin === 'dark'
               ? 'assets/images/pages/login/colmena-login-img.svg'
@@ -22,7 +21,7 @@
           " alt="Login V2" />
           </div>
           <div class="card-footer text-muted">
-            <img class="float-sm-left img-fluid" src="assets/images/menu/colmena-lineas.svg" style="width: 150px;">
+            <!--<img class="float-sm-left img-fluid" src="assets/images/menu/colmena-lineas.svg" style="width: 150px;">-->
           </div>
         </div>
       </div>
@@ -31,9 +30,17 @@
     <!-- Login-->
     <div class="d-flex col-lg-4 align-items-center auth-bg px-2 p-lg-5">
       <div class="col-12 col-sm-8 col-md-6 col-lg-12 px-xl-2 mx-auto">
-        <img class="rounded mx-auto d-block img-fluid" src="assets/images/fondo/colmena-fondo.svg"
-          style="width: 150px;">
-        <h2 class="card-title font-weight-bold mb-1">Bienvenido! 👋</h2>
+        <!--<img class="rounded mx-auto d-block img-fluid" src="assets/images/fondo/colmena-fondo.svg"
+          style="width: 150px;">-->
+          <span class="avatar"
+          ><img
+            class="round"
+            src="assets/images/portrait/small/user_info.png"
+            alt="avatar"
+            height="35"
+            width="35" /><span class="avatar-status-online"></span
+        ></span>
+        <h2 class="card-title font-weight-bold mb-1">Ingrese credenciales...</h2>
         <ngb-alert [type]="'danger'" [dismissible]="false" *ngIf="error">
           <div class="alert-body">
             <p>{{ error }}</p>
@@ -104,7 +111,7 @@
 <ng-template #modal_acuerdo_confidencialidad let-modal>
 
   <div class="modal-header">
-    <h5 class="modal-title justify-content-center">{{'APLICATIVOS ASEDINFO'}}</h5>
+    <h5 class="modal-title justify-content-center">{{'SISTEMAS ASEDINFO'}}</h5>
     <!--     <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
       <span aria-hidden="true">&times;</span>
     </button> -->

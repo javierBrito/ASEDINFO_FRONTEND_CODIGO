@@ -86,6 +86,7 @@
     "node-cron": "^3.0.2",
     "node-waves": "0.7.6",
     "nouislider": "15.1.1",
+    "pdfmake": "^0.2.9",
     "plyr": "3.6.8",
     "popper.js": "^1.16.1",
     "primeicons": "^6.0.1",

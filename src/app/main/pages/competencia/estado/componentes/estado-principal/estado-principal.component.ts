@@ -126,11 +126,11 @@ export class EstadoPrincipalComponent implements OnInit {
   ) {
     // Inicio - Para acceder directamente a la página de inscripción
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    //console.log("this.currentUser Estado I = ", this.currentUser);
+    console.log("this.currentUser Estado I = ", this.currentUser);
     if (this.currentUser == null) {
       this.iniciarSesion();
     };
-    //console.log("this.currentUser Estado F = ", this.currentUser)
+    console.log("this.currentUser Estado F = ", this.currentUser)
     // Fin - Para acceder directamente a la página de inscripción
   }
 
@@ -309,25 +309,11 @@ export class EstadoPrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEstado() {
-    // Receptar la codSubcategoria y codInstancia de formEstado.value
-    //let estadoCompetenciaParametroTemp = this.formEstado.value;
-    //this.codSubcategoria = estadoCompetenciaParametroTemp?.codSubcategoria;
-    //this.codInstancia = estadoCompetenciaParametroTemp?.codInstancia;
-    //this.habilitarAgregarParticipante = true;
     this.habilitarAgregarParticipante = true;
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
         console.log("respuesta = ", respuesta)
         this.listaParticipante = respuesta['listado'];
-        // Ordenar lista por codigo
-        //this.listaCategoria.sort((firstItem, secondItem) => firstItem.participante.codigo - secondItem.participante.codigo);
-        
-        var arr = this.listaParticipante;
-        console.log("this.listaParticipante A = ", arr)
-        //arr.sort((firstItem, secondItem) => firstItem?.codigo - secondItem?.codigo);
-        //arr.sort((firstItem, secondItem) => Math.random() - 0.5);
-        console.log("this.listaParticipante D = ", arr)
-
         if (this.listaParticipante.length < this.itemsRegistros) {
           this.page = 1;
         }
