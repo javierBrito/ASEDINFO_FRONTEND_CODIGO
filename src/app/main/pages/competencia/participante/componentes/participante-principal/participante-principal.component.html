@@ -82,6 +82,7 @@
                     </div>
                 </form>
                 <div class="row">
+                    <!--
                     <div class="col-12" [ngStyle]="{'display': displayNone1}">
                         <button id="selectButton" mat-raised-button (click)="fileInput.click()"
                             [disabled]="habilitarSeleccionarArchivo">
@@ -97,12 +98,13 @@
                         </button>
                         <div class="col-sm-12" *ngIf="true">
                             <embed id="vistaPreviaDJ" type="application/pdf" with="120" height="120">
-                            <!--
+                            
                             <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
                             <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
-                            -->
+                            
                         </div>
                     </div>
+                    -->
                     <div class="col-12">
                         <ng-container>
                             <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
@@ -110,8 +112,10 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
+                                            <!--
                                             <h3><b>{{'Lista Participantes del Subscriptor: '}} {{nombreSubscriptor}}
                                                 </b></h3>
+                                            -->
                                             <button type="submit" (click)="openDetail(1)"
                                                 [disabled]="habilitarAgregarParticipante"
                                                 matTooltip="Agregar participante"
@@ -139,7 +143,7 @@
                                                         <th scope="col">
                                                             <div align="center">Pista / Canción</div>
                                                         </th>
-                                                        <th scope="col" [ngStyle]="{'display': displayNone}">Acciones
+                                                        <th scope="col">Acciones
                                                         </th>
                                                     </tr>
                                                 </thead>
@@ -179,7 +183,7 @@
                                                             <button (click)="ref.play()">▶️ play</button>
                                                             <button (click)="ref.pause()">⏸ pause</button>
                                                         </td>
-                                                        <td [ngStyle]="{'display': displayNone}">
+                                                        <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
                                                                 <button (click)="openEditarDetail(participante)"

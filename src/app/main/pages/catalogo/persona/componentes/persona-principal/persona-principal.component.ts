@@ -80,6 +80,8 @@ export class PersonaPrincipalComponent implements OnInit {
       this.listaPersona = this.listaPersonaChild;
     }
     this.formPersonaIdentificacion = this.formBuilder.group({
+      identificacion: new FormControl(''),
+      /*
       identificacion: new FormControl('', Validators.compose([
         MyValidators.isCedulaValid,
         Validators.required,
@@ -87,6 +89,7 @@ export class PersonaPrincipalComponent implements OnInit {
         Validators.maxLength(10),
         Validators.pattern("^[0-9]*$"),
       ])),
+      */
     })
   }
 
@@ -98,6 +101,15 @@ export class PersonaPrincipalComponent implements OnInit {
     this.personaService.listarPersonaPorIdentificacion(this.identificacion).subscribe(
       (respuesta) => {
         this.listaPersona = respuesta['listado'];
+        for (const ele of this.listaPersona) {
+          if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
+            ele.prefijoTelefonico = '593';
+          }
+        }
+        if (this.listaPersona.length < this.itemsRegistros) {
+          this.page = 1;
+        }
+
       }
     );
   }

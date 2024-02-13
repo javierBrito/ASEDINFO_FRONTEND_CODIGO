@@ -13,44 +13,19 @@
                 <div class="col-6">
                     <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        (keypress)="validateFormat($event)" maxlength="10" id="identificacion"
-                        (keyup)="onKey($event)"
-                        placeholder="Por favor, ingrese el número de cédula."
-                        oninput="identificacion.value = identificacion.value.toUpperCase()"
+                        maxlength="60" id="identificacion" placeholder="Por favor, ingrese el número de cédula."
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
-                            valida."}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="identificacionField?.errors?.['minlength']">{{"Debe ingresar al menos 10
-                            dígitos."}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="identificacionField?.errors?.['maxlength']">{{"Solo puede ingresar 10
-                            dígitos."}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
-                            números."}}</span>
                     </div>
                 </div>
                 <div class="col-6">
                     <label for="fechaNacimiento"><b>{{'Nacimiento: '}}</b></label>
                     <input type="date" name="fechaNacimiento" formControlName="fechaNacimiento" class="form-control"
-                        id="fechaNacimiento" oninput="fechaNacimiento.value = fechaNacimiento.value.toUpperCase()"
+                        id="fechaNacimiento"
                         [ngClass]="{'is-valid': fechaNacimientoField?.dirty && !fechaNacimientoField?.invalid && !fechaNacimientoField?.errors,'is-invalid': fechaNacimientoField?.dirty && fechaNacimientoField?.invalid && fechaNacimientoField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="fechaNacimientoField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
             </div>
@@ -81,21 +56,21 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-12">
-                    <label for="direccion"><b>{{'Dirección: '}}</b></label>
-                    <input type="text" name="direccion" formControlName="direccion" class="form-control" id="direccion"
-                        oninput="direccion.value = direccion.value.toUpperCase()"
-                        [ngClass]="{'is-valid': direccionField?.dirty && !direccionField?.invalid && !direccionField?.errors, 'is-invalid': direccionField?.dirty && direccionField?.invalid && direccionField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="direccionField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
+                <div class="col-6">
+                    <label for="codigo"><b>{{"Prefijo(*): "}}</b></label>
+                    <select name="codigo" formControlName="codigo" required [compareWith]="compararPrefijoTelefonico"
+                        placeholder="Prefijo telefónico" class="form-control mr-sm-2" id="codigo"
+                        (change)="buscarPrefijoTelefonico()">
+                        <option [value]="" selected>Prefijo telefónico</option>
+                        <option *ngFor="let prefijoTelefonico of listaPrefijoTelefonico"
+                            [value]="prefijoTelefonico.codigo">
+                            <span>{{prefijoTelefonico?.nombrePais+" / "+prefijoTelefonico?.codigo}}</span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
                 </div>
-            </div>
-            <div class="row form-group">
-                <div class="col-4">
+                <div class="col-6">
                     <label for="celular"><b>{{'Celular(*): '}}</b></label>
                     <input type="text" name="celular" formControlName="celular" class="form-control" id="celular"
                         [ngClass]="{'is-valid': celularField?.dirty && !celularField?.invalid && !celularField?.errors, 'is-invalid': celularField?.dirty && celularField?.invalid && celularField?.errors}">
@@ -104,6 +79,16 @@
                     </div>
                     <div class="invalid-feedback">
                         <span *ngIf="celularField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-4">
+                    <label for="cedula"><b>{{'Tipo Rol Persona(*): '}}</b></label>
+                    <input type="text" name="cedula" formControlName="cedula" class="form-control" id="cedula"
+                        [ngClass]="{'is-valid': cedulaField?.dirty && !cedulaField?.invalid && !cedulaField?.errors, 'is-invalid': cedulaField?.dirty && cedulaField?.invalid && cedulaField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
                     </div>
                 </div>
                 <div class="col-8">
@@ -115,6 +100,21 @@
                     </div>
                     <div class="invalid-feedback">
                         <span *ngIf="correoField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="direccion"><b>{{'Dirección: '}}</b></label>
+                    <input type="text" name="direccion" formControlName="direccion" class="form-control" id="direccion"
+                        oninput="direccion.value = direccion.value.toUpperCase()"
+                        [ngClass]="{'is-valid': direccionField?.dirty && !direccionField?.invalid && !direccionField?.errors, 'is-invalid': direccionField?.dirty && direccionField?.invalid && direccionField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="direccionField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
             </div>

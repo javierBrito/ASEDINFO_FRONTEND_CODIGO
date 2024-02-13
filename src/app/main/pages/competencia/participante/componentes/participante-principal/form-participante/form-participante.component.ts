@@ -122,12 +122,13 @@ export class FormParticipanteComponent implements OnInit {
 
   ngOnInit() {
     this.listarEstadoCompetenciaActivo();
-    console.log("this.codSubcategoriaChild = ", this.codSubcategoriaChild)
+    this.listarSubcategoriaActivo();
     if (this.participanteEditar) {
+      this.nombreCancion = this.participanteEditar?.nombreCancion;
       this.codSubcategoriaChild = this.participanteEditar.codSubcategoria;
       this.codInstanciaChild = this.participanteEditar.codInstancia;
       this.formParticipante = this.formBuilder.group({
-        identificacion: new FormControl(this.participanteEditar?.email, Validators.required),
+        identificacion: new FormControl(this.participanteEditar?.identificacion, Validators.required),
         nombres: new FormControl(this.participanteEditar?.nombres, Validators.required),
         apellidos: new FormControl(this.participanteEditar?.apellidos),
         fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
@@ -382,7 +383,8 @@ export class FormParticipanteComponent implements OnInit {
         fechaNacimiento: participanteTemp?.fechaNacimiento,
         celular: participanteTemp?.celular,
         correo: participanteTemp?.identificacion,
-        cedula: this.currentUser.cedula,
+        //cedula: this.currentUser.cedula,
+        cedula: 'Suscriptor',
         estado: 'A',
       });
     }
@@ -445,7 +447,6 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
-      console.log("this.participante = ", this.participante)
       this.participanteService.guardarParticipante(this.participante).subscribe({
         next: (response) => {
           this.listarParticipantePorSubcategoriaInstancia();
@@ -460,7 +461,6 @@ export class FormParticipanteComponent implements OnInit {
     } else {
       // Si es nuevo el participante
       this.participanteAux['data'].codPersona = this.persona.codigo;
-      console.log("this.participanteAux['data'] = ", this.participanteAux['data'])
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
@@ -579,7 +579,6 @@ export class FormParticipanteComponent implements OnInit {
     // Receptar identificacion de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.nombreCancion = participanteTemp?.identificacion + "_" + file?.name;
-    console.log("this.nombreCancion = ", this.nombreCancion)
     this.participanteService.cargarArchivo(file, participanteTemp?.identificacion).subscribe(
       async (respuesta) => {
         console.log("respuesta = ", respuesta);

@@ -119,11 +119,12 @@
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <!--<th scope="col">Identificación</th>-->
-                                                        <th scope="col">Nombres</th>
-                                                        <th scope="col">Grupo</th>
-                                                        <th scope="col">Categoría/Subcategoría</th>
-                                                        <th scope="col">Fecha/hora Competencia</th>
-                                                        <th scope="col">Estado Competencia</th>
+                                                        <th scope="col"><div align="center">Nombres</div></th>
+                                                        <th scope="col"><div align="center">Grupo</div></th>
+                                                        <th scope="col"><div align="center">Categoría / Subcategoría</div></th>
+                                                        <th scope="col"><div align="center">Fecha/hora Competencia</div></th>
+                                                        <th scope="col"><div align="center">Estado Competencia</div></th>
+                                                        <th scope="col"><div align="center">Número Participante</div></th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone}">Pista / Canción</th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone}">Acciones
                                                         </th>
@@ -159,6 +160,7 @@
                                                                 <i class="fa fa-pencil"></i>
                                                             </button>
                                                         </td>
+                                                        <td><div align="center">{{participante?.numParticipante}}</div></td>
                                                         <td [ngStyle]="{'display': displayNone}">
                                                             <audio #ref src="{{participante?.nombreCancion}}" type="audio/mpeg"></audio>
                                                             <button (click)="ref.play()">▶️ play</button>

@@ -529,6 +529,14 @@ export class PuntajePrincipalComponent implements OnInit {
     })
   }
 
+  // Contar los caracteres de la cedula para activar boton <Buscar>
+  onKey(event) {
+    if (event.target.value < 0 || event.target.value > 10) {
+      event.target.value = 0;
+      this.mensajeService.mensajeError('Valor del puntaje incorrecto, ingrese en el rango de 1 a 10...');
+    }
+  }
+
   capturarInputs(datosParticipante) {
     this.datosEditar = datosParticipante;
   }

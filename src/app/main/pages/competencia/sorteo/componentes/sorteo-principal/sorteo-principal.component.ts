@@ -127,11 +127,9 @@ export class SorteoPrincipalComponent implements OnInit {
   ) {
     // Inicio - Para acceder directamente a la página de inscripción
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    //console.log("this.currentUser Estado I = ", this.currentUser);
     if (this.currentUser == null) {
       this.iniciarSesion();
     };
-    //console.log("this.currentUser Estado F = ", this.currentUser)
     // Fin - Para acceder directamente a la página de inscripción
   }
 
@@ -405,7 +403,6 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   actualizarListaParticipante() {
-    console.log("this.listaParticipante", this.listaParticipante)
     this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
       next: (response) => {
         this.displayBotonGuardar = "none";

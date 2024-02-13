@@ -7,8 +7,7 @@
                         <h4><b>Parámetros busqueda :</b></h4>
                     </div>
                 </div>
-                <form detail-content [formGroup]="formPuntajeParametro"
-                    (ngSubmit)="listarPuntajePorParticipante()">
+                <form detail-content [formGroup]="formPuntajeParametro" (ngSubmit)="listarPuntajePorParticipante()">
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
                         <div class="col-3">
                             <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
@@ -63,7 +62,7 @@
                                     <section class="tab-container">
                                         <div>
                                             <h3><b>{{'Lista Puntaje del juez '}} {{nombreUsuario}}
-                                            </b></h3>
+                                                </b></h3>
                                             <!--
                                             <button type="submit" (click)="openDetail(1)"
                                                 matTooltip="Agregar Nuevo Puntaje"
@@ -79,7 +78,11 @@
                                                         <th scope="col">#</th>
                                                         <th scope="col">Participante</th>
                                                         <th *ngFor="let modeloPuntaje of this.listaModeloPuntaje; let index=index"
-                                                            scope="col">{{modeloPuntaje?.denominacion}}</th>
+                                                            scope="col">
+                                                            <div align="center">{{modeloPuntaje?.denominacion}}</div>
+                                                            <div align="center">{{modeloPuntaje?.porcentaje}} {{' %'}}
+                                                            </div>
+                                                        </th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
                                                 </thead>
@@ -89,12 +92,14 @@
                                                         <td>{{index+1}}</td>
                                                         <td>{{participante?.nombrePersona}}</td>
                                                         <td *ngFor="let nota of participante?.listaNotas" scope="col">
-                                                            <input style="width: 50px; text-align:center"
-                                                                [(ngModel)]="nota.puntaje"
-                                                                (change)="capturarInputs(participante)"
-                                                                [ngModelOptions]="{standalone: true}"
-                                                                [disabled]="idInput!='curso_'+index" type="text"
-                                                                id="curso_{{index}}">
+                                                            <div align="center">
+                                                                <input style="width: 50px; text-align:center"
+                                                                    [(ngModel)]="nota.puntaje" (keyup)="onKey($event)"
+                                                                    (change)="capturarInputs(participante)"
+                                                                    [ngModelOptions]="{standalone: true}"
+                                                                    [disabled]="idInput!='curso_'+index" type="text"
+                                                                    id="curso_{{index}}">
+                                                            </div>
                                                         </td>
                                                         <td>
                                                             <div class="btn-group" role="group"
@@ -103,7 +108,8 @@
                                                                     (click)="guardarNotas(participante, 'curso_'+index)"
                                                                     type="button" class="btn btn-success"
                                                                     rippleEffect><i class="fa fa-floppy-o"></i></button>
-                                                                <button (click)="editarNota(participante, 'curso_'+index)"
+                                                                <button
+                                                                    (click)="editarNota(participante, 'curso_'+index)"
                                                                     type=" button" class="btn btn-primary" rippleEffect
                                                                     round><i class="fa fa-pencil"></i></button>
                                                             </div>
@@ -120,7 +126,7 @@
                                                     </pagination-controls>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="listaPuntaje.length === 0">
+                                            <ng-container *ngIf="listaPuntaje?.length === 0">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p>No hay datos disponibles</p>

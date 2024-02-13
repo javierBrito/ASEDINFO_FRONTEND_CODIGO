@@ -127,7 +127,7 @@ export class ResultadoPrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    this.sede = this.currentUser.sede;
+    //this.sede = this.currentUser.sede;
   }
 
   ngOnInit() {

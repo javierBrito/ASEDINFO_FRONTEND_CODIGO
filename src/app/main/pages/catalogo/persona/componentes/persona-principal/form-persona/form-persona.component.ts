@@ -9,6 +9,7 @@ import { PersonaService } from '../../../servicios/persona.service';
 import { SedeService } from 'app/main/pages/seguridad/sede/servicios/sede.service';
 import dayjs from "dayjs";
 import { MyValidators } from 'app/utils/validators';
+import { PrefijoTelefonico } from 'app/main/pages/compartidos/modelos/PrefijoTelefonico';
 
 @Component({
   selector: 'app-form-persona',
@@ -41,7 +42,6 @@ export class FormPersonaComponent implements OnInit {
 
   /*FORMULARIOS*/
   public formPersona: FormGroup;
-  public listaPersonaAux: Persona[];
 
   /*OBJETOS*/
   public persona: Persona;
@@ -50,6 +50,8 @@ export class FormPersonaComponent implements OnInit {
     { valor: "SI" },
     { valor: "NO" },
   ];
+  public listaPersonaAux: Persona[];
+  public listaPrefijoTelefonico: PrefijoTelefonico[];
 
   /*CONSTRUCTOR*/
   constructor(
@@ -72,6 +74,8 @@ export class FormPersonaComponent implements OnInit {
     this.listarSedeActivo();
     if (this.personaEditar) {
       this.formPersona = this.formBuilder.group({
+        identificacion: new FormControl({ value: this.personaEditar?.identificacion, disabled: true }, Validators.required),
+        /*
         identificacion: new FormControl({ value: this.personaEditar.identificacion, disabled: true }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
@@ -79,16 +83,21 @@ export class FormPersonaComponent implements OnInit {
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
+        */
         nombres: new FormControl(this.personaEditar.nombres, Validators.required),
         apellidos: new FormControl(this.personaEditar.apellidos, Validators.required),
         fechaNacimiento: new FormControl(dayjs(this.personaEditar.fechaNacimiento).format("YYYY-MM-DD")),
         direccion: new FormControl(this.personaEditar.direccion),
         celular: new FormControl(this.personaEditar.celular, Validators.required),
         correo: new FormControl(this.personaEditar.correo, Validators.required),
+        codigo: new FormControl(this.personaEditar?.prefijoTelefonico),
+        cedula: new FormControl(this.personaEditar?.cedula),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
       this.formPersona = this.formBuilder.group({
+        identificacion: new FormControl({ value: this.identificacionChild, disabled: false }, Validators.required),
+        /*
         identificacion: new FormControl({ value: this.identificacionChild, disabled: false }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
@@ -96,14 +105,26 @@ export class FormPersonaComponent implements OnInit {
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
+        */
         nombres: new FormControl('', Validators.required),
         apellidos: new FormControl('', Validators.required),
         fechaNacimiento: new FormControl(''),
         direccion: new FormControl(''),
         celular: new FormControl('', Validators.required),
         correo: new FormControl('', Validators.required),
+        codigo: new FormControl('593'),
+        cedula: new FormControl(''),
       })
     }
+    this.listarPrefijoTelefonico();
+  }
+  
+  async listarPrefijoTelefonico() {
+    this.personaService.listarPrefijoTelefonico().subscribe(
+      (respuesta) => {
+        this.listaPrefijoTelefonico = respuesta['listado'];
+      }
+    );
   }
 
   listarSedeActivo() {
@@ -143,23 +164,35 @@ export class FormPersonaComponent implements OnInit {
     return amieFiltrado['0']
   }
 
+  buscarPrefijoTelefonico() {
+    // Receptar el codigo de formCliente.value
+    let formPersonaTemp = this.formPersona.value;
+  }
+
   addRegistro() {
+    let fechaNacimiento = "";
     if (this.formPersona?.valid) {
       let personaTemp = this.formPersona.value;
+      if (personaTemp?.fechaNacimiento.length != 0 && personaTemp?.fechaNacimiento.length != 12) {
+        fechaNacimiento = dayjs(personaTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
+      }
       this.persona = new Persona({
         codigo: 0,
         identificacion: personaTemp.identificacion,
         nombres: personaTemp.nombres,
         apellidos: personaTemp.apellidos,
-        fechaNacimiento: dayjs(personaTemp.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        fechaNacimiento: fechaNacimiento,
         direccion: personaTemp.direccion,
         celular: personaTemp.celular,
         correo: personaTemp.correo,
         estado: 'A',
+        prefijoTelefonico: personaTemp?.codigo,
+        cedula: personaTemp?.cedula,
       });
     }
     if (this.personaEditar) {
       this.persona['data'].codigo = this.personaEditar.codigo;
+      //this.persona['data'].cedula = this.personaEditar.cedula;
       this.persona['data'].identificacion = this.identificacionChild;
       this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: (response) => {
@@ -192,6 +225,10 @@ export class FormPersonaComponent implements OnInit {
   }
 
   compararSede(o1, o2) {
+    return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
+  }
+
+  compararPrefijoTelefonico(o1, o2) {
     return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
   }
 
@@ -270,5 +307,11 @@ export class FormPersonaComponent implements OnInit {
   }
   get correoField() {
     return this.formPersona.get('correo');
+  }
+  get cedulaField() {
+    return this.formPersona.get('cedula');
+  }
+  get codigoField() {
+    return this.formPersona.get('codigo');
   }
 }

@@ -35,5 +35,8 @@ export class PersonaService {
   guardarPersona(persona) {
     return this.http.post<Persona>(`${environment.url_seguridad}/catalogo/guardarPersona`, persona);
   }
+  listarPrefijoTelefonico(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarPrefijoTelefonico`);
+  }
 
 }

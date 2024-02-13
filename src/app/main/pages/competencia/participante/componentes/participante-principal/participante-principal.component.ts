@@ -145,7 +145,6 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    console.log("this.currentUser = ", this.currentUser)
     this.nombreSubscriptor = this.currentUser.nombre;
     this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
@@ -313,8 +312,9 @@ export class ParticipantePrincipalComponent implements OnInit {
           if (ele.desSubcategoria.includes("GRUPOS")) {
             ele.displayNoneGrupo = "";
           }
-          this.generarPDF();
         }
+        // Ordenar lista por numParticipante
+        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
       }
     );
   }
@@ -614,14 +614,14 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   generarPDF() {
-    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.identificacion, participante?.desCategoria + "/" + participante?.desSubcategoria]);
+    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
         { text: 'Reporte Participante', style: 'datoTituloGeneral' },
         {
           table: {
             body: [
-              ['#', 'Nombre', 'Identificación', 'Categoría/Subcategoría'],
+              ['#', 'Nombre', 'Categoría/Subcategoría', 'Número Participante', 'CheckList'],
               ...bodyData
             ],
           },

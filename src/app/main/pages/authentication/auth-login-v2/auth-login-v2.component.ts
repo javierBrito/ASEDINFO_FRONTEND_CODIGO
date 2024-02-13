@@ -179,6 +179,13 @@ export class AuthLoginV2Component implements OnInit {
     }
     // Fin - jbrito - para redireccionar a los usuarios Suscriptores - 20231229
 
+    // Inicio - jbrito - para redireccionar a los usuarios Suscriptores - 20240212
+    if (this._authenticationService.currentUserValue.cedula == 'JUEZ') {
+      this.aplicacionVEN = true;
+      this._router.navigate(['/pages/competencia/puntaje'])
+    }
+    // Fin - jbrito - para redireccionar a los usuarios Suscriptores - 20240212
+
     var menuItem: CoreMenu[] = [];
     //console.log("roles = ", roles['0']['aplicacion'].prefijo);
     roles.forEach(rol => {

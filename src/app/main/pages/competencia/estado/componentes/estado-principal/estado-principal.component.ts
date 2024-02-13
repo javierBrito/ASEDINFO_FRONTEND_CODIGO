@@ -126,11 +126,9 @@ export class EstadoPrincipalComponent implements OnInit {
   ) {
     // Inicio - Para acceder directamente a la página de inscripción
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    console.log("this.currentUser Estado I = ", this.currentUser);
     if (this.currentUser == null) {
       this.iniciarSesion();
     };
-    console.log("this.currentUser Estado F = ", this.currentUser)
     // Fin - Para acceder directamente a la página de inscripción
   }
 
@@ -312,7 +310,6 @@ export class EstadoPrincipalComponent implements OnInit {
     this.habilitarAgregarParticipante = true;
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
-        console.log("respuesta = ", respuesta)
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length < this.itemsRegistros) {
           this.page = 1;
@@ -334,6 +331,8 @@ export class EstadoPrincipalComponent implements OnInit {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
         }
+        // Ordenar lista por numParticipante
+        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
       }
     );
   }

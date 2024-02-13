@@ -13,7 +13,7 @@
                         <div class="col-md-6 col-12 form-group">
                             <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                             <input type="text" name="identificacion" id="identificacion"
-                                formControlName="identificacion" (keypress)="validateFormat($event)" maxlength="10"
+                                formControlName="identificacion" maxlength="60"
                                 placeholder="Por favor, ingrese el número de cédula." class="form-control"
                                 (keyup)="onKey($event)"
                                 [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors,'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
@@ -23,6 +23,7 @@
                             <div class="invalid-feedback">
                                 <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
+                            <!--
                             <div class="invalid-feedback">
                                 <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
                                     valida."}}</span>
@@ -39,6 +40,7 @@
                                 <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
                                     números."}}</span>
                             </div>
+                            -->
                         </div>
                         <div class="col-md-2 col-12 form-group">
                             <div class="my-2 text-left table-responsive">
@@ -115,7 +117,7 @@
                                                     </pagination-controls>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="listaPersona.length === 0">
+                                            <ng-container *ngIf="listaPersona?.length === 0">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p>No hay datos disponibles</p>

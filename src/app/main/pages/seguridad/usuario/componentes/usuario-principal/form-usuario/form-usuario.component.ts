@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { MyValidators } from 'app/utils/validators';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
+import { PrefijoTelefonico } from 'app/main/pages/compartidos/modelos/PrefijoTelefonico';
 
 @Component({
   selector: 'app-form-usuario',
@@ -54,6 +55,7 @@ export class FormUsuarioComponent implements OnInit {
     { valor: "SI" },
     { valor: "NO" },
   ];
+  public listaPrefijoTelefonico: PrefijoTelefonico[];
 
   /*CONSTRUCTOR*/
   constructor(
@@ -77,6 +79,8 @@ export class FormUsuarioComponent implements OnInit {
     this.listarSedeActivo();
     if (this.personaEditar) {
       this.formUsuario = this.formBuilder.group({
+        identificacion: new FormControl({ value: this.personaEditar?.identificacion, disabled: true }, Validators.required),
+        /*
         identificacion: new FormControl({ value: this.personaEditar.identificacion, disabled: true }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
@@ -84,6 +88,7 @@ export class FormUsuarioComponent implements OnInit {
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
+        */
         nombres: new FormControl(this.personaEditar?.nombres, Validators.required),
         apellidos: new FormControl(this.personaEditar?.apellidos, Validators.required),
         fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
@@ -92,10 +97,14 @@ export class FormUsuarioComponent implements OnInit {
         correo: new FormControl(this.personaEditar?.correo, Validators.required),
         cambioClave: new FormControl(this.personaEditar?.usuario?.cambioClave, Validators.required),
         actualizacionDatos: new FormControl(this.personaEditar?.usuario?.actualizacionDatos, Validators.required),
+        codigo: new FormControl(this.personaEditar?.prefijoTelefonico),
+        cedula: new FormControl(this.personaEditar?.cedula),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
       this.formUsuario = this.formBuilder.group({
+        identificacion: new FormControl({ value: this.identificacionChild, disabled: false }, Validators.required),
+        /*
         identificacion: new FormControl({ value: this.identificacionChild, disabled: false }, Validators.compose([
           MyValidators.isCedulaValid,
           Validators.required,
@@ -103,6 +112,7 @@ export class FormUsuarioComponent implements OnInit {
           Validators.maxLength(10),
           Validators.pattern("^[0-9]*$"),
         ])),
+        */
         sede: new FormControl(''),
         nombres: new FormControl('', Validators.required),
         apellidos: new FormControl('', Validators.required),
@@ -112,8 +122,24 @@ export class FormUsuarioComponent implements OnInit {
         correo: new FormControl('', Validators.required),
         cambioClave: new FormControl('', Validators.required),
         actualizacionDatos: new FormControl('', Validators.required),
+        codigo: new FormControl('593'),
+        cedula: new FormControl(''),
       })
     }
+    this.listarPrefijoTelefonico();
+  }
+  
+  async listarPrefijoTelefonico() {
+    this.personaService.listarPrefijoTelefonico().subscribe(
+      (respuesta) => {
+        this.listaPrefijoTelefonico = respuesta['listado'];
+      }
+    );
+  }
+
+  buscarPrefijoTelefonico() {
+    // Receptar el codigo de formCliente.value
+    let formUsuarioTemp = this.formUsuario.value;
   }
 
   listarSedeActivo() {
@@ -199,18 +225,24 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   addRegistroPersona() {
+    let fechaNacimiento = "";
     if (this.formUsuario?.valid) {
       let usuarioTemp = this.formUsuario.value;
+      if (usuarioTemp?.fechaNacimiento.length != 0 && usuarioTemp?.fechaNacimiento.length != 12) {
+        fechaNacimiento = dayjs(usuarioTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
+      }
       this.persona = new Persona({
         codigo: 0,
         identificacion: usuarioTemp?.identificacion,
         nombres: usuarioTemp?.nombres,
         apellidos: usuarioTemp?.apellidos,
-        fechaNacimiento: dayjs(usuarioTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        fechaNacimiento: fechaNacimiento,
         direccion: usuarioTemp?.direccion,
         celular: usuarioTemp?.celular,
         correo: usuarioTemp?.correo,
         estado: 'A',
+        prefijoTelefonico: usuarioTemp?.codigo,
+        cedula: usuarioTemp?.cedula,
       });
     }
     if (this.personaEditar) {
@@ -297,6 +329,10 @@ export class FormUsuarioComponent implements OnInit {
     return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
   }
 
+  compararPrefijoTelefonico(o1, o2) {
+    return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
+  }
+
   // Contar los caracteres de la cedula para activar boton <Buscar>
   onKey(event) {
     if (event.target.value.length != 10) {
@@ -354,5 +390,11 @@ export class FormUsuarioComponent implements OnInit {
   }
   get fechaInicioField() {
     return this.formUsuario.get('fechaInicio');
+  }
+  get cedulaField() {
+    return this.formUsuario.get('cedula');
+  }
+  get codigoField() {
+    return this.formUsuario.get('codigo');
   }
 }

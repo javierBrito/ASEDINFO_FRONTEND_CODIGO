@@ -83,6 +83,8 @@ export class UsuarioPrincipalComponent implements OnInit {
       this.listaPersona = this.listaPersonaChild;
     }
     this.formUsuarioIdentificacion = this.formBuilder.group({
+      identificacion: new FormControl(''),
+      /*
       identificacion: new FormControl('', Validators.compose([
         MyValidators.isCedulaValid,
         Validators.required,
@@ -90,6 +92,7 @@ export class UsuarioPrincipalComponent implements OnInit {
         Validators.maxLength(10),
         Validators.pattern("^[0-9]*$"),
       ])),
+      */
     })
   }
 

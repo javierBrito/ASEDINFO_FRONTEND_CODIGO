@@ -17,7 +17,6 @@ export class AuthGuard implements CanActivate {
   // canActivate
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const currentUser = this._authenticationService.currentUserValue;
-    console.log("auth.guards currentUser.identificacion = ", currentUser.identificacion)
     if (currentUser) {
       //verificar acceso a las paginas por el menu asignado excepto la pagina de inicio
       if (state.url.localeCompare("/pages/inicio") != 0) {
