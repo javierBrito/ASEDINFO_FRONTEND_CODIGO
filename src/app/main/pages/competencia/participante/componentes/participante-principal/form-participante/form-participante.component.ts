@@ -66,6 +66,7 @@ export class FormParticipanteComponent implements OnInit {
   public desSubcategoria: string;
   public nombreCancion: string;
   public nombreIntegrante: string;
+  public pathCancion: string = "./assets/musica/";
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -309,6 +310,8 @@ export class FormParticipanteComponent implements OnInit {
           for (const ele of this.listaParticipanteChild) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
+          // Ordenar lista por numParticipante
+          this.listaParticipanteChild.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
           this.listaParticipante.emit(this.listaParticipanteChild);
           resolve(respuesta);
         }, error: (error) => {
@@ -383,7 +386,6 @@ export class FormParticipanteComponent implements OnInit {
         fechaNacimiento: participanteTemp?.fechaNacimiento,
         celular: participanteTemp?.celular,
         correo: participanteTemp?.identificacion,
-        //cedula: this.currentUser.cedula,
         cedula: 'Suscriptor',
         estado: 'A',
       });
@@ -440,10 +442,14 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.firstName = this.participanteAux['data'].firstName;
       this.participante.lastName = this.participanteAux['data'].lastName;
       this.participante.username = this.participanteAux['data'].username;
-      this.participante.email = this.participanteAux['data'].email;
+      if (this.currentUser.cedula == "Subscriptor") {
+        this.participante.email = this.participanteAux['data'].email;
+      } else {
+        this.participante.email = this.participanteEditar?.email;
+      }
       this.participante.codSubcategoria = this.codSubcategoriaChild,
-      this.participante.codInstancia = this.codInstanciaChild,
-      this.participante.country = this.participanteAux['data'].country;
+        this.participante.codInstancia = this.codInstanciaChild,
+        this.participante.country = this.participanteAux['data'].country;
       this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
@@ -461,6 +467,7 @@ export class FormParticipanteComponent implements OnInit {
     } else {
       // Si es nuevo el participante
       this.participanteAux['data'].codPersona = this.persona.codigo;
+      this.participanteAux['data'].email = this.persona.correo;
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
@@ -578,7 +585,7 @@ export class FormParticipanteComponent implements OnInit {
   cargarArchivo(index, file) {
     // Receptar identificacion de formParticipante.value
     let participanteTemp = this.formParticipante.value;
-    this.nombreCancion = participanteTemp?.identificacion + "_" + file?.name;
+    this.nombreCancion = this.pathCancion + participanteTemp?.identificacion + "_" + file?.name;
     this.participanteService.cargarArchivo(file, participanteTemp?.identificacion).subscribe(
       async (respuesta) => {
         console.log("respuesta = ", respuesta);

@@ -61,7 +61,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public disabledEstado: boolean;
   public customerId: number;
   public userId: number;
-  public urlCancion: string;
+  public pathCancion: string = "./assets/musica/";
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -132,11 +132,11 @@ export class ParticipantePrincipalComponent implements OnInit {
     private dataService: DataService,
     private modalService: NgbModal
   ) {
-    //this.urlCancion = "./assets/musica/bachata_prueba.mpeg";
-    //this.urlCancion = "./assets/musica/solista_salsa.mp3";
-    this.urlCancion = "./assets/musica/";
-    //this.urlCancion = ".../upload/musica/";
-    //this.urlCancion = "D:/upload/";
+    //this.pathCancion = "./assets/musica/bachata_prueba.mpeg";
+    //this.pathCancion = "./assets/musica/solista_salsa.mp3";
+    //this.pathCancion = ;
+    //this.pathCancion = ".../upload/musica/";
+    //this.pathCancion = "D:/upload/";
     //this.descargarArchivo("comprobante.pdf");
     this.codigo = 0;
     this.codigoSede = 0;
@@ -277,7 +277,7 @@ export class ParticipantePrincipalComponent implements OnInit {
         if (this.listaParticipante.length > 0) {
           //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
-            ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
+            //ele.nombreCancion = this.pathCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
@@ -306,7 +306,8 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
-          ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
+          //ele.nombreCancion = this.pathCancion + ele?.nombreCancion;
+          console.log("ele.nombreCancion = ", ele.nombreCancion)
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           if (ele.desSubcategoria.includes("GRUPOS")) {
