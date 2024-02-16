@@ -176,6 +176,8 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
         this.listaModeloPuntaje = respuesta['listado'];
+        console.log("this.listaModeloPuntaje = ", this.listaModeloPuntaje)
+        console.log("this.currentUser = ", this.currentUser)
       }
     )
   }
@@ -386,14 +388,14 @@ export class PuntajePrincipalComponent implements OnInit {
     let notaGuardada = 0;
     let errorGuardar = 0;
     for (const puntajeAux of participante.listaNotas) {
-      if (puntajeAux.puntaje > 0 &&
-        puntajeAux.puntaje <= 10 &&
-        puntajeAux.puntaje != 0) {
+      if (puntajeAux?.puntaje > 0 &&
+        puntajeAux?.puntaje <= 10 &&
+        puntajeAux?.puntaje != 0) {
         if (puntajeAux?.codigo != 0) {
           //this.siActualizaNumJuez = false;
         }
         this.puntajeAuxTotal = puntajeAux;
-        puntajeTotal = puntajeTotal + (puntajeAux.porcentaje / 100) * Number(puntajeAux ? puntajeAux.puntaje : 0);
+        puntajeTotal = puntajeTotal + (puntajeAux?.porcentaje / 100) * Number(puntajeAux ? puntajeAux?.puntaje : 0);
         await new Promise((resolve, rejects) => {
           let puntaje = new Puntaje;
           puntaje = this.moverDatosPuntaje(puntajeAux);

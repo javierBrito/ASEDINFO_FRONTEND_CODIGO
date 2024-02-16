@@ -290,7 +290,6 @@ export class SorteoPrincipalComponent implements OnInit {
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-            ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
@@ -318,7 +317,6 @@ export class SorteoPrincipalComponent implements OnInit {
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-            ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
@@ -351,7 +349,7 @@ export class SorteoPrincipalComponent implements OnInit {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-          ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
+          //ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
           ele.displayNoneGrupo = "none";
           if (ele.desSubcategoria.includes("GRUPOS")) {
             ele.displayNoneGrupo = "";

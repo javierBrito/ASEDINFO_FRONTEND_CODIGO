@@ -569,7 +569,7 @@ export class FormSorteoComponent implements OnInit {
     this.nombreCancion = sorteoTemp?.identificacion+"_"+file?.name;
     this.participanteService.cargarArchivo(file, sorteoTemp?.identificacion).subscribe(
       async (respuesta) => {
-        console.log("respuesta = ", respuesta);
+        //console.log("respuesta = ", respuesta);
       }, err => {
         console.log("err = ", err);
         if (err == "OK") {

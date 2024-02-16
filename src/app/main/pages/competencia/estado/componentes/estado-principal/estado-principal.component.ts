@@ -286,9 +286,7 @@ export class EstadoPrincipalComponent implements OnInit {
           this.page = 1;
         }
         if (this.listaParticipante.length > 0) {
-          //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
-            ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
@@ -315,9 +313,7 @@ export class EstadoPrincipalComponent implements OnInit {
           this.page = 1;
         }
         if (this.listaParticipante.length > 0) {
-          //this.habilitarAgregarParticipante = false;
           for (const ele of this.listaParticipante) {
-            ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
@@ -352,7 +348,6 @@ export class EstadoPrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
-          ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           if (ele.desSubcategoria.includes("GRUPOS")) {
