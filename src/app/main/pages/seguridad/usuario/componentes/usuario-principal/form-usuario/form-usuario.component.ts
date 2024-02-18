@@ -12,6 +12,8 @@ import { MyValidators } from 'app/utils/validators';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
 import { PrefijoTelefonico } from 'app/main/pages/compartidos/modelos/PrefijoTelefonico';
+import { ModeloPuntaje } from 'app/main/pages/compartidos/modelos/ModeloPuntaje';
+import { PuntajeService } from 'app/main/pages/competencia/puntaje/servicios/puntaje.service';
 
 @Component({
   selector: 'app-form-usuario',
@@ -56,6 +58,7 @@ export class FormUsuarioComponent implements OnInit {
     { valor: "NO" },
   ];
   public listaPrefijoTelefonico: PrefijoTelefonico[];
+  public listaModeloPuntaje: ModeloPuntaje[];
 
   /*CONSTRUCTOR*/
   constructor(
@@ -65,6 +68,7 @@ export class FormUsuarioComponent implements OnInit {
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
     private mensajeIzi: MensajesIziToastService,
+    private puntajeService: PuntajeService,
   ) {
     this.load_btn = false;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -127,12 +131,21 @@ export class FormUsuarioComponent implements OnInit {
       })
     }
     this.listarPrefijoTelefonico();
+    this.listarModeloPuntajeActivo();
   }
   
   async listarPrefijoTelefonico() {
     this.personaService.listarPrefijoTelefonico().subscribe(
       (respuesta) => {
         this.listaPrefijoTelefonico = respuesta['listado'];
+      }
+    );
+  }
+
+  async listarModeloPuntajeActivo() {
+    this.puntajeService.listarModeloPuntajeActivo().subscribe(
+      (respuesta) => {
+        this.listaModeloPuntaje = respuesta['listado'];
       }
     );
   }
@@ -222,6 +235,11 @@ export class FormUsuarioComponent implements OnInit {
     const regExp = new RegExp('([0-9])\\w+')
     const amieFiltrado = valorEncontrar.match(regExp)
     return amieFiltrado['0']
+  }
+
+  verificar(modeloPuntaje: ModeloPuntaje) {
+    console.log("modeloPuntaje = ", modeloPuntaje)
+
   }
 
   addRegistroPersona() {
