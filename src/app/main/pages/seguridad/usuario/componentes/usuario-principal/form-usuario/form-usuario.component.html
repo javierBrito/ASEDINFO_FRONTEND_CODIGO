@@ -183,11 +183,11 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-6">
+                <div class="col-12">
                     <label for="cambioClave"><b>{{'Opciones del JUEZ para ingresar PUNTAJE(*):'}}</b></label>
-                    <div class="form-group form-check" *ngFor="let modeloPuntaje of listaModeloPuntaje; let i=index">
-                        <input type="checkbox" [value]="modeloPuntaje" (click)="verificar(modeloPuntaje)"
-                            class="form-check-input" id="exampleCheck{{i}}">
+                    <div class="form-group form-check" *ngFor="let modeloPuntaje of listaModeloPuntaje; let indice=index">
+                        <input type="checkbox" [value]="modeloPuntaje" (click)="guardarUsuarioModeloPuntaje(modeloPuntaje, $event, indice)"
+                            class="form-check-input" id="exampleCheck{{indice}}">
                         <label class="form-check-label" for="exampleCheck1">{{modeloPuntaje?.denominacion}}</label>
                     </div>
                     <br>

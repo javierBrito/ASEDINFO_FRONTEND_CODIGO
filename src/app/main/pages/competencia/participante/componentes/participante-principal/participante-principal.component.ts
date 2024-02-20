@@ -373,7 +373,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.listaParticipante = event;
   }
 
-  openDetail(codjornada) {
+  openDetail() {
     this.showDetail = true;
   }
 

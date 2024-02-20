@@ -33,6 +33,7 @@ export interface Iparticipante {
     nombres: string;
     apellidos: string;
     identificacion: string;
+    fechaNacimiento: string;
 
     estadoCompetencia: any;
 

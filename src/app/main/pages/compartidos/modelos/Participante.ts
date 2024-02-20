@@ -219,6 +219,13 @@ export class Participante implements Iparticipante {
         set(this, 'data.identificacion', value);
     }    
 
+    get fechaNacimiento(): string {
+        return get(this, 'data.fechaNacimiento');
+    }
+    set fechaNacimiento(value: string) {
+        set(this, 'data.fechaNacimiento', value);
+    }    
+
     get nombreCancion(): string {
         return get(this, 'data.nombreCancion');
     }

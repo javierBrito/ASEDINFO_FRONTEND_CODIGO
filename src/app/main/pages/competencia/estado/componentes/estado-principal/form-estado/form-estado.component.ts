@@ -623,16 +623,6 @@ export class FormEstadoComponent implements OnInit {
         this.mensajeService.mensajeError("Error: No se pudo descargar el documento")
       }
     );
- 
-    // const base64Response = await fetch(`${this.previzualizacion}`);
-    // const blob = await base64Response.blob();
-    // //comvierto el blob a tipo archivo pdf
-    // // const file = new Blob([blob], { type: 'application/pdf' });
-    // const file = new File([blob], `my-file-name`, { type: 'application/pdf' })
-    // // console.log(file)
-    // const fileURL = URL.createObjectURL(file);
-    // //abro una nueva ventana con el archivo
-    // window.open(fileURL);
   }
 
   //filenames: string[] = [];

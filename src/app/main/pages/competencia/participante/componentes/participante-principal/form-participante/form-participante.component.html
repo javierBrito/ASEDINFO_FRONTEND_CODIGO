@@ -7,7 +7,7 @@
                     <label for="codCategoria">
                         <h4><b>{{'Categoría(*): '}}</b></h4>
                     </label>
-                    <select name="codCategoria" formControlName="codCategoria" required
+                    <select name="codCategoria" formControlName="codCategoria" 
                         [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
                         class="form-control mr-sm-2" id="codCategoria" (change)="listarSubcategoriaPorCategoria()">
                         <option [value]="''" selected>Seleccionar categoría</option>
@@ -22,7 +22,7 @@
                     <label for="codSubcategoria">
                         <h4><b>{{'Subcategoría(*): '}}</b></h4>
                     </label>
-                    <select name="codSubcategoria" formControlName="codSubcategoria" required
+                    <select name="codSubcategoria" formControlName="codSubcategoria" 
                         [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                         class="form-control mr-sm-2 custom-select" id="codSubcategoria"
                         (change)="obtenerCodInstancia()">

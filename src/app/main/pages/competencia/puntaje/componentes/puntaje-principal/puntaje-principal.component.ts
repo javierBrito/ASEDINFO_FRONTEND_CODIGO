@@ -79,6 +79,7 @@ export class PuntajePrincipalComponent implements OnInit {
   public listaModeloPuntaje: any[];
   public listaParticipante: any[];
   public listaParticipantePresentacion: any[] = [];
+  public listaUsuarioModeloPuntaje: any[];
 
   /*TABS*/
   public selectedTab: number;
@@ -178,6 +179,12 @@ export class PuntajePrincipalComponent implements OnInit {
         this.listaModeloPuntaje = respuesta['listado'];
         console.log("this.listaModeloPuntaje = ", this.listaModeloPuntaje)
         console.log("this.currentUser = ", this.currentUser)
+        this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.currentUser?.codigoUsuario).subscribe(
+          (respuesta) => {
+            this.listaUsuarioModeloPuntaje = respuesta['listado'];
+            console.log("this.listaUsuarioModeloPuntaje = ", this.listaUsuarioModeloPuntaje)
+          }
+        )
       }
     )
   }

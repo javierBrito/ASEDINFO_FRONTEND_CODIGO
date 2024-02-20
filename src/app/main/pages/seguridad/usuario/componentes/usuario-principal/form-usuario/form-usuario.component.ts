@@ -14,6 +14,7 @@ import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/person
 import { PrefijoTelefonico } from 'app/main/pages/compartidos/modelos/PrefijoTelefonico';
 import { ModeloPuntaje } from 'app/main/pages/compartidos/modelos/ModeloPuntaje';
 import { PuntajeService } from 'app/main/pages/competencia/puntaje/servicios/puntaje.service';
+import { UsuarioModeloPuntaje } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntaje';
 
 @Component({
   selector: 'app-form-usuario',
@@ -50,6 +51,8 @@ export class FormUsuarioComponent implements OnInit {
   /*OBJETOS*/
   public usuario: Usuario;
   public persona: Persona;
+  public usuarioModeloPuntaje: UsuarioModeloPuntaje;
+  public listaUsuarioModeloPuntaje: UsuarioModeloPuntaje[] = [];
   public listaSede: Sede[];
   public listaPersonaAux: Persona[];
   public listaUsuario: Usuario[];
@@ -82,6 +85,7 @@ export class FormUsuarioComponent implements OnInit {
   ngOnInit() {
     this.listarSedeActivo();
     if (this.personaEditar) {
+      console.log("this.codigoChild = ", this.codigoChild)
       this.formUsuario = this.formBuilder.group({
         identificacion: new FormControl({ value: this.personaEditar?.identificacion, disabled: true }, Validators.required),
         /*
@@ -133,7 +137,7 @@ export class FormUsuarioComponent implements OnInit {
     this.listarPrefijoTelefonico();
     this.listarModeloPuntajeActivo();
   }
-  
+
   async listarPrefijoTelefonico() {
     this.personaService.listarPrefijoTelefonico().subscribe(
       (respuesta) => {
@@ -146,6 +150,18 @@ export class FormUsuarioComponent implements OnInit {
     this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
         this.listaModeloPuntaje = respuesta['listado'];
+        if (this.codigoChild != null && this.codigoChild != 0) {
+          this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.currentUser?.codigoUsuario).subscribe(
+            (respuesta) => {
+              this.listaUsuarioModeloPuntaje = respuesta['listado'];
+              console.log("this.listaUsuarioModeloPuntaje I = ", this.listaUsuarioModeloPuntaje)
+              if (this.listaUsuarioModeloPuntaje == null) {
+                this.listaUsuarioModeloPuntaje = [];
+              }
+              console.log("this.listaUsuarioModeloPuntaje F = ", this.listaUsuarioModeloPuntaje)
+            }
+          );
+        }
       }
     );
   }
@@ -218,7 +234,7 @@ export class FormUsuarioComponent implements OnInit {
                 this.persona.usuario.fechaInicio = dayjs(this.persona.usuario.fechaInicio).format("YYYY-MM-DD");
                 this.formUsuario.controls.fechaInicio.setValue(dayjs(this.persona.usuario?.fechaInicio).format("YYYY-MM-DD"));
                 this.formUsuario.controls.tipoUsuario.setValue(this.persona.usuario?.tipoUsuario);
-                }
+              }
             }
           )
         }
@@ -237,9 +253,24 @@ export class FormUsuarioComponent implements OnInit {
     return amieFiltrado['0']
   }
 
-  verificar(modeloPuntaje: ModeloPuntaje) {
+  guardarUsuarioModeloPuntaje(modeloPuntaje: ModeloPuntaje, event: any, indice: number) {
+    console.log("indice = ", indice)
+    console.log("event.target.checked = ", event.target.checked);
     console.log("modeloPuntaje = ", modeloPuntaje)
-
+    if (event.target.checked) {
+      this.usuarioModeloPuntaje = new UsuarioModeloPuntaje();
+      this.usuarioModeloPuntaje = {
+        codigo: 0,
+        codUsuario: 0,
+        codModeloPuntaje: modeloPuntaje?.codigo,
+        estado: 'A',
+      };
+      console.log("this.usuarioModeloPuntaje = ", this.usuarioModeloPuntaje)
+      this.listaUsuarioModeloPuntaje.push(this.usuarioModeloPuntaje);
+    } else {
+      this.listaUsuarioModeloPuntaje.splice(indice, 1);
+    }
+    console.log("this.listaUsuarioModeloPuntaje = ", this.listaUsuarioModeloPuntaje)
   }
 
   addRegistroPersona() {
@@ -270,7 +301,7 @@ export class FormUsuarioComponent implements OnInit {
         next: (response) => {
           // Actualizar Datos Usuario
           this.addRegistroUsuario();
-          // Actualiza la lista con los datos actualizados
+          // Actualiza la lista
           //this.listarUsuarioPorIdentificacion();
           //this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
           //this.parentDetail.closeDetail();
@@ -315,9 +346,30 @@ export class FormUsuarioComponent implements OnInit {
       this.usuario['data'].codigo = this.personaEditar?.usuario?.codigo;
       this.usuarioService.guardarUsuario(this.usuario['data']).subscribe({
         next: (response) => {
-          this.listarUsuarioPorIdentificacion();
-          this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
-          this.parentDetail.closeDetail();
+          this.usuario = response['objeto'];
+          for (const ele of this.listaUsuarioModeloPuntaje) {
+            ele.codUsuario = this.usuario.codigo;
+          }
+          console.log("Sale del for")
+          if (this.listaUsuarioModeloPuntaje.length > 0) {
+            console.log("this.listaUsuarioModeloPuntaje Actualizar = ", this.listaUsuarioModeloPuntaje)
+            this.puntajeService.guardarlistaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
+              next: async (response) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          } else {
+            this.listarUsuarioPorIdentificacion();
+            this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+            this.parentDetail.closeDetail();
+          }
         },
         error: (error) => {
           this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
@@ -327,9 +379,29 @@ export class FormUsuarioComponent implements OnInit {
     } else {
       this.usuarioService.guardarUsuario(this.usuario['data']).subscribe({
         next: async (response) => {
-          this.listarUsuarioPorIdentificacion();
-          this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
-          this.parentDetail.closeDetail();
+          this.usuario = response['objeto'];
+          for (const ele of this.listaUsuarioModeloPuntaje) {
+            ele.codUsuario = this.usuario.codigo;
+          }
+          if (this.listaUsuarioModeloPuntaje.length > 0) {
+            console.log("this.listaUsuarioModeloPuntaje Crear = ", this.listaUsuarioModeloPuntaje)
+            this.puntajeService.guardarlistaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
+              next: async (response) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          } else {
+            this.listarUsuarioPorIdentificacion();
+            this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+            this.parentDetail.closeDetail();
+          }
         },
         error: (error) => {
           this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
@@ -356,9 +428,10 @@ export class FormUsuarioComponent implements OnInit {
     if (event.target.value.length != 10) {
       this.resetTheForm();
     } else {
-      this.verificarPersona();    }
+      this.verificarPersona();
+    }
   }
-  
+
   resetTheForm(): void {
     this.formUsuario.reset = null;
   }

@@ -3,7 +3,6 @@ import { get, set } from 'lodash-es';
 import { Isocio } from '../interfaces/Isocio';
 
 export class Socio implements Isocio {
-
     constructor(data) {
         set(this, 'data', data);
     }

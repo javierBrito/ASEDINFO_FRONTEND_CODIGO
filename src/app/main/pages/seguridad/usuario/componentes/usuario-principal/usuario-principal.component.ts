@@ -131,6 +131,7 @@ export class UsuarioPrincipalComponent implements OnInit {
 
   openEditarDetail(persona: Persona) {
     this.personaSeleccionado = persona;
+    this.codigo = this.personaSeleccionado?.usuario?.codigo;
     this.showDetail = true;
   }
 

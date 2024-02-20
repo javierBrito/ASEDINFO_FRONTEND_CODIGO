@@ -7,6 +7,7 @@ import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import axios from 'axios';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
+import { UsuarioModeloPuntaje } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntaje';
 
 @Injectable({
   providedIn: 'root'
@@ -131,6 +132,12 @@ export class PuntajeService {
   }
   listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number, codEstadoCompetencia: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}/${codEstadoCompetencia}`);
+  }
+  listarUsuarioModeloPuntajePorUsuario(codUsuario: number) {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarUsuarioModeloPuntajePorUsuario/${codUsuario}`);
+  }
+  guardarlistaUsuarioModeloPuntaje(listaUsuarioModeloPuntaje: UsuarioModeloPuntaje[]) {
+    return this.http.post<UsuarioModeloPuntaje[]>(`${environment.url_seguridad}/competencia/guardarListaUsuarioModeloPuntaje`, listaUsuarioModeloPuntaje);
   }
 
   /*SERVICIOS EXTERNOS*/

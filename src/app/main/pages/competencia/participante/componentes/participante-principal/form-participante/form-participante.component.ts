@@ -64,6 +64,7 @@ export class FormParticipanteComponent implements OnInit {
   public codSubcategoria: number;
   public codInstancia: number;
   public desSubcategoria: string;
+  public desCategoria: string;
   public nombreCancion: string;
   public nombreIntegrante: string;
   public pathCancion: string = "./assets/musica/";
@@ -87,11 +88,15 @@ export class FormParticipanteComponent implements OnInit {
   public filenames: string[] = [];
   public listaBase64: any;
   public nombreArchivoDescarga: string;
+  public fechaNacimiento: string = "";
+
+
   /*OBJETOS*/
   public participante: Participante;
   public participanteAux: Participante;
   public personaEditar: Persona;
   public persona: Persona;
+  public subcategoria: Subcategoria;
   public listaEstadoCompetencia: EstadoCompetencia[];
   public listaRespuesta = [
     { valor: "SI" },
@@ -125,14 +130,19 @@ export class FormParticipanteComponent implements OnInit {
     this.listarEstadoCompetenciaActivo();
     this.listarSubcategoriaActivo();
     if (this.participanteEditar) {
+      if (this.participanteEditar?.fechaNacimiento != "" && this.participanteEditar?.fechaNacimiento != null) {
+        this.fechaNacimiento = dayjs(this.participanteEditar?.fechaNacimiento).format("YYYY-MM-DD");
+      }
       this.nombreCancion = this.participanteEditar?.nombreCancion;
-      this.codSubcategoriaChild = this.participanteEditar.codSubcategoria;
-      this.codInstanciaChild = this.participanteEditar.codInstancia;
+      this.codSubcategoriaChild = this.participanteEditar?.codSubcategoria;
+      this.desCategoria = this.participanteEditar?.desCategoria;
+      this.codInstanciaChild = this.participanteEditar?.codInstancia;
       this.formParticipante = this.formBuilder.group({
         identificacion: new FormControl(this.participanteEditar?.identificacion, Validators.required),
         nombres: new FormControl(this.participanteEditar?.nombres, Validators.required),
         apellidos: new FormControl(this.participanteEditar?.apellidos),
-        fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
+        //fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
+        fechaNacimiento: new FormControl(this.fechaNacimiento),
         country: new FormControl(this.participanteEditar?.country),
         celular: new FormControl(this.participanteEditar?.celular),
         //correo: new FormControl(this.participanteEditar?.correo, Validators.required),
@@ -158,8 +168,8 @@ export class FormParticipanteComponent implements OnInit {
         username: new FormControl(''),
         codEstadoCompetencia: new FormControl(1),
         numPuntajeJuez: new FormControl(''),
-        codCategoria: new FormControl('', Validators.required),
-        codSubcategoria: new FormControl('', Validators.required),
+        codCategoria: new FormControl(''),
+        codSubcategoria: new FormControl(''),
         codInstancia: new FormControl(''),
       })
     }
@@ -269,8 +279,10 @@ export class FormParticipanteComponent implements OnInit {
   buscarSubcategoriaPorCodigo() {
     this.participanteService.buscarSubcategoriaPorCodigo(this.codSubcategoria).subscribe(
       (respuesta) => {
-        this.desSubcategoria = respuesta['objeto']?.denominacion;
-        this.codCategoria = respuesta['objeto']?.codCategoria;
+        this.subcategoria = respuesta['objeto'];
+        this.desCategoria = this.subcategoria?.desCategoria;
+        this.desSubcategoria = this.subcategoria?.denominacion;
+        this.codCategoria = this.subcategoria.codCategoria;
         if (this.desSubcategoria.includes("PAREJA")) {
           this.displayIntegrante2 = "";
         }
@@ -339,10 +351,13 @@ export class FormParticipanteComponent implements OnInit {
     );
   }
 
-  buscarPersonaPorCodigo(codPersona: number) {
+  async buscarPersonaPorCodigo(codPersona: number) {
     this.personaService.buscarPersonaPorCodigo(codPersona).subscribe({
       next: (response) => {
         this.personaEditar = response['objeto'];
+        if (this.personaEditar?.fechaNacimiento != "" && this.personaEditar?.fechaNacimiento != null) {
+          this.fechaNacimiento = dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD");
+        }
         /*
         this.formParticipante.controls.fechaNacimiento.setValue(dayjs(this.participante?.fechaNacimiento).format("YYYY-MM-DD"));
         this.formParticipante.controls.nombres.setValue(this.participante?.nombres);
@@ -367,15 +382,49 @@ export class FormParticipanteComponent implements OnInit {
 
   addRegistroPersona() {
     if (this.formParticipante?.valid) {
+      let edad = 0;
       let participanteTemp = this.formParticipante.value;
-      /*
-      if (this.currentUser.cedula == "Suscriptor") {
-        if (this.currentUser.identificacion != participanteTemp?.identificacion) {
-        }
-      }
-      */
-      if (participanteTemp?.fechaNacimiento != "") {
+      if (participanteTemp?.fechaNacimiento != "" && participanteTemp?.fechaNacimiento != null) {
         participanteTemp.fechaNacimiento = dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
+        this.fechaNacimiento = participanteTemp?.fechaNacimiento;
+        edad = this.calcularEdad();
+        if (this.desCategoria.includes("PRE INFANTIL") && edad > 8) {
+          this.mensajeService.mensajeError('Edad del aprticipante mayor a 8 años...');
+          return;
+        }
+        if (this.desCategoria.includes("INFANTIL") && edad > 12) {
+          this.mensajeService.mensajeError('Edad del aprticipante mayor a 12 años...');
+          return;
+        }
+        if (this.desCategoria.includes("JUNIOR") && edad > 17) {
+          this.mensajeService.mensajeError('Edad del aprticipante mayor a 17 años...');
+          return;
+        }
+        if ((this.desCategoria.includes("ESTUDIANTES") ||
+          this.desCategoria.includes("AMATEUR") ||
+          this.desCategoria.includes("PRO-AM")) && edad < 13) {
+          this.mensajeService.mensajeError('Edad del aprticipante menor a 13 años...');
+          return;
+        }
+      } else {
+        if (this.desCategoria.includes("PRE INFANTIL")) {
+          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril cumpla 8 años...');
+          return;
+        }
+        if (this.desCategoria.includes("INFANTIL")) {
+          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril cumpla 12 años...');
+          return;
+        }
+        if (this.desCategoria.includes("JUNIOR")) {
+          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril cumpla 17 años...');
+          return;
+        }
+        if (this.desCategoria.includes("ESTUDIANTES") ||
+            this.desCategoria.includes("AMATEUR") ||
+            this.desCategoria.includes("PRO-AM")) {
+            this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril tenga 13 años o más...');
+          return;
+        }
       }
       this.persona = new Persona({
         codigo: 0,
@@ -442,7 +491,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.firstName = this.participanteAux['data'].firstName;
       this.participante.lastName = this.participanteAux['data'].lastName;
       this.participante.username = this.participanteAux['data'].username;
-      if (this.currentUser.cedula == "Subscriptor") {
+      if (this.currentUser.cedula == "Suscriptor") {
         this.participante.email = this.participanteAux['data'].email;
       } else {
         this.participante.email = this.participanteEditar?.email;
@@ -467,7 +516,11 @@ export class FormParticipanteComponent implements OnInit {
     } else {
       // Si es nuevo el participante
       this.participanteAux['data'].codPersona = this.persona.codigo;
-      this.participanteAux['data'].email = this.persona.correo;
+      if (this.currentUser.cedula == "Suscriptor") {
+        this.participanteAux['data'].email = this.currentUser?.identificacion;
+      } else {
+        this.participanteAux['data'].email = this.persona?.correo;
+      }
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
@@ -497,6 +550,21 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     }
+  }
+
+  calcularEdad(): number {
+    const today: Date = new Date('04-07-2024');
+    const birthDate: Date = new Date(this.fechaNacimiento);
+    let edad: number = today.getFullYear() - birthDate.getFullYear();
+    let month: number = today.getMonth() - birthDate.getMonth();
+    if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+      edad--;
+    }
+    if (month > 0) {
+      month = month / 12;
+      edad = edad + month;
+    }
+    return edad;
   }
 
   closeDetail($event) {
@@ -588,7 +656,7 @@ export class FormParticipanteComponent implements OnInit {
     this.nombreCancion = this.pathCancion + participanteTemp?.identificacion + "_" + file?.name;
     this.participanteService.cargarArchivo(file, participanteTemp?.identificacion).subscribe(
       async (respuesta) => {
-        console.log("respuesta = ", respuesta);
+        //console.log("respuesta = ", respuesta);
       }, err => {
         console.log("err = ", err);
         if (err == "OK") {
@@ -642,16 +710,6 @@ export class FormParticipanteComponent implements OnInit {
         this.mensajeService.mensajeError("Error: No se pudo descargar el documento")
       }
     );
-
-    // const base64Response = await fetch(`${this.previzualizacion}`);
-    // const blob = await base64Response.blob();
-    // //comvierto el blob a tipo archivo pdf
-    // // const file = new Blob([blob], { type: 'application/pdf' });
-    // const file = new File([blob], `my-file-name`, { type: 'application/pdf' })
-    // // console.log(file)
-    // const fileURL = URL.createObjectURL(file);
-    // //abro una nueva ventana con el archivo
-    // window.open(fileURL);
   }
 
   //filenames: string[] = [];
