@@ -371,6 +371,7 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   listarParticipanteActivoActualizada(event) {
     this.listaParticipante = event;
+    window.location.reload();
   }
 
   openDetail() {

@@ -68,6 +68,7 @@ export class CategoriaPrincipalComponent implements OnInit {
   }
 
   listarCategoriaActivoActualizada(event) {
+    console.log("reinicia")
     this.listaCategoria = event;
   }
 
