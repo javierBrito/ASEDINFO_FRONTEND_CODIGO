@@ -612,14 +612,14 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   generarPDF() {
-    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.numParticipante, participante?.postcode]);
+    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.identificacion, participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
         { text: 'Reporte Participante', style: 'datoTituloGeneral' },
         {
           table: {
             body: [
-              ['#', 'Nombre', 'Categoría/Subcategoría', 'Número Participante', 'CheckList'],
+              ['#', 'Nombre', 'Categoría/Subcategoría', 'Identificación', '# Participante', 'CheckList'],
               ...bodyData
             ],
           },
@@ -629,7 +629,7 @@ export class ParticipantePrincipalComponent implements OnInit {
       styles: {
         datosTabla: {
           fontSize: 10,
-          margin: [10, 10, 10, 10], // Margen inferior para separar la tabla de otros elementos
+          margin: [5, 5, 5, 5], // Margen inferior para separar la tabla de otros elementos
           fillColor: '#F2F2F2', // Color de fondo de la tabla
         },
         datoTitulo: {

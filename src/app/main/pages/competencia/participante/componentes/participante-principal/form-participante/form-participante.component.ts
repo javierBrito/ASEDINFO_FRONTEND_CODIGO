@@ -128,6 +128,7 @@ export class FormParticipanteComponent implements OnInit {
     this.listarEstadoCompetenciaActivo();
     this.listarSubcategoriaActivo();
     if (this.participanteEditar) {
+      this.desSubcategoria = this.participanteEditar?.desSubcategoria;
       if (this.participanteEditar?.fechaNacimiento != "" && this.participanteEditar?.fechaNacimiento != null) {
         this.fechaNacimiento = dayjs(this.participanteEditar?.fechaNacimiento).format("YYYY-MM-DD");
       }
@@ -391,22 +392,29 @@ export class FormParticipanteComponent implements OnInit {
         participanteTemp.fechaNacimiento = dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
         this.fechaNacimiento = participanteTemp?.fechaNacimiento;
         edad = this.calcularEdad();
-        if (this.desCategoria.includes("PRE INFANTIL") && edad > 8) {
-          this.mensajeService.mensajeError('Edad del participante mayor a 8 años...');
+        if (this.desCategoria.includes("PRE INFANTIL") && (edad < 4 || edad > 8)) {
+          this.mensajeService.mensajeError('Edad participante, menor a 4 años o mayor a 8 años...');
           return;
         }
-        if (this.desCategoria.includes("INFANTIL") && edad > 12) {
-          this.mensajeService.mensajeError('Edad del participante mayor a 12 años...');
+        if (this.desCategoria.includes("INFANTIL") && (edad < 7 || edad > 12)) {
+          this.mensajeService.mensajeError('Edad participante, menor a 7 años o mayor a 12 años...');
           return;
         }
-        if (this.desCategoria.includes("JUNIOR") && edad > 17) {
-          this.mensajeService.mensajeError('Edad del participante mayor a 17 años...');
+        if (this.desCategoria.includes("JUNIOR") && (edad < 13 || edad > 17)) {
+          this.mensajeService.mensajeError('Edad participante, menor a 13 años o mayor a 17 años...');
           return;
         }
         if ((this.desCategoria.includes("ESTUDIANTES") ||
-          this.desCategoria.includes("AMATEUR") ||
-          this.desCategoria.includes("PRO-AM")) && edad < 13) {
-          this.mensajeService.mensajeError('Edad del participante menor a 13 años...');
+          this.desCategoria.includes("PRO-AM")) && edad < 4) {
+          this.mensajeService.mensajeError('Edad participante menor a 4 años...');
+          return;
+        }
+        if (this.desCategoria.includes("AMATEUR") && edad < 13) {
+          this.mensajeService.mensajeError('Edad participante menor a 13 años...');
+          return;
+        }
+        if (this.desCategoria.includes("OPEN") && edad < 14) {
+          this.mensajeService.mensajeError('Edad participante menor a 14 años...');
           return;
         }
       } else {
@@ -423,9 +431,16 @@ export class FormParticipanteComponent implements OnInit {
           return;
         }
         if (this.desCategoria.includes("ESTUDIANTES") ||
-          this.desCategoria.includes("AMATEUR") ||
           this.desCategoria.includes("PRO-AM")) {
+          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril tenga 4 años o más...');
+          return;
+        }
+        if (this.desCategoria.includes("AMATEUR")) {
           this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril tenga 13 años o más...');
+          return;
+        }
+        if (this.desCategoria.includes("PRO-AM")) {
+          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril tenga 14 años o más...');
           return;
         }
       }
@@ -509,8 +524,8 @@ export class FormParticipanteComponent implements OnInit {
         this.participante.email = this.participanteEditar?.email;
       }
       this.participante.codSubcategoria = this.codSubcategoriaChild,
-      this.participante.codInstancia = this.codInstanciaChild,
-      this.participante.country = this.participanteAux['data'].country;
+        this.participante.codInstancia = this.codInstanciaChild,
+        this.participante.country = this.participanteAux['data'].country;
       this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
