@@ -85,7 +85,6 @@ export class FormUsuarioComponent implements OnInit {
   ngOnInit() {
     this.listarSedeActivo();
     if (this.personaEditar) {
-      console.log("this.codigoChild = ", this.codigoChild)
       this.formUsuario = this.formBuilder.group({
         identificacion: new FormControl({ value: this.personaEditar?.identificacion, disabled: true }, Validators.required),
         /*
@@ -151,14 +150,22 @@ export class FormUsuarioComponent implements OnInit {
       (respuesta) => {
         this.listaModeloPuntaje = respuesta['listado'];
         if (this.codigoChild != null && this.codigoChild != 0) {
-          this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.currentUser?.codigoUsuario).subscribe(
+          this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.codigoChild).subscribe(
             (respuesta) => {
               this.listaUsuarioModeloPuntaje = respuesta['listado'];
-              console.log("this.listaUsuarioModeloPuntaje I = ", this.listaUsuarioModeloPuntaje)
               if (this.listaUsuarioModeloPuntaje == null) {
                 this.listaUsuarioModeloPuntaje = [];
               }
-              console.log("this.listaUsuarioModeloPuntaje F = ", this.listaUsuarioModeloPuntaje)
+              if (this.listaUsuarioModeloPuntaje.length > 0) {
+                for (const ele of this.listaModeloPuntaje) {
+                  ele.asignado = false;
+                  for (const ele1 of this.listaUsuarioModeloPuntaje) {
+                    if (ele?.codigo == ele1?.codModeloPuntaje) {
+                      ele.asignado = true;
+                    }
+                  }
+                }
+              }
             }
           );
         }
@@ -254,9 +261,6 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   guardarUsuarioModeloPuntaje(modeloPuntaje: ModeloPuntaje, event: any, indice: number) {
-    console.log("indice = ", indice)
-    console.log("event.target.checked = ", event.target.checked);
-    console.log("modeloPuntaje = ", modeloPuntaje)
     if (event.target.checked) {
       this.usuarioModeloPuntaje = new UsuarioModeloPuntaje();
       this.usuarioModeloPuntaje = {
@@ -265,12 +269,19 @@ export class FormUsuarioComponent implements OnInit {
         codModeloPuntaje: modeloPuntaje?.codigo,
         estado: 'A',
       };
-      console.log("this.usuarioModeloPuntaje = ", this.usuarioModeloPuntaje)
       this.listaUsuarioModeloPuntaje.push(this.usuarioModeloPuntaje);
     } else {
-      this.listaUsuarioModeloPuntaje.splice(indice, 1);
+      let indice1 = 0;
+      if (this.listaUsuarioModeloPuntaje.length > 0) {
+        for (const ele1 of this.listaUsuarioModeloPuntaje) {
+          if (modeloPuntaje.codigo == ele1?.codModeloPuntaje) {
+            break;
+          }
+          indice1 = indice1 + 1;
+        }
+      }
+      this.listaUsuarioModeloPuntaje.splice(indice1, 1);
     }
-    console.log("this.listaUsuarioModeloPuntaje = ", this.listaUsuarioModeloPuntaje)
   }
 
   addRegistroPersona() {
@@ -350,9 +361,7 @@ export class FormUsuarioComponent implements OnInit {
           for (const ele of this.listaUsuarioModeloPuntaje) {
             ele.codUsuario = this.usuario.codigo;
           }
-          console.log("Sale del for")
           if (this.listaUsuarioModeloPuntaje.length > 0) {
-            console.log("this.listaUsuarioModeloPuntaje Actualizar = ", this.listaUsuarioModeloPuntaje)
             this.puntajeService.guardarlistaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
               next: async (response) => {
                 this.listarUsuarioPorIdentificacion();
@@ -384,7 +393,6 @@ export class FormUsuarioComponent implements OnInit {
             ele.codUsuario = this.usuario.codigo;
           }
           if (this.listaUsuarioModeloPuntaje.length > 0) {
-            console.log("this.listaUsuarioModeloPuntaje Crear = ", this.listaUsuarioModeloPuntaje)
             this.puntajeService.guardarlistaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
               next: async (response) => {
                 this.listarUsuarioPorIdentificacion();

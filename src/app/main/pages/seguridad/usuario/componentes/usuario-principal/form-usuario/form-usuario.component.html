@@ -13,9 +13,8 @@
                 <div class="col-6">
                     <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        (keypress)="validateFormat($event)" maxlength="10" id="identificacion" (keyup)="onKey($event)"
-                        placeholder="Por favor, ingrese el número de cédula."
-                        oninput="identificacion.value = identificacion.value.toUpperCase()"
+                        (keypress)="validateFormat($event)" maxlength="10" id="identificacion" 
+                        placeholder="Por favor, ingrese la identificación."
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -23,6 +22,7 @@
                     <div class="invalid-feedback">
                         <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="identificacionField?.errors?.['cedula_invalid']">{{"No es una cédula
                             valida."}}</span>
@@ -39,6 +39,7 @@
                         <span *ngIf="identificacionField?.errors?.['pattern']">{{"Por favor, ingrese
                             números."}}</span>
                     </div>
+                    -->
                 </div>
                 <div class="col-6">
                     <label for="fechaNacimiento"><b>{{'Nacimiento(*): '}}</b></label>
@@ -187,7 +188,7 @@
                     <label for="cambioClave"><b>{{'Opciones del JUEZ para ingresar PUNTAJE(*):'}}</b></label>
                     <div class="form-group form-check" *ngFor="let modeloPuntaje of listaModeloPuntaje; let indice=index">
                         <input type="checkbox" [value]="modeloPuntaje" (click)="guardarUsuarioModeloPuntaje(modeloPuntaje, $event, indice)"
-                            class="form-check-input" id="exampleCheck{{indice}}">
+                            class="form-check-input" id="exampleCheck{{indice}}" [checked]="modeloPuntaje.asignado">
                         <label class="form-check-label" for="exampleCheck1">{{modeloPuntaje?.denominacion}}</label>
                     </div>
                     <br>

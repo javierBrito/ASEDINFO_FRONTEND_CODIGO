@@ -31,5 +31,11 @@ export class ModeloPuntaje implements ImodeloPuntaje {
     set estado(value: string) {
         set(this, 'data.estado', value);
     }
+    get asignado(): boolean {
+        return get(this, 'data.asignado');
+    }
+    set asignado(value: boolean) {
+        set(this, 'data.asignado', value);
+    }
 
 }

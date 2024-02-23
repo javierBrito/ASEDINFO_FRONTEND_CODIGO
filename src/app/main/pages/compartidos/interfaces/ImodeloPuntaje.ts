@@ -3,4 +3,6 @@ export interface ImodeloPuntaje {
     denominacion?: string;
     porentaje?: number;
     estado?: string;
+
+    asignado: boolean;
 }
