@@ -7,9 +7,9 @@
                     <label for="codCategoria">
                         <h4><b>{{'Categoría(*): '}}</b></h4>
                     </label>
-                    <select name="codCategoria" formControlName="codCategoria" 
-                        [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
-                        class="form-control mr-sm-2" id="codCategoria" (change)="listarSubcategoriaPorCategoria()">
+                    <select name="codCategoria" formControlName="codCategoria" [compareWith]="compararCategoria"
+                        placeholder="Seleccione categoría..." class="form-control mr-sm-2" id="codCategoria"
+                        (change)="listarSubcategoriaPorCategoria()">
                         <option [value]="''" selected>Seleccionar categoría</option>
                         <option *ngFor="let categoria  of listaCategoria" [value]="categoria.codigo">
                             <span><b>{{categoria?.denominacion}}</b></span>
@@ -22,7 +22,7 @@
                     <label for="codSubcategoria">
                         <h4><b>{{'Subcategoría(*): '}}</b></h4>
                     </label>
-                    <select name="codSubcategoria" formControlName="codSubcategoria" 
+                    <select name="codSubcategoria" formControlName="codSubcategoria"
                         [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                         class="form-control mr-sm-2 custom-select" id="codSubcategoria"
                         (change)="obtenerCodInstancia()">
@@ -54,36 +54,6 @@
             </div>
             <div class="row form-group">
                 <div class="col-6">
-                    <label for="identificacion">
-                        <h4><b>{{'Correo electrónico(*): '}}</b></h4>
-                    </label>
-                    <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        maxlength="60" id="identificacion" placeholder="Correo electrónico"
-                        [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <label for="fechaNacimiento">
-                        <h4><b>{{'Nacimiento: '}}</b></h4>
-                    </label>
-                    <input type="date" name="fechaNacimiento" formControlName="fechaNacimiento" class="form-control"
-                        id="fechaNacimiento"
-                        [ngClass]="{'is-valid': fechaNacimientoField?.dirty && !fechaNacimientoField?.invalid && !fechaNacimientoField?.errors,'is-invalid': fechaNacimientoField?.dirty && fechaNacimientoField?.invalid && fechaNacimientoField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
-                    <div class="invalid-feedback">
-                        <span *ngIf="fechaNacimientoField?.errors?.['required']">{{"Requerido"}}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="row form-group">
-                <div class="col-6">
                     <label for="nombres">
                         <h4><b>{{'Nombre & Apellido(*): '}}</b></h4>
                     </label>
@@ -111,7 +81,57 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-8">
+                <div class="col-6">
+                    <label for="identificacion">
+                        <h4><b>{{'Usuario(*): '}}</b></h4>
+                    </label>
+                    <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
+                        maxlength="60" id="identificacion" placeholder="nombre.apellido"
+                        [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="identificacionField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label for="fechaNacimiento">
+                        <h4><b>{{'Nacimiento: '}}</b></h4>
+                    </label>
+                    <input type="date" name="fechaNacimiento" formControlName="fechaNacimiento" class="form-control"
+                        id="fechaNacimiento"
+                        [ngClass]="{'is-valid': fechaNacimientoField?.dirty && !fechaNacimientoField?.invalid && !fechaNacimientoField?.errors,'is-invalid': fechaNacimientoField?.dirty && fechaNacimientoField?.invalid && fechaNacimientoField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="fechaNacimientoField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-12">
+                    <button id="selectButton" mat-raised-button (click)="fileInput.click()"
+                        class="btn btn-primary">Subir mp3:
+                    </button>
+                    <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
+                    <span *ngIf="fileName">{{fileName}}</span>
+                    <button id="uploadButton" mat-raised-button *ngIf="selectedFiles"
+                        [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()" class="btn btn-primary">
+                        <b>Guardar</b>
+                    </button>
+                    <div class="col-sm-12" *ngIf="true">
+                        <embed id="vistaPreviaDJ1" type="application/pdf" with="60" height="50">
+                        <!--
+                        <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
+                        <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
+                        -->
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-3">
                     <label for="country">
                         <h4><b>{{'País: '}}</b></h4>
                     </label>
@@ -133,31 +153,24 @@
                         <span>{{ "Exito"}}</span>
                     </div>
                 </div>
-            </div>
-            <div class="row form-group">
-                <div class="col-12">
-                    <button id="selectButton" mat-raised-button (click)="fileInput.click()"
-                        class="btn btn-primary">Subir mp3:
-                    </button>
-                    <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
-                    <span *ngIf="fileName">{{fileName}}</span>
-                    <button id="uploadButton" mat-raised-button *ngIf="selectedFiles"
-                        [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()" class="btn btn-primary">
-                        <b>Guardar</b>
-                    </button>
-                    <div class="col-sm-12" *ngIf="true">
-                        <embed id="vistaPreviaDJ1" type="application/pdf" with="60" height="60">
-                        <!--
-                        <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
-                        <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
-                        -->
+                <div class="col-5">
+                    <label for="correo">
+                        <h4><b>{{'Correo Personal(*): '}}</b></h4>
+                    </label>
+                    <input type="text" name="correo" formControlName="correo" class="form-control" maxlength="60"
+                        id="correo" placeholder="Correo electrónico"
+                        [ngClass]="{'is-valid': correoField?.dirty && !correoField?.invalid && !correoField?.errors, 'is-invalid': correoField?.dirty && correoField?.invalid && correoField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="correoField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
             </div>
             <div class="row">
             </div>
         </div>
-        <br>
         <div [ngStyle]="{'display': displayParticipante}" class="container"
             style="border: 0px solid black; box-shadow: 0px 10px 10px black">
             <div class="row form-group">

@@ -51,11 +51,17 @@ export class FormCategoriaComponent implements OnInit {
   ngOnInit() {
     if (this.categoriaEditar) {
       this.formCategoria = this.formBuilder.group({
-        denominacion: new FormControl(this.categoriaEditar.denominacion, Validators.required),
+        denominacion: new FormControl(this.categoriaEditar?.denominacion, Validators.required),
+        edadMinima: new FormControl(this.categoriaEditar?.edadMinima),
+        edadMaxima: new FormControl(this.categoriaEditar?.edadMaxima),
+        numJueces: new FormControl(this.categoriaEditar?.numJueces, Validators.required),
       })
     } else {
       this.formCategoria = this.formBuilder.group({
         denominacion: new FormControl('', Validators.required),
+        edadMinima: new FormControl(''),
+        edadMaxima: new FormControl(''),
+        numJueces: new FormControl('', Validators.required),
       })
     }
   }
@@ -73,16 +79,13 @@ export class FormCategoriaComponent implements OnInit {
     if (this.formCategoria?.valid) {
       let categoriaTemp = this.formCategoria.value;
       let codigoCategoriaSuperior = 0;
-      if (categoriaTemp.categoriaSuperior != "") {
-        codigoCategoriaSuperior = categoriaTemp.categoriaSuperior?.codigo;
-      }
       this.categoria = new Categoria({
         codigo: 0,
-        nombre: categoriaTemp.nombre,
-        denominacion: categoriaTemp.denominacion,
-        nemonico: categoriaTemp.nemonico,
+        denominacion: categoriaTemp?.denominacion,
+        edadMinima: categoriaTemp?.edadMinima,
+        edadMaxima: categoriaTemp?.edadMaxima,
+        numJueces: categoriaTemp?.numJueces,
         estado: 'A',
-        codigoCategoriaSuperior: codigoCategoriaSuperior,
       });
     }
 
@@ -122,13 +125,16 @@ export class FormCategoriaComponent implements OnInit {
     return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
   }
 
-  get nombreField() {
-    return this.formCategoria.get('nombre');
-  }
   get denominacionField() {
     return this.formCategoria.get('denominacion');
   }
-  get nemonicoField() {
-    return this.formCategoria.get('nemonico');
+  get edadMinimaField() {
+    return this.formCategoria.get('edadMinima');
+  }
+  get edadMaximaField() {
+    return this.formCategoria.get('edadMaxima');
+  }
+  get numJuecesField() {
+    return this.formCategoria.get('numJueces');
   }
 }

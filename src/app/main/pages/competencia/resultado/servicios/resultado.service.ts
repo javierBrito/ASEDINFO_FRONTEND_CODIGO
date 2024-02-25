@@ -33,6 +33,9 @@ export class ResultadoService {
   listarPuntajePorSubcategoriaInstanciaRegAVG(codSubcategoria: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaInstanciaRegAVG/${codSubcategoria}/${codInstancia}`);
   }
+  listarPuntajePorSubcategoriaInstanciaRegSUMA(codSubcategoria: number, codInstancia: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaInstanciaRegSUMA/${codSubcategoria}/${codInstancia}`);
+  }
   listarPuntajePorParticipante(codParticipante: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaRegTotal/${codParticipante}/${codInstancia}`);
   }

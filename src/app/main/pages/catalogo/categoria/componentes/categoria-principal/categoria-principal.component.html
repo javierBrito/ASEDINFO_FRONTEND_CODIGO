@@ -21,16 +21,22 @@
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Denominación</th>
-                                                        <th scope="col">Estado</th>
-                                                        <th scope="col">Acciones</th>
+                                                        <th scope="col"><div align="center">Edad Mínima</div></th>
+                                                        <th scope="col"><div align="center">Edad Máxima</div></th>
+                                                        <th scope="col"><div align="center">Número Jueces</div></th>
+                                                        <th scope="col"><div align="center">Estado</div></th>
+                                                        <th scope="col"><div align="center">Acciones</div></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr
                                                         *ngFor="let categoria of listaCategoria | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{categoria.denominacion}}</td>
-                                                        <td>{{categoria.estado}}</td>
+                                                        <td>{{categoria?.denominacion}}</td>
+                                                        <td><div align="center">{{categoria?.edadMinima}}</div></td>
+                                                        <td><div align="center">{{categoria?.edadMaxima}}</div></td>
+                                                        <td><div align="center">{{categoria?.numJueces}}</div></td>
+                                                        <td><div align="center">{{categoria?.estado}}</div></td>
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">

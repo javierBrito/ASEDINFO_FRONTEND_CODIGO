@@ -62,6 +62,8 @@ export class ParticipantePrincipalComponent implements OnInit {
   public customerId: number;
   public userId: number;
   public pathCancion: string = "./assets/musica/";
+  public tituloLista: string = "";
+  public nombreArchivoDescarga: string;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -87,9 +89,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public fileStatus = { status: '', requestType: '', percent: 0 };
   public filenames: string[] = [];
   public listaBase64: any;
-  public nombreArchivoDescarga: string;
-  public nombreSubscriptor: string;
-
+  
   /*TABS*/
   public selectedTab: number;
 
@@ -132,12 +132,6 @@ export class ParticipantePrincipalComponent implements OnInit {
     private dataService: DataService,
     private modalService: NgbModal
   ) {
-    //this.pathCancion = "./assets/musica/bachata_prueba.mpeg";
-    //this.pathCancion = "./assets/musica/solista_salsa.mp3";
-    //this.pathCancion = ;
-    //this.pathCancion = ".../upload/musica/";
-    //this.pathCancion = "D:/upload/";
-    //this.descargarArchivo("comprobante.pdf");
     this.codigo = 0;
     this.codigoSede = 0;
     this.itemsRegistros = 5;
@@ -145,8 +139,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    this.nombreSubscriptor = this.currentUser.nombre;
-    this.sede = this.currentUser.sede;
+    //this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;
   }
@@ -161,6 +154,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
     if (this.currentUser.cedula == "Suscriptor") {
+      this.tituloLista = "Lista Participantes del Suscriptor: " + this.currentUser.nombre;
       this.disabledEstado = true;
       this.displayNone = 'none';
       this.listarParticipantePorEmail();
@@ -239,6 +233,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.buscarInstanciaPorCodigo(this.codInstancia).subscribe(
       (respuesta) => {
         this.desInstancia = respuesta['objeto']?.denominacion;
+        this.tituloLista = "Lista Participantes de: " + this.desCategoria + " - " + this.desSubcategoria + " - " + this.desInstancia;
       }
     )
   }
@@ -371,7 +366,7 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   listarParticipanteActivoActualizada(event) {
     this.listaParticipante = event;
-    window.location.reload();
+    //window.location.reload();
   }
 
   openDetail() {
@@ -424,7 +419,7 @@ export class ParticipantePrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, eliminar"
-          this.participanteService.migrarClienteWP().subscribe({
+          this.participanteService.migrarUsuarioWP().subscribe({
             next: (response) => {
               this.mensajeService.mensajeCorrecto('Se ha cargado los participantes...');
             },

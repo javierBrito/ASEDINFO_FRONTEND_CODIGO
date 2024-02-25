@@ -25,5 +25,23 @@ export class Categoria implements Icategoria {
     set estado(value: string) {
         set(this, 'data.estado', value);
     }
+    get edadMinima(): number {
+        return get(this, 'data.edadMinima');
+    }
+    set edadMinima(value: number) {
+        set(this, 'data.edadMinima', value);
+    }
+    get edadMaxima(): number {
+        return get(this, 'data.edadMaxima');
+    }
+    set edadMaxima(value: number) {
+        set(this, 'data.edadMaxima', value);
+    }
+    get numJueces(): number {
+        return get(this, 'data.numJueces');
+    }
+    set numJueces(value: number) {
+        set(this, 'data.numJueces', value);
+    }
 
 }

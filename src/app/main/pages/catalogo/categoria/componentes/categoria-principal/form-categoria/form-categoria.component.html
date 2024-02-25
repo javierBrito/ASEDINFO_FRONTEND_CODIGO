@@ -15,10 +15,47 @@
                 </div>
             </div>
         </div>
+        <div class="row form-group">
+            <div class="col-3">
+                <label for="edadMinima"><b>{{'Edad Mínima(*):'}}</b></label>
+                <input type="number" name="edadMinima" formControlName="edadMinima" class="form-control" id="edadMinima"
+                    placeholder="99" step="0.01" min="0.01"
+                    [ngClass]="{'is-valid': edadMinimaField?.dirty && !edadMinimaField?.invalid && !edadMinimaField?.errors && (edadMinimaField?.value > edadMinimaField?.value), 'is-invalid': edadMinimaField?.dirty && edadMinimaField?.invalid && edadMinimaField?.errors  && !(edadMinimaField?.value > edadMinimaField?.value)}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="edadMinimaField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+            <div class="col-3">
+                <label for="edadMaxima"><b>{{'Edad Máxima(*):'}}</b></label>
+                <input type="number" name="edadMaxima" formControlName="edadMaxima" class="form-control" id="edadMaxima"
+                    placeholder="99" step="0.01" min="0.01"
+                    [ngClass]="{'is-valid': edadMaximaField?.dirty && !edadMaximaField?.invalid && !edadMaximaField?.errors && (edadMaximaField?.value > edadMaximaField?.value), 'is-invalid': edadMaximaField?.dirty && edadMaximaField?.invalid && edadMaximaField?.errors  && !(edadMaximaField?.value > edadMaximaField?.value)}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="edadMaximaField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+            <div class="col-3">
+                <label for="numJueces"><b>{{'Numero Jueces(*):'}}</b></label>
+                <input type="number" name="numJueces" formControlName="numJueces" class="form-control" id="numJueces"
+                    placeholder="99" step="0.01" min="0.01"
+                    [ngClass]="{'is-valid': numJuecesField?.dirty && !numJuecesField?.invalid && !numJuecesField?.errors && (numJuecesField?.value > numJuecesField?.value), 'is-invalid': numJuecesField?.dirty && numJuecesField?.invalid && numJuecesField?.errors  && !(numJuecesField?.value > numJuecesField?.value)}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="numJuecesField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12">
-                <button type="submit" class="btn btn-block btn-primary"
-                    [disabled]="formCategoria?.invalid">
+                <button type="submit" class="btn btn-block btn-primary" [disabled]="formCategoria?.invalid">
                     {{categoriaEditar?'GUARDAR':'GUARDAR'}}</button>
             </div>
         </div>
@@ -43,6 +80,7 @@
         </button>
     </div>
     <div class="modal-body">
-        {{categoriaEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al agregar el registro.'}}
+        {{categoriaEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al agregar el
+        registro.'}}
     </div>
 </ng-template>

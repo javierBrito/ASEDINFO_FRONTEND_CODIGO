@@ -93,6 +93,9 @@ export class ParticipanteService {
   migrarClienteWP(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/wordpress/migrarClienteWP`);
   }
+  migrarUsuarioWP(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/wordpress/migrarUsuarioWP`);
+  }
 
   // GESTIÓN DE ARCHIVOS
   // Cargar archivo PDF a una carpeta

@@ -68,6 +68,11 @@ export class FormParticipanteComponent implements OnInit {
   public nombreCancion: string;
   public nombreIntegrante: string;
   public pathCancion: string = "./assets/musica/";
+  public nombreArchivoDescarga: string;
+  public fechaNacimiento: string = "";
+  public edadMinima: number;
+  public edadMaxima: number;
+  public existeIdentificacion: boolean;
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -87,9 +92,6 @@ export class FormParticipanteComponent implements OnInit {
   public fileStatus = { status: '', requestType: '', percent: 0 };
   public filenames: string[] = [];
   public listaBase64: any;
-  public nombreArchivoDescarga: string;
-  public fechaNacimiento: string = "";
-
 
   /*OBJETOS*/
   public participante: Participante;
@@ -107,6 +109,7 @@ export class FormParticipanteComponent implements OnInit {
   public listaInstancia: Instancia[] = [];
   public listaIntegrante: Integrante[] = [];
   public integrante: Integrante;
+  public listaPersona: Persona[] = [];
 
   /*CONSTRUCTOR*/
   constructor(
@@ -144,7 +147,7 @@ export class FormParticipanteComponent implements OnInit {
         fechaNacimiento: new FormControl(this.fechaNacimiento),
         country: new FormControl(this.participanteEditar?.country),
         celular: new FormControl(this.participanteEditar?.celular),
-        //correo: new FormControl(this.participanteEditar?.correo, Validators.required),
+        correo: new FormControl(this.participanteEditar?.correo),
         dateLastActive: new FormControl(dayjs(this.participanteEditar?.dateLastActive).format("YYYY-MM-DD HH:mm")),
         username: new FormControl(this.participanteEditar?.username),
         codEstadoCompetencia: new FormControl(this.participanteEditar?.codEstadoCompetencia),
@@ -162,7 +165,7 @@ export class FormParticipanteComponent implements OnInit {
         fechaNacimiento: new FormControl(''),
         country: new FormControl(''),
         celular: new FormControl(''),
-        //correo: new FormControl('', Validators.required),
+        correo: new FormControl(this.currentUser?.correo),
         dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD HH:mm")),
         username: new FormControl(''),
         codEstadoCompetencia: new FormControl(1),
@@ -172,6 +175,8 @@ export class FormParticipanteComponent implements OnInit {
         codInstancia: new FormControl(''),
       })
     }
+    this.codSubcategoria = this.codSubcategoriaChild;
+    this.buscarSubcategoriaPorCodigo();
     this.displayInstancia = 'none';
     if (this.currentUser.cedula == "Suscriptor") {
       this.displayParticipante = 'none';
@@ -185,8 +190,8 @@ export class FormParticipanteComponent implements OnInit {
       this.displayCategoria = 'none';
       this.displayIntegrante2 = 'none';
       this.displayIntegranteGrupo = 'none';
-      this.codSubcategoria = this.codSubcategoriaChild;
-      this.buscarSubcategoriaPorCodigo();
+      //this.codSubcategoria = this.codSubcategoriaChild;
+      //this.buscarSubcategoriaPorCodigo();
     }
     //this.verpdf();
   }
@@ -279,6 +284,8 @@ export class FormParticipanteComponent implements OnInit {
     this.participanteService.buscarSubcategoriaPorCodigo(this.codSubcategoria).subscribe(
       (respuesta) => {
         this.subcategoria = respuesta['objeto'];
+        this.edadMinima = this.subcategoria?.edadMinima;
+        this.edadMaxima = this.subcategoria?.edadMaxima;
         this.desCategoria = this.subcategoria?.desCategoria;
         this.desSubcategoria = this.subcategoria?.denominacion;
         this.codCategoria = this.subcategoria.codCategoria;
@@ -377,6 +384,20 @@ export class FormParticipanteComponent implements OnInit {
     });
   }
 
+  async listarPersonaPorIdentificacion(identificacion: string) {
+    this.existeIdentificacion = false;
+    this.personaService.listarPersonaPorIdentificacion(identificacion).subscribe(
+      (respuesta) => {
+        this.listaPersona = respuesta['listado'];
+        if (this.listaPersona?.length > 0) {
+          this.existeIdentificacion = true;
+          this.mensajeService.mensajeError('El Usuario ya existe, modifique...');
+          return;
+        }
+      }
+    );
+  }
+
   patternAmie(amie: string) {
     const valorEncontrar = amie
     const regExp = new RegExp('([0-9])\\w+')
@@ -392,55 +413,55 @@ export class FormParticipanteComponent implements OnInit {
         participanteTemp.fechaNacimiento = dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS");
         this.fechaNacimiento = participanteTemp?.fechaNacimiento;
         edad = this.calcularEdad();
-        if (this.desCategoria.includes("PRE INFANTIL") && (edad < 4 || edad > 8)) {
-          this.mensajeService.mensajeError('Edad participante, menor a 4 años o mayor a 8 años...');
+        if (this.desCategoria.includes("PRE INFANTIL") && (edad < this.edadMinima || edad > this.edadMaxima)) {
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 4 años y menor a 9 años...');
           return;
         }
-        if (this.desCategoria.includes("INFANTIL") && (edad < 7 || edad > 12)) {
-          this.mensajeService.mensajeError('Edad participante, menor a 7 años o mayor a 12 años...');
+        if (this.desCategoria.includes("INFANTIL") && (edad < this.edadMinima || edad > this.edadMaxima)) {
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 7 años y menor a 13 años...');
           return;
         }
-        if (this.desCategoria.includes("JUNIOR") && (edad < 13 || edad > 17)) {
-          this.mensajeService.mensajeError('Edad participante, menor a 13 años o mayor a 17 años...');
+        if (this.desCategoria.includes("JUNIOR") && (edad < this.edadMinima || edad > this.edadMaxima)) {
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 13 años y menor a 18 años...');
           return;
         }
         if ((this.desCategoria.includes("ESTUDIANTES") ||
-          this.desCategoria.includes("PRO-AM")) && edad < 4) {
-          this.mensajeService.mensajeError('Edad participante menor a 4 años...');
+          this.desCategoria.includes("PRO-AM")) && edad < this.edadMinima) {
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 4 años...');
           return;
         }
-        if (this.desCategoria.includes("AMATEUR") && edad < 13) {
-          this.mensajeService.mensajeError('Edad participante menor a 13 años...');
+        if (this.desCategoria.includes("AMATEUR") && edad < this.edadMinima) {
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 13 años...');
           return;
         }
-        if (this.desCategoria.includes("OPEN") && edad < 14) {
-          this.mensajeService.mensajeError('Edad participante menor a 14 años...');
+        if (this.desCategoria.includes("OPEN") && edad < this.edadMinima) {
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 14 años...');
           return;
         }
       } else {
         if (this.desCategoria.includes("PRE INFANTIL")) {
-          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril cumpla 8 años...');
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 4 años y menor a 9 años...');
           return;
         }
         if (this.desCategoria.includes("INFANTIL")) {
-          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril cumpla 12 años...');
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 7 años y menor a 13 años...');
           return;
         }
         if (this.desCategoria.includes("JUNIOR")) {
-          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril cumpla 17 años...');
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 13 años y menor a 18 años...');
           return;
         }
         if (this.desCategoria.includes("ESTUDIANTES") ||
           this.desCategoria.includes("PRO-AM")) {
-          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril tenga 4 años o más...');
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 4 años...');
           return;
         }
         if (this.desCategoria.includes("AMATEUR")) {
-          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril tenga 13 años o más...');
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 13 años...');
           return;
         }
-        if (this.desCategoria.includes("PRO-AM")) {
-          this.mensajeService.mensajeError('Ingrese Fecha Nacimiento, tal que, hasta el 7 de abril tenga 14 años o más...');
+        if (this.desCategoria.includes("OPEN")) {
+          this.mensajeService.mensajeError('La Edad del participante debe ser: mayor a 14 años...');
           return;
         }
       }
@@ -457,7 +478,7 @@ export class FormParticipanteComponent implements OnInit {
         //fechaNacimiento: dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaNacimiento: participanteTemp?.fechaNacimiento,
         celular: participanteTemp?.celular,
-        correo: participanteTemp?.identificacion,
+        correo: participanteTemp?.correo,
         cedula: 'Suscriptor',
         estado: 'A',
       });
@@ -475,6 +496,13 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     } else {
+      // Validar si ya existe participante con esa identificacion
+      if (this.persona['data']?.identificacion != "" && this.persona['data']?.identificacion != null) {
+        this.listarPersonaPorIdentificacion(this.persona['data']?.identificacion);
+      }
+      if (this.existeIdentificacion) {
+        return;
+      }
       this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: async (response) => {
           this.persona = response['objeto'];
@@ -504,7 +532,8 @@ export class FormParticipanteComponent implements OnInit {
         customerId: this.customerIdChild,
         userId: this.userIdChild,
         //email: participanteTemp.identificacion,
-        email: this.currentUser.identificacion,
+        //email: this.currentUser.identificacion,
+        email: this.currentUser.correo,
         codSubcategoria: this.codSubcategoriaChild,
         codInstancia: this.codInstanciaChild,
         country: participanteTemp?.country,
@@ -518,11 +547,11 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.firstName = this.participanteAux['data'].firstName;
       this.participante.lastName = this.participanteAux['data'].lastName;
       this.participante.username = this.participanteAux['data'].username;
-      if (this.currentUser.cedula == "Suscriptor") {
+      //if (this.currentUser.cedula == "Suscriptor") {
         this.participante.email = this.participanteAux['data'].email;
-      } else {
-        this.participante.email = this.participanteEditar?.email;
-      }
+      //} else {
+        //this.participante.email = this.participanteEditar?.email;
+      //}
       this.participante.codSubcategoria = this.codSubcategoriaChild,
         this.participante.codInstancia = this.codInstanciaChild,
         this.participante.country = this.participanteAux['data'].country;

@@ -77,6 +77,7 @@ export class PuntajePrincipalComponent implements OnInit {
   public listaSubcategoria: any[];
   public listaInstancia: any[];
   public listaModeloPuntaje: any[];
+  public listaModeloPuntajeAux: any[];
   public listaParticipante: any[];
   public listaParticipantePresentacion: any[] = [];
   public listaUsuarioModeloPuntaje: any[];
@@ -164,7 +165,7 @@ export class PuntajePrincipalComponent implements OnInit {
             if (this.codInstancia == undefined || this.codInstancia == 0) {
               this.mensajeService.mensajeError('Ingrese parámetros de SUBCATEGORÍA E INSTANCIA, para ingreso de puntaje..');
             }
-                // Obtener la denominación de la instancia
+            // Obtener la denominación de la instancia
             this.buscarInstanciaPorCodigo();
             this.listarPuntajePorParticipante();
           }
@@ -174,15 +175,27 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   listarModeloPuntajeActivo() {
+    this.listaModeloPuntaje = [];
     this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
-        this.listaModeloPuntaje = respuesta['listado'];
-        console.log("this.listaModeloPuntaje = ", this.listaModeloPuntaje)
+        this.listaModeloPuntajeAux = respuesta['listado'];
+        console.log("this.listaModeloPuntajeAux = ", this.listaModeloPuntajeAux)
         console.log("this.currentUser = ", this.currentUser)
         this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.currentUser?.codigoUsuario).subscribe(
           (respuesta) => {
             this.listaUsuarioModeloPuntaje = respuesta['listado'];
             console.log("this.listaUsuarioModeloPuntaje = ", this.listaUsuarioModeloPuntaje)
+            if (this.listaUsuarioModeloPuntaje.length > 0) {
+              for (const ele of this.listaModeloPuntajeAux) {
+                ele.asignado = false;
+                for (const ele1 of this.listaUsuarioModeloPuntaje) {
+                  if (ele?.codigo == ele1?.codModeloPuntaje) {
+                    ele.asignado = true;
+                    this.listaModeloPuntaje.push(ele);
+                  }
+                }
+              }
+            }
           }
         )
       }
@@ -216,7 +229,8 @@ export class PuntajePrincipalComponent implements OnInit {
         next: (respuesta) => {
           this.participanteAux = respuesta['objeto'];
           this.participanteAux.numPuntajeJuez = this.participanteAux?.numPuntajeJuez + 1;
-          if (this.participanteAux.numPuntajeJuez == 2) {
+          // Verificar si ya han puntuado los JUECES jbrito-20240223
+          if (this.participanteAux.numPuntajeJuez == 3) {
             // Cambiar el estado de la competencia a Completado
             this.participanteAux.codEstadoCompetencia = 5;
           }

@@ -5,5 +5,8 @@ export interface Isubcategoria {
 
     codCategoria?: number;
     desCategoria?: string;
+    edadMinima?: number;
+    edadMaxima?: number;
+    numJueces?: number;
     categoria: any;
 }
