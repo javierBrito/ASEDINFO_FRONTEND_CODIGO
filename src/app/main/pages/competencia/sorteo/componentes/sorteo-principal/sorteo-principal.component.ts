@@ -339,14 +339,20 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstancia() {
-    // Receptar codSubcategoria y codInstancia de formSorteo.value
+    this.habilitarAgregarParticipante = false;
+    this.displayBotonGuardar = "none";
+    this.listaParticipante = [];
+    // Receptar codSubcategoria de formSorteo.value
     let sorteoCompetenciaParametroTemp = this.formSorteo.value;
     this.codSubcategoria = sorteoCompetenciaParametroTemp?.codSubcategoria;
-    this.codInstancia = sorteoCompetenciaParametroTemp?.codInstancia;
+    this.buscarSubcategoriaPorCodigo();
+    //this.codInstancia = sorteoCompetenciaParametroTemp?.codInstancia;
+    this.codInstancia = 1;
     this.buscarInstanciaPorCodigo();
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        console.log("this.listaParticipante = ", this.listaParticipante)
         for (const ele of this.listaParticipante) {
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
           //ele.nombreCancion = this.urlCancion + ele?.nombreCancion;

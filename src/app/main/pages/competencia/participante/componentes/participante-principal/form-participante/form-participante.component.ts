@@ -73,6 +73,7 @@ export class FormParticipanteComponent implements OnInit {
   public edadMinima: number;
   public edadMaxima: number;
   public existeIdentificacion: boolean;
+  public disabledIdentificacion: boolean;
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -131,6 +132,10 @@ export class FormParticipanteComponent implements OnInit {
     this.listarEstadoCompetenciaActivo();
     this.listarSubcategoriaActivo();
     if (this.participanteEditar) {
+      // S identificacion de usuario == identificacion de participante NO MODIFICA
+      if (this.currentUser?.identificacion == this.participanteEditar?.identificacion) {
+        this.disabledIdentificacion = true;
+      }
       this.desSubcategoria = this.participanteEditar?.desSubcategoria;
       if (this.participanteEditar?.fechaNacimiento != "" && this.participanteEditar?.fechaNacimiento != null) {
         this.fechaNacimiento = dayjs(this.participanteEditar?.fechaNacimiento).format("YYYY-MM-DD");
@@ -163,7 +168,7 @@ export class FormParticipanteComponent implements OnInit {
         nombres: new FormControl('', Validators.required),
         apellidos: new FormControl(''),
         fechaNacimiento: new FormControl(''),
-        country: new FormControl(''),
+        country: new FormControl('ECUADOR'),
         celular: new FormControl(''),
         correo: new FormControl(this.currentUser?.correo),
         dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD HH:mm")),
@@ -652,7 +657,7 @@ export class FormParticipanteComponent implements OnInit {
     if (event.target.value.length != 0) {
       let participanteTemp = this.formParticipante.value;
       if (participanteTemp?.identificacion == "") {
-        this.formParticipante.controls.identificacion.setValue((event.target.value.replace(" ", ".")).toLowerCase());
+        this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
       }
     }
   }

@@ -11,7 +11,7 @@
                 -->
                 <form detail-content [formGroup]="formSorteo">
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codCategoria">
                                 <h4><b>{{'Categoría(*): '}}</b></h4>
                             </label>
@@ -27,14 +27,14 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codSubcategoria">
                                 <h4><b>{{'Subcategoría(*): '}}</b></h4>
                             </label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                                 class="form-control mr-sm-2 custom-select" id="codSubcategoria"
-                                (change)="listarInstanciaActivo()">
+                                (change)="listarParticipantePorSubcategoriaInstancia()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
                                     <span><b>{{subcategoria?.denominacion}}</b></span>
@@ -43,7 +43,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" [ngStyle]="{'display': 'none'}">
                             <label for="codInstancia">
                                 <h4><b>{{'Instancia(*): '}}</b></h4>
                             </label>

@@ -49,7 +49,7 @@
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
                                 class="form-control mr-sm-2 custom-select" id="codInstancia"
                                 (change)="listarParticipanteGeneral()">
-                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                <option [value]="''" selected>Seleccionar instancia</option>
                                 <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>
                                 </option>

@@ -86,7 +86,7 @@
                         <h4><b>{{'Usuario(*): '}}</b></h4>
                     </label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        maxlength="60" id="identificacion" placeholder="nombre.apellido"
+                        maxlength="60" id="identificacion" placeholder="nombre.apellido" [attr.disabled]="disabledIdentificacion"
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -136,7 +136,7 @@
                         <h4><b>{{'País: '}}</b></h4>
                     </label>
                     <input type="text" name="country" formControlName="country" class="form-control" id="country"
-                        oninput="country.value = country.value.toUpperCase()" placeholder="Nombre país"
+                        oninput="country.value = country.value.toUpperCase()" placeholder="Nombre país" autocomplete="off"
                         [ngClass]="{'is-valid': countryField?.dirty && !countryField?.invalid && !countryField?.errors, 'is-invalid': countryField?.dirty && countryField?.invalid && countryField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>

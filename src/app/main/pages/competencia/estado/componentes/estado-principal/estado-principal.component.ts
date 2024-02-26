@@ -57,7 +57,6 @@ export class EstadoPrincipalComponent implements OnInit {
   public disabledEstado: boolean;
   public customerId: number;
   public userId: number;
-  public urlCancion: string;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -133,21 +132,12 @@ export class EstadoPrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Fin - Para acceder directamente a la página de inscripción  }
-    //this.urlCancion = "./assets/musica/bachata_prueba.mpeg";
-    //this.urlCancion = "./assets/musica/solista_salsa.mp3";
-    this.urlCancion = "./assets/musica/";
-    //this.urlCancion = ".../upload/musica/";
-    //this.urlCancion = "D:/upload/";
-    //this.descargarArchivo("comprobante.pdf");
     this.codigo = 0;
     this.codigoSede = 0;
     this.itemsRegistros = 10;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
-    //this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    //this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;
 
@@ -159,15 +149,9 @@ export class EstadoPrincipalComponent implements OnInit {
     })
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
-    //if (this.currentUser.cedula == "Suscriptor") {
-      this.disabledEstado = true;
-      this.displayNone = 'none';
-      //this.listarParticipantePorEmail();
-    //} else {
-      //this.disabledEstado = false;
-      this.displayNone1 = 'none';
-    //}
-    //this.listarIntegranteActivo();
+    this.disabledEstado = true;
+    this.displayNone = 'none';
+    this.displayNone1 = 'none';
     this.listarParticipantePorEstado();
   }
 
@@ -315,8 +299,6 @@ export class EstadoPrincipalComponent implements OnInit {
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             ele.displayNoneGrupo = "none";
-            this.customerId = ele.customerId;
-            this.userId = ele.userId;
             if (ele?.identificacion == this.currentUser.identificacion) {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
@@ -333,7 +315,7 @@ export class EstadoPrincipalComponent implements OnInit {
     );
   }
 
-  ordenarLista(listaOrdenar: Participante[]) : Participante[] {
+  ordenarLista(listaOrdenar: Participante[]): Participante[] {
     return listaOrdenar.sort((firstItem, secondItem) => Math.random() - 0.5);
   }
 

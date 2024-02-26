@@ -199,6 +199,10 @@ export class AuthLoginV2Component implements OnInit {
         this.aplicacionVEN = true;
         this._router.navigate(['/pages/venta/transaccion'])
       }
+      if (rol?.aplicacion?.prefijo == 'COM') {
+        this.aplicacionVEN = true;
+        this._router.navigate(['/pages/competencia/participante'])
+      }
       if (rol.menu.length > 0) {
         item.children = this.obtenerRecursos(rol.menu);
       } else {
