@@ -32,10 +32,12 @@ export class AuthGuard implements CanActivate {
       // authorised so return true
       return true;
     }
-
-    // Inicio - Para acceder directamente a la página de estado
-    if (state.url.localeCompare("pages/competencia/estado") != 0) {
-      return true;
+    console.log("currentUser?.identificacion = NEW ", currentUser?.identificacion)
+    // Inicio - Para acceder directamente a la página de 
+    if (currentUser?.identificacion == "minutoAminuto") {
+      if (state.url.localeCompare("pages/competencia/estado") != 0) {
+        return true;
+      }
     }
     // Fin - Para acceder directamente a la página de estado
 

@@ -158,7 +158,7 @@ export class EstadoPrincipalComponent implements OnInit {
   // Inicio - Para acceder directamente a la página de inscripción
   // Crear usuario para acceso directo a la página de inscripción
   iniciarSesion() {
-    this.autenticacion.login('1707025746', '1512').subscribe(
+    this.autenticacion.login('minutoAminuto', '1512').subscribe(
       (respuesta) => {
         console.log("respuesta = " + respuesta);
       }

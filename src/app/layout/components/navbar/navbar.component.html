@@ -94,7 +94,7 @@
           ></span>
         </ng-container>
       </a>
-      <div ngbDropdownMenu aria-labelledby="navbarUserDropdown" class="dropdown-menu dropdown-menu-right">
+      <div ngbDropdownMenu aria-labelledby="navbarUserDropdown" class="dropdown-menu dropdown-menu-right" [ngStyle]="{'display': visibleSalir}">
        <!-- <a ngbDropdownItem [routerLink]="['/pages/profile']"
           ><span [data-feather]="'user'" [class]="'mr-50'"></span> Profile</a
         ><a ngbDropdownItem [routerLink]="['/apps/email']"

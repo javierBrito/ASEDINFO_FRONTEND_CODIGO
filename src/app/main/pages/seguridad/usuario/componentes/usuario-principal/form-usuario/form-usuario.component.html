@@ -13,7 +13,7 @@
                 <div class="col-6">
                     <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        (keypress)="validateFormat($event)" maxlength="10" id="identificacion" 
+                        maxlength="60" id="identificacion" 
                         placeholder="Por favor, ingrese la identificación."
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">
@@ -49,9 +49,11 @@
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="fechaNacimientoField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    -->
                 </div>
             </div>
             <div class="row form-group">
@@ -83,7 +85,7 @@
             <div class="row form-group">
                 <div class="col-6">
                     <label for="codigo"><b>{{"Prefijo(*): "}}</b></label>
-                    <select name="codigo" formControlName="codigo" required [compareWith]="compararPrefijoTelefonico"
+                    <select name="codigo" formControlName="codigo" [compareWith]="compararPrefijoTelefonico"
                         placeholder="Prefijo telefónico" class="form-control mr-sm-2" id="codigo"
                         (change)="buscarPrefijoTelefonico()">
                         <option [value]="" selected>Prefijo telefónico</option>
@@ -102,9 +104,11 @@
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="celularField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    -->
                 </div>
             </div>
             <div class="row form-group">
@@ -123,9 +127,11 @@
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="correoField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    -->
                 </div>
             </div>
 
@@ -137,9 +143,11 @@
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>
+                    <!--
                     <div class="invalid-feedback">
                         <span *ngIf="direccionField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
+                    -->
                 </div>
             </div>
             <div class="row">

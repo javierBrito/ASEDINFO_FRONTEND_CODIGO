@@ -35,6 +35,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public languageOptions: any;
   public navigation: any;
   public selectedLanguage: any;
+  public visibleSalir: string;
 
   @HostBinding('class.fixed-top')
   public isFixed = false;
@@ -84,7 +85,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     public _translateService: TranslateService
   ) {
     this._authenticationService.currentUser.subscribe(x => (this.currentUser = x));
-
     this.languageOptions = {
       en: {
         title: 'English',
@@ -178,7 +178,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // get the currentUser details from localStorage
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
+    console.log("this.currentUser?.identificacion = ", this.currentUser?.identificacion)
+    this.visibleSalir = "";
+    if (this.currentUser?.identificacion == "minutoAminuto") {
+      this.visibleSalir = "none";
+    }
     // Subscribe to the config changes
     this._coreConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {
       this.coreConfig = config;
