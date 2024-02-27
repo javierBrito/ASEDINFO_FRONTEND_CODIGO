@@ -557,7 +557,7 @@ export class ResultadoPrincipalComponent implements OnInit {
 
     this.resultadoService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {
-        console.log("response = ", response);
+        //console.log("response = ", response);
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
       },
       error: (error) => {

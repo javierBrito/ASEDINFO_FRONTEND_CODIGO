@@ -18,7 +18,21 @@ export class AuthGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const currentUser = this._authenticationService.currentUserValue;
     if (currentUser) {
-      //verificar acceso a las paginas por el menu asignado excepto la pagina de inicio
+      // Inicio - Para acceder directamente a la página de 
+      if (currentUser?.identificacion == "minutoAminuto") {
+        if (state.url.localeCompare("pages/competencia/estado") != 0) {
+          let acceso = this.permitirAcceso(state.url);
+          // check if route is restricted by role
+          //if (route.data.roles && route.data.roles.indexOf(currentUser.role) === -1) {
+          if (acceso == false) {
+            // role not authorised so redirect to not-authorized page
+            this._router.navigate(['/pages/miscellaneous/not-authorized']);
+            return false;
+          }
+            return true;
+        }
+      }
+        //verificar acceso a las paginas por el menu asignado excepto la pagina de inicio
       if (state.url.localeCompare("/pages/inicio") != 0) {
         let acceso = this.permitirAcceso(state.url);
         // check if route is restricted by role
@@ -31,13 +45,6 @@ export class AuthGuard implements CanActivate {
       }
       // authorised so return true
       return true;
-    }
-    console.log("currentUser?.identificacion = NEW ", currentUser?.identificacion)
-    // Inicio - Para acceder directamente a la página de 
-    if (currentUser?.identificacion == "minutoAminuto") {
-      if (state.url.localeCompare("pages/competencia/estado") != 0) {
-        return true;
-      }
     }
     // Fin - Para acceder directamente a la página de estado
 

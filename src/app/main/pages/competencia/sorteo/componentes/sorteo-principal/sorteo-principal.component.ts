@@ -7,17 +7,12 @@ import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/men
 import Swal from 'sweetalert2';
 import dayjs from "dayjs";
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
-import { empty } from 'rxjs';
 import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
-import { userInfo } from 'os';
 import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
 import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
-import { saveAs } from 'file-saver';
-import { AudioService } from 'app/main/pages/compartidos/servicios/audio.service';
-import { DataService } from 'app/main/pages/compartidos/servicios/data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
@@ -134,24 +129,14 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Fin - Para acceder directamente a la página de inscripción  }
-    //this.urlCancion = "./assets/musica/bachata_prueba.mpeg";
-    //this.urlCancion = "./assets/musica/solista_salsa.mp3";
-    this.urlCancion = "./assets/musica/";
-    //this.urlCancion = ".../upload/musica/";
-    //this.urlCancion = "D:/upload/";
-    //this.descargarArchivo("comprobante.pdf");
     this.codigo = 0;
     this.codigoSede = 0;
     this.itemsRegistros = 10;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
-    //this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    //this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;
-
     this.formSorteo = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
@@ -160,28 +145,19 @@ export class SorteoPrincipalComponent implements OnInit {
     })
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
-    //if (this.currentUser.cedula == "Suscriptor") {
     this.disabledEstado = true;
     this.displayNone = '';
-    //this.listarParticipantePorEmail();
-    //} else {
-    //this.disabledEstado = false;
     this.displayNone1 = 'none';
-    //}
-    //this.listarIntegranteActivo();
-    //this.listarParticipantePorEstado();
   }
 
-  // Inicio - Para acceder directamente a la página de inscripción
-  // Crear usuario para acceso directo a la página de inscripción
+  // Inicio - Acceder directamente a la página de inscripción
   iniciarSesion() {
     this.autenticacion.login('1707025746', '1512').subscribe(
       (respuesta) => {
-        console.log("respuesta = " + respuesta);
       }
     );
   }
-  // Fin - Para acceder directamente a la página de inscripción
+  // Fin - Acceder directamente a la página de inscripción
 
   listarIntegranteActivo() {
     this.participanteService.listarIntegranteActivo().subscribe(
@@ -189,10 +165,6 @@ export class SorteoPrincipalComponent implements OnInit {
         this.listaIntegrante = respuesta['listado'];
       }
     )
-  }
-
-  cargarParticipantes() {
-    this.confirmarCargarParticipantes();
   }
 
   listarEstadoCompetenciaActivo() {
@@ -352,7 +324,6 @@ export class SorteoPrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
-        console.log("this.listaParticipante = ", this.listaParticipante)
         for (const ele of this.listaParticipante) {
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
           //ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
@@ -476,25 +447,29 @@ export class SorteoPrincipalComponent implements OnInit {
       });
   }
 
-  confirmarCargarParticipantes() {
+  confirmarActualizarListaParticipante() {
     Swal
       .fire({
-        title: "Cargar Participantes",
-        text: "¿Quieres cargar los participantes?'",
+        title: "Sortear Participantes",
+        text: "¿Quieres sortear los participantes?'",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: "Sí, cargar",
+        confirmButtonText: "Sí, sortear",
         cancelButtonText: "Cancelar",
       })
       .then(resultado => {
         if (resultado.value) {
-          // Hicieron click en "Sí, eliminar"
-          this.participanteService.migrarClienteWP().subscribe({
+          // Hicieron click en "Sí, sortear"
+          this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
             next: (response) => {
-              this.mensajeService.mensajeCorrecto('Se ha cargado los participantes...');
+              this.displayBotonGuardar = "none";
+              this.habilitarAgregarParticipante = true;
+              this.listarParticipantePorSubcategoriaInstancia();
+              this.mensajeService.mensajeCorrecto('Se ha sorteado los participantes...');
             },
             error: (error) => {
-              this.mensajeService.mensajeError('Ha habido un problema al cargar los participantes...');
+              this.listarParticipantePorSubcategoriaInstancia();
+              this.mensajeService.mensajeError('Ha habido un problema al sortear los participantes...');
             }
           });
         } else {
@@ -507,14 +482,6 @@ export class SorteoPrincipalComponent implements OnInit {
   closeDetail($event) {
     this.showDetail = $event;
     this.participanteSeleccionado = null;
-  }
-
-  // Contar los caracteres de la cedula para activar boton <Buscar>
-  onKey(event) {
-    if (event.target.value.length != 10) {
-      this.resetTheForm();
-    } else {
-    }
   }
 
   resetTheForm(): void {
@@ -548,28 +515,23 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   cargarArchivos() {
-    //this.play();
     this.message = '';
     for (let i = 0; i < this.selectedFiles.length; i++) {
       this.cargarArchivo(i, this.selectedFiles[i]);
       this.previsualizarArchivo(i, this.selectedFiles[i]);
-      //this.descargarArchivo(this.selectedFiles[i].name);
-      //this.obtenerReporteTitulo25();
     }
   }
 
   previsualizarArchivo(index, file) {
     //Previsualizar documento
     this.pdfFileURL = URL.createObjectURL(file);
-    //window.open(this.pdfFileURL);
-    //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
     document.getElementById('vistaPreviaDJ').setAttribute('src', this.pdfFileURL);
   }
 
   cargarArchivo(index, file) {
     this.participanteService.cargarArchivo(file, "").subscribe(
       async (respuesta) => {
-        console.log("respuesta = ", respuesta);
+        //console.log("respuesta = ", respuesta);
       }, err => {
         console.log("err = ", err);
         if (err == "OK") {
@@ -629,7 +591,6 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   verListaIntegrante = async (codParticipante: number) => {
-    //this.listaIntegrante = [];
     await this.listarIntegrantePorParticipante(codParticipante);
     await this.verModalIntegrante();
   }

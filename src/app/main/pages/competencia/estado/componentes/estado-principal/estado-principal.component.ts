@@ -123,12 +123,12 @@ export class EstadoPrincipalComponent implements OnInit {
     private modalService: NgbModal,
     private autenticacion: AuthenticationService,
   ) {
-    // Inicio - Para acceder directamente a la página de inscripción
+    // Inicio - Acceder directamente a la página de inscripción
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (this.currentUser == null) {
       this.iniciarSesion();
     };
-    // Fin - Para acceder directamente a la página de inscripción
+    // Fin - Acceder directamente a la página de inscripción
   }
 
   ngOnInit() {
@@ -147,24 +147,28 @@ export class EstadoPrincipalComponent implements OnInit {
       codInstancia: new FormControl('', Validators.required),
       identificacion: new FormControl(''),
     })
-    this.listarCategoriaActivo();
-    this.listarEstadoCompetenciaActivo();
     this.disabledEstado = true;
     this.displayNone = 'none';
     this.displayNone1 = 'none';
-    this.listarParticipantePorEstado();
+    if (this.currentUser != null) {
+      this.listarParticipantePorEstado();
+    }
+    if (this.currentUser?.identificacion == "minutoAminuto") {
+      setTimeout(() => {
+        window.location.reload();
+      }, 50000);
+    }
   }
 
-  // Inicio - Para acceder directamente a la página de inscripción
-  // Crear usuario para acceso directo a la página de inscripción
+  // Inicio - Acceder directamente a la página de inscripción
   iniciarSesion() {
     this.autenticacion.login('minutoAminuto', '1512').subscribe(
       (respuesta) => {
-        console.log("respuesta = " + respuesta);
+        this.listarParticipantePorEstado();
       }
     );
   }
-  // Fin - Para acceder directamente a la página de inscripción
+  // Fin - Acceder directamente a la página de inscripción
 
   listarIntegranteActivo() {
     this.participanteService.listarIntegranteActivo().subscribe(
@@ -519,15 +523,13 @@ export class EstadoPrincipalComponent implements OnInit {
   previsualizarArchivo(index, file) {
     //Previsualizar documento
     this.pdfFileURL = URL.createObjectURL(file);
-    //window.open(this.pdfFileURL);
-    //document.querySelector('#vistaPreviaDJ').setAttribute('src', pdfFileURL);
     document.getElementById('vistaPreviaDJ').setAttribute('src', this.pdfFileURL);
   }
 
   cargarArchivo(index, file) {
     this.participanteService.cargarArchivo(file, "").subscribe(
       async (respuesta) => {
-        console.log("respuesta = ", respuesta);
+        //console.log("respuesta = ", respuesta);
       }, err => {
         console.log("err = ", err);
         if (err == "OK") {

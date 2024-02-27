@@ -179,12 +179,9 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
         this.listaModeloPuntajeAux = respuesta['listado'];
-        console.log("this.listaModeloPuntajeAux = ", this.listaModeloPuntajeAux)
-        console.log("this.currentUser = ", this.currentUser)
         this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.currentUser?.codigoUsuario).subscribe(
           (respuesta) => {
             this.listaUsuarioModeloPuntaje = respuesta['listado'];
-            console.log("this.listaUsuarioModeloPuntaje = ", this.listaUsuarioModeloPuntaje)
             if (this.listaUsuarioModeloPuntaje.length > 0) {
               for (const ele of this.listaModeloPuntajeAux) {
                 ele.asignado = false;

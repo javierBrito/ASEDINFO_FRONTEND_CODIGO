@@ -173,6 +173,12 @@ export class AuthLoginV2Component implements OnInit {
   // -----------------------------------------------------------------------------------------------------
   obtenerRoles(roles: Rol[]): CoreMenu[] {
     // Inicio - jbrito - para redireccionar a los usuarios Suscriptores - 20231229
+    if (this._authenticationService.currentUserValue.identificacion == 'minutoAminuto') {
+      this.aplicacionVEN = true;
+      this._router.navigate(['/pages/competencia/estado'])
+    }
+    // Fin - jbrito - para redireccionar a los usuarios Suscriptores - 20231229
+    // Inicio - jbrito - para redireccionar a los usuarios Suscriptores - 20231229
     if (this._authenticationService.currentUserValue.cedula == 'Suscriptor') {
       this.aplicacionVEN = true;
       this._router.navigate(['/pages/competencia/participante'])

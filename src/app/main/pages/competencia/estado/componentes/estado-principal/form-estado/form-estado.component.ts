@@ -569,7 +569,7 @@ export class FormEstadoComponent implements OnInit {
     this.nombreCancion = estadoTemp?.identificacion+"_"+file?.name;
     this.participanteService.cargarArchivo(file, estadoTemp?.identificacion).subscribe(
       async (respuesta) => {
-        console.log("respuesta = ", respuesta);
+        //console.log("respuesta = ", respuesta);
       }, err => {
         console.log("err = ", err);
         if (err == "OK") {

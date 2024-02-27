@@ -16,6 +16,8 @@ export class VerticalLayoutComponent implements OnInit, OnDestroy {
 
   // Private
   private _unsubscribeAll: Subject<any>;
+  //public currentUser: any;
+  //public activarNavBar: boolean;
 
   /**
    * Constructor
@@ -25,6 +27,11 @@ export class VerticalLayoutComponent implements OnInit, OnDestroy {
   constructor(private _coreConfigService: CoreConfigService, private _elementRef: ElementRef) {
     // Set the private defaults
     this._unsubscribeAll = new Subject();
+    // Para que no se muestre el layout vertical
+    //this.currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    //this.activarNavBar = false;
+    //this.activarNavBar = this.currentUser.identificacion !== 'minutoAminuto'
+    //console.log("this.currentUser.identificacion layout-vertical = ",this.currentUser.identificacion);
   }
 
   // Lifecycle Hooks

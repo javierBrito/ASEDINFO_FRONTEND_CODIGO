@@ -623,17 +623,7 @@ export class FormSorteoComponent implements OnInit {
         this.mensajeService.mensajeError("Error: No se pudo descargar el documento")
       }
     );
- 
-    // const base64Response = await fetch(`${this.previzualizacion}`);
-    // const blob = await base64Response.blob();
-    // //comvierto el blob a tipo archivo pdf
-    // // const file = new Blob([blob], { type: 'application/pdf' });
-    // const file = new File([blob], `my-file-name`, { type: 'application/pdf' })
-    // // console.log(file)
-    // const fileURL = URL.createObjectURL(file);
-    // //abro una nueva ventana con el archivo
-    // window.open(fileURL);
-  }
+   }
 
   //filenames: string[] = [];
   private resportProgress(httpEvent: HttpEvent<string[] | Blob>): void {
@@ -654,8 +644,6 @@ export class FormSorteoComponent implements OnInit {
             this.filenames.unshift(filename);
           }
         } else {
-          console.log("httpEvent.url = ", httpEvent.url)
-          console.log("httpEvent.body = ", httpEvent.body)
           saveAs(new Blob([httpEvent.body!],
             { type: `${httpEvent.headers.get('Content-Type')};charset=utf-8` }),
             "solista_salsa.mp3");
@@ -663,9 +651,7 @@ export class FormSorteoComponent implements OnInit {
         this.fileStatus.status = 'done';
         break;
       default:
-        //console.log(httpEvent);
         break;
- 
     }
   }
 

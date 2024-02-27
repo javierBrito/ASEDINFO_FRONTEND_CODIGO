@@ -59,11 +59,11 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                    </div>
-                    <div class="row form-group" [ngStyle]="{'display': displayBotonGuardar}">
-                        <div class="col-12" align="center">
+                        <div class="col-3" align="center" [ngStyle]="{'display': displayBotonGuardar}">
+                            <br/>
+                            <br/>
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                (click)="actualizarListaParticipante()">
+                                (click)="confirmarActualizarListaParticipante()">
                                 <b>{{ "Guardar Sorteo..."}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fa fa-save" style="font-size:14px;color:red"></i>
@@ -72,26 +72,6 @@
                     </div>
                 </form>
                 <div class="row">
-                    <div class="col-12" [ngStyle]="{'display': displayNone1}">
-                        <button id="selectButton" mat-raised-button (click)="fileInput.click()"
-                            [disabled]="habilitarSeleccionarArchivo">
-                            <h3><b>Subir boucher de pago:</b></h3>
-                        </button>
-                        <input #fileInput type="file" hidden multiple (change)="selectFiles($event)" />
-                        <span *ngIf="fileName">{{fileName}}</span>
-
-                        <button id="uploadButton" mat-raised-button *ngIf="selectedFiles"
-                            [disabled]="habilitarSeleccionarArchivo" (click)="cargarArchivos()">
-                            <h3><b>Guardar Archivo</b></h3>
-                        </button>
-                        <div class="col-sm-12" *ngIf="true">
-                            <embed id="vistaPreviaDJ" type="application/pdf" with="120" height="120">
-                            <!--
-                            <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
-                            <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
-                            -->
-                        </div>
-                    </div>
                     <div class="col-12">
                         <ng-container>
                             <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
@@ -99,11 +79,9 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <!--
                                             <h3><b>{{'Lista Participantes: '}} {{desCategoria}}
                                                     - {{desSubcategoria}} - {{desInstancia}}
                                                 </b></h3>
-                                            -->
                                             <button type="submit" (click)="sortearParticipante()"
                                                 [disabled]="habilitarAgregarParticipante" matTooltip="Procesar Sorteo"
                                                 class="btn btn-block btn-primary form-control mt-2">

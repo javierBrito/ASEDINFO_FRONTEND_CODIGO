@@ -59,15 +59,15 @@ export class AppComponent implements OnInit, OnDestroy {
     private _translateService: TranslateService
   ) {
     // Get the application main menu
-    let menuArmar:Rol[]=JSON.parse(localStorage.getItem('menuJson'));
-   if(menuArmar!=null){
-    this.menu=this.obtenerRoles(menuArmar);
-   }else{
-     this.menu=null;
-   }
-    
+    let menuArmar: Rol[] = JSON.parse(localStorage.getItem('menuJson'));
+    if (menuArmar != null) {
+      this.menu = this.obtenerRoles(menuArmar);
+    } else {
+      this.menu = null;
+    }
+
     //this.menu = menu;
-   this._coreMenuService.unregister('main');
+    this._coreMenuService.unregister('main');
     // Register the menu to the menu service
     this._coreMenuService.register('main', this.menu);
 
@@ -80,7 +80,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // This language will be used as a fallback when a translation isn't found in the current language
     this._translateService.setDefaultLang('en');
 
-    
+
 
     // Set the private defaults
     this._unsubscribeAll = new Subject();
@@ -92,44 +92,45 @@ export class AppComponent implements OnInit, OnDestroy {
   /**
    * On init
    */
-  obtenerRoles(roles:Rol[]):CoreMenu[]{
-    var menuItem:CoreMenu[]=[]; 
-  roles.forEach(rol => {
-    var item:CoreMenu=
-       {
+  obtenerRoles(roles: Rol[]): CoreMenu[] {
+    var menuItem: CoreMenu[] = [];
+    roles.forEach(rol => {
+      var item: CoreMenu =
+      {
         id: rol.codigo.toString(),
         type: 'section',
-        title: rol.nombre, 
-       };
-       if (rol.menu.length>0) {
-         item.children=this.obtenerRecursos(rol.menu);
-       } else {
-         
-       }
-       menuItem.push(item);
-  });
-  return menuItem;
+        title: rol.nombre,
+      };
+      if (rol.menu.length > 0) {
+        item.children = this.obtenerRecursos(rol.menu);
+      } else {
+
+      }
+      menuItem.push(item);
+    });
+    return menuItem;
   }
-  obtenerRecursos(recursos:Recurso[]) : CoreMenu[]{
-    var menuProceso:CoreMenu[]=[]; 
+
+  obtenerRecursos(recursos: Recurso[]): CoreMenu[] {
+    var menuProceso: CoreMenu[] = [];
     recursos.forEach(hijo => {
-       var item:CoreMenu=
-       {
+      var item: CoreMenu =
+      {
         id: hijo.codigo.toString(),
         type: 'collapsible',
         title: hijo.nombre,
         icon: 'file-text',
-       };
-       if (hijo.recursosHijos.length>0) {
-        item.children= this.obtenerRecursos(hijo.recursosHijos);
-       } else {
-        item.type='item';
-        item.url=hijo.url;
-        item.icon='circle';
-       }
-       menuProceso.push(item);
-     });
-     return menuProceso;
+      };
+      if (hijo.recursosHijos.length > 0) {
+        item.children = this.obtenerRecursos(hijo.recursosHijos);
+      } else {
+        item.type = 'item';
+        item.url = hijo.url;
+        item.icon = 'circle';
+      }
+      menuProceso.push(item);
+    });
+    return menuProceso;
   }
 
   ngOnInit(): void {
@@ -142,7 +143,6 @@ export class AppComponent implements OnInit, OnDestroy {
       this.coreConfig = config;
 
       // Set application default language.
-
       // Change application language? Read the ngxTranslate Fix
 
       // ? Use app-config.ts file to set default language
@@ -170,7 +170,6 @@ export class AppComponent implements OnInit, OnDestroy {
        **/
 
       // Set the default language to 'en' and then back to 'fr'.
-
       setTimeout(() => {
         this._translateService.setDefaultLang('en');
         this._translateService.setDefaultLang(appLanguage);

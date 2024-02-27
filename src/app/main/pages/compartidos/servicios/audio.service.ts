@@ -48,7 +48,7 @@ export class AudioService {
         break;
       case 'playing':
         this.state.playing = true;
-        console.log(this.state);
+        //console.log(this.state);
         break;
       case 'pause':
         this.state.playing = false;
@@ -57,7 +57,7 @@ export class AudioService {
         this.state.playing = false;
         this.state.currentTime = this.audioObj.currentTime;
         this.state.readableCurrentTime = this.formatTime(this.state.currentTime);
-        console.log(this.state);
+        //console.log(this.state);
         break;
       case 'timeupdate':
         this.state.currentTime = this.audioObj.currentTime;
@@ -98,7 +98,7 @@ export class AudioService {
       this.audioObj.play();
 
       const handler = (event: Event) => {
-        console.log(event.type);
+        //console.log(event.type);
         this.updateStateEvents(event.type);
         observer.next(event);
       };
