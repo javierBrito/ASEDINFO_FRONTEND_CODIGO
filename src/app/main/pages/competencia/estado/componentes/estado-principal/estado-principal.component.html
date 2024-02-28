@@ -124,7 +124,6 @@
                                                         <th scope="col"><div align="center">Fecha/hora Competencia</div></th>
                                                         <th scope="col"><div align="center">Estado Competencia</div></th>
                                                         <th scope="col"><div align="center">Número Participante</div></th>
-                                                        <th scope="col" [ngStyle]="{'display': displayNone}">Pista / Canción</th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone}">Acciones
                                                         </th>
                                                     </tr>
@@ -160,11 +159,6 @@
                                                             </button>
                                                         </td>
                                                         <td><div align="center">{{participante?.numParticipante}}</div></td>
-                                                        <td [ngStyle]="{'display': displayNone}">
-                                                            <audio #ref src="{{participante?.nombreCancion}}" type="audio/mpeg"></audio>
-                                                            <button (click)="ref.play()">▶️ play</button>
-                                                            <button (click)="ref.pause()">⏸ pause</button>
-                                                        </td>
                                                         <td [ngStyle]="{'display': displayNone}">
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">

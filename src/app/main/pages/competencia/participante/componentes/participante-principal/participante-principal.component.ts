@@ -639,7 +639,7 @@ export class ParticipantePrincipalComponent implements OnInit {
         datoSubtitulo: {
           fontSize: 10,
           bold: true,
-          alignment: 'left', // Alineado a la izquierda
+          alignment: 'center', // Alineado a la izquierda
           margin: [0, 0, 0, 10], // Ajusta el margen según tus preferencias
         }
       },

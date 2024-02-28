@@ -12,12 +12,8 @@ import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
-import { userInfo } from 'os';
 import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
 import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
-import { saveAs } from 'file-saver';
-import { AudioService } from 'app/main/pages/compartidos/servicios/audio.service';
-import { DataService } from 'app/main/pages/compartidos/servicios/data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
@@ -156,7 +152,7 @@ export class EstadoPrincipalComponent implements OnInit {
     if (this.currentUser?.identificacion == "minutoAminuto") {
       setTimeout(() => {
         window.location.reload();
-      }, 50000);
+      }, 24999);
     }
   }
 
@@ -293,6 +289,7 @@ export class EstadoPrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEstado() {
+    this.listaParticipante = [];
     this.habilitarAgregarParticipante = true;
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {

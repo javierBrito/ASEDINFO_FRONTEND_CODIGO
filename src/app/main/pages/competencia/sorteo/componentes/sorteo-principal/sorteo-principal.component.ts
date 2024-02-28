@@ -305,6 +305,108 @@ export class SorteoPrincipalComponent implements OnInit {
     );
   }
 
+  sorteoTotal() {
+    if (this.listaCategoria.length > 0) {
+      // Ordenar lista por codigo
+      this.listaCategoria.sort((firstItem, secondItem) => firstItem.codigo - secondItem.codigo);
+      console.log("this.listaCategoria = ", this.listaCategoria)
+      for (let categoria of this.listaCategoria) {
+        console.log("categoria?.denominacion = ", categoria?.denominacion)
+        this.participanteService.listarSubcategoriaPorCategoria(categoria?.codigo).subscribe(
+          (respuesta) => {
+            this.listaSubcategoria = respuesta['listado'];
+            console.log("this.listaSubcategoria = ", this.listaSubcategoria);
+            if (this.listaSubcategoria.length > 0) {
+              for (let subcategoria of this.listaSubcategoria) {
+                console.log("subcategoria = ", subcategoria);
+                //this.codCategoria = subcategoria?.categoria?.codigo;
+                this.codSubcategoria = subcategoria?.codigo;
+                this.codInstancia = 1;
+                this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
+                  (respuesta) => {
+                    this.listaParticipante = respuesta['listado'];
+                    console.log("this.listaParticipante Sin Soprt = ", this.listaParticipante)
+                    if (this.listaParticipante.length > 0) {
+                      this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
+                      this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
+                        next: (response) => {
+                          this.mensajeService.mensajeCorrecto('Se ha realizado el sorteo correctamente...');
+                        },
+                        error: (error) => {
+                          this.mensajeService.mensajeError('Ha habido un problema al sortear los registros...');
+                        }
+                      });
+                    }
+                    console.log("this.listaParticipante Con Soprt = ", this.listaParticipante)
+                  }
+                );
+              }
+            }
+          }
+        )
+      }
+    }
+  }
+
+  listarParticipantePorSubcategoriaInstanciaTot() {
+    this.codInstancia = 1;
+    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+      }
+    );
+  }
+
+  async listarSubcategoria(categoria: Categoria) {
+    console.log("categoria?.denominacion = ", categoria?.denominacion)
+    return new Promise((resolve, rejects) => {
+      this.participanteService.listarSubcategoriaPorCategoria(categoria?.codigo).subscribe({
+        next: (respuesta) => {
+          this.listaSubcategoria = respuesta['listado'];
+          console.log("this.listaSubcategoria = ", this.listaSubcategoria);
+          this.listaSubcategoria.sort((firstItem, secondItem) => firstItem.codigo - secondItem.codigo);
+          console.log("this.listaSubcategoria Sort = ", this.listaSubcategoria);
+          resolve(respuesta);
+        }, error: (error) => {
+          this.mensajeService.mensajeError('Error al traer la lista. Subcategoria Error = ' + error)
+          rejects("Error");
+        }
+      })
+    })
+  }
+
+  async listarParticipante(subcategoria: Subcategoria) {
+    console.log("subcategoria?.denominacion = ", subcategoria?.denominacion)
+    this.codInstancia = 1;
+    return new Promise((resolve, rejects) => {
+      this.participanteService.listarParticipantePorSubcategoriaInstancia(subcategoria?.codigo, this.codInstancia, 0).subscribe({
+        next: (respuesta) => {
+          this.listaParticipante = respuesta['listado'];
+          if (this.listaParticipante.length > 0) {
+            console.log("this.listaParticipante = ", this.listaParticipante);
+            this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
+            console.log("this.listaParticipante Sort = ", this.listaParticipante);
+          }
+          resolve(respuesta);
+        }, error: (error) => {
+          this.mensajeService.mensajeError('Error al traer la lista. Participante Error = ' + error)
+          rejects("Error");
+        }
+      })
+    })
+  }
+
+  sorteoTotalAsync = async () => {
+    await this.listaCategoria.sort((firstItem, secondItem) => firstItem.codigo - secondItem.codigo);
+    console.log("this.listaCategoria = ", this.listaCategoria)
+    for (let categoria of this.listaCategoria) {
+      await this.listarSubcategoria(categoria);
+      for (let subcategoria of this.listaSubcategoria) {
+        await this.listarParticipante(subcategoria);
+      }
+    }
+  }
+
   sortearParticipante() {
     this.displayBotonGuardar = "";
     return this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
@@ -326,7 +428,6 @@ export class SorteoPrincipalComponent implements OnInit {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-          //ele.nombreCancion = this.urlCancion + ele?.nombreCancion;
           ele.displayNoneGrupo = "none";
           if (ele.desSubcategoria.includes("GRUPOS")) {
             ele.displayNoneGrupo = "";
@@ -472,6 +573,41 @@ export class SorteoPrincipalComponent implements OnInit {
               this.mensajeService.mensajeError('Ha habido un problema al sortear los participantes...');
             }
           });
+        } else {
+          // Hicieron click en "Cancelar"
+          console.log("*Se cancela el proceso...*");
+        }
+      });
+  }
+
+  confirmarSorteoTotal() {
+    Swal
+      .fire({
+        title: "Sortear Participantes",
+        text: "¿Quieres sortear los participantes?'",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: "Sí, sortear",
+        cancelButtonText: "Cancelar",
+      })
+      .then(resultado => {
+        if (resultado.value) {
+          // Hicieron click en "Sí, sortear"
+          this.sorteoTotalAsync();
+          /*
+          this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
+            next: (response) => {
+              this.displayBotonGuardar = "none";
+              this.habilitarAgregarParticipante = true;
+              //this.listarParticipantePorSubcategoriaInstancia();
+              this.mensajeService.mensajeCorrecto('Se ha sorteado los participantes...');
+            },
+            error: (error) => {
+              //this.listarParticipantePorSubcategoriaInstancia();
+              this.mensajeService.mensajeError('Ha habido un problema al sortear los participantes...');
+            }
+          });
+          */
         } else {
           // Hicieron click en "Cancelar"
           console.log("*Se cancela el proceso...*");

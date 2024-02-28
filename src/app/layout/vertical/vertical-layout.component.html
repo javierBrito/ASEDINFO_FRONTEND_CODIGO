@@ -25,7 +25,7 @@
 <!-- NAVBAR -->
 <ng-template #navbar>
   <!--<ng-container *ngIf="activarNavBar">-->
-    <app-navbar *ngIf="!coreConfig.layout.navbar.hidden" [ngClass]="[
+  <app-navbar *ngIf="!coreConfig.layout.navbar.hidden" [ngClass]="[
       coreConfig.layout.navbar.customBackgroundColor === true
         ? coreConfig.layout.navbar.background +
           ' ' +
@@ -35,7 +35,7 @@
         : coreConfig.layout.navbar.background + ' ' + coreConfig.layout.navbar.type,
       coreConfig.layout.navbar.type === 'floating-nav' ? 'container-xxl' : ''
     ]" class="header-navbar navbar navbar-expand-lg align-items-center navbar-shadow">
-    </app-navbar>
+  </app-navbar>
   <!--</ng-container>-->
 </ng-template>
 <!--/ NAVBAR -->

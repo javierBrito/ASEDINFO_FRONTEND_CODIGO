@@ -60,11 +60,21 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-3" align="center" [ngStyle]="{'display': displayBotonGuardar}">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="confirmarActualizarListaParticipante()">
                                 <b>{{ "Guardar Sorteo..."}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fa fa-save" style="font-size:14px;color:red"></i>
+                            </button>
+                        </div>
+                        <div class="col-3" align="center">
+                            <br />
+                            <br />
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="confirmarSorteoTotal()">
+                                <b>{{ "Guardar Sorteo Total..."}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fa fa-save" style="font-size:14px;color:red"></i>
                             </button>
@@ -104,8 +114,6 @@
                                                         <th scope="col">
                                                             <div align="center">Número Participante</div>
                                                         </th>
-                                                        <th scope="col" [ngStyle]="{'display': displayNone1}">Pista /
-                                                            Canción</th>
                                                         <th scope="col" [ngStyle]="{'display': displayNone1}">Acciones
                                                         </th>
                                                     </tr>
@@ -142,12 +150,6 @@
                                                         </td>
                                                         <td>
                                                             <div align="center">{{participante?.numParticipante}}</div>
-                                                        </td>
-                                                        <td [ngStyle]="{'display': displayNone1}">
-                                                            <audio #ref src="{{participante?.nombreCancion}}"
-                                                                type="audio/mpeg"></audio>
-                                                            <button (click)="ref.play()">▶️ play</button>
-                                                            <button (click)="ref.pause()">⏸ pause</button>
                                                         </td>
                                                         <td [ngStyle]="{'display': displayNone1}">
                                                             <div class="btn-group" role="group"

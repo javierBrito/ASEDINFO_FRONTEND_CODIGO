@@ -1,8 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation, ElementRef } from '@angular/core';
-
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
 import { CoreConfigService } from '@core/services/config.service';
 
 @Component({
