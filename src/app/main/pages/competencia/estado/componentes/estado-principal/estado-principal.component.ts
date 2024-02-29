@@ -121,16 +121,16 @@ export class EstadoPrincipalComponent implements OnInit {
   ) {
     // Inicio - Acceder directamente a la página de inscripción
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (this.currentUser == null) {
+    //if (this.currentUser == null || this.currentUser?.identificacion != "minutoAminuto") {
       this.iniciarSesion();
-    };
+    //};
     // Fin - Acceder directamente a la página de inscripción
   }
 
   ngOnInit() {
     this.codigo = 0;
     this.codigoSede = 0;
-    this.itemsRegistros = 10;
+    this.itemsRegistros = 20;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
@@ -448,7 +448,7 @@ export class EstadoPrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, eliminar"
-          this.participanteService.migrarClienteWP().subscribe({
+          this.participanteService.migrarUsuarioWP().subscribe({
             next: (response) => {
               this.mensajeService.mensajeCorrecto('Se ha cargado los participantes...');
             },

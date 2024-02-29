@@ -179,6 +179,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // get the currentUser details from localStorage
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.visibleSalir = "";
+    console.log("this.currentUser?.identificacion navbar = ", this.currentUser?.identificacion)
     if (this.currentUser?.identificacion == "minutoAminuto") {
       this.visibleSalir = "none";
     }

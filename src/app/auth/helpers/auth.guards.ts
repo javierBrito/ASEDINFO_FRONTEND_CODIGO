@@ -16,9 +16,23 @@ export class AuthGuard implements CanActivate {
 
   // canActivate
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const currentUser = this._authenticationService.currentUserValue;
+    let currentUser = this._authenticationService.currentUserValue;
+    if (currentUser != null) {
+      currentUser = null;
+    }
     if (currentUser) {
-      // Inicio - Para acceder directamente a la página de 
+      //verificar acceso a las paginas por el menu asignado excepto la pagina de inicio
+      if (state.url.localeCompare("/pages/inicio") != 0) {
+        let acceso = this.permitirAcceso(state.url);
+        // check if route is restricted by role
+        //if (route.data.roles && route.data.roles.indexOf(currentUser.role) === -1) {
+        if (acceso == false) {
+          // role not authorised so redirect to not-authorized page
+          this._router.navigate(['/pages/miscellaneous/not-authorized']);
+          return false;
+        }
+      }
+      // Inicio - Para acceder directamente a la página de estado 
       if (currentUser?.identificacion == "minutoAminuto") {
         if (state.url.localeCompare("pages/competencia/estado") != 0) {
           let acceso = this.permitirAcceso(state.url);
@@ -29,18 +43,7 @@ export class AuthGuard implements CanActivate {
             this._router.navigate(['/pages/miscellaneous/not-authorized']);
             return false;
           }
-            return true;
-        }
-      }
-        //verificar acceso a las paginas por el menu asignado excepto la pagina de inicio
-      if (state.url.localeCompare("/pages/inicio") != 0) {
-        let acceso = this.permitirAcceso(state.url);
-        // check if route is restricted by role
-        //if (route.data.roles && route.data.roles.indexOf(currentUser.role) === -1) {
-        if (acceso == false) {
-          // role not authorised so redirect to not-authorized page
-          this._router.navigate(['/pages/miscellaneous/not-authorized']);
-          return false;
+          return true;
         }
       }
       // authorised so return true
@@ -63,6 +66,7 @@ export class AuthGuard implements CanActivate {
     });
     return accesoConcedido;
   }
+
   revisarMenu(recursos: Recurso[], urlBuscar: string): Boolean {
     let recursoEncontrado = false;
     recursos.forEach(recurso => {
