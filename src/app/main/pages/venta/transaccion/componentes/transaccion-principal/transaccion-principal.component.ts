@@ -538,7 +538,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     let dia = moment(transaccion?.fechaFin).format("D");
     let mes = moment(transaccion?.fechaFin).format("MMMM");
     let año = moment(transaccion?.fechaFin).format("YYYY");
-    transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
+    //transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
     //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente 
     + " el servicio de " + transaccion.descripcion 
