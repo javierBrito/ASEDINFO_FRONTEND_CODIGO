@@ -89,7 +89,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public fileStatus = { status: '', requestType: '', percent: 0 };
   public filenames: string[] = [];
   public listaBase64: any;
-  
+
   /*TABS*/
   public selectedTab: number;
 
@@ -596,6 +596,10 @@ export class ParticipantePrincipalComponent implements OnInit {
             if (ele?.identificacion == this.currentUser.identificacion) {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
+            }
+            ele.displayNoneGrupo = "none";
+            if (ele.desSubcategoria.includes("GRUPOS")) {
+              ele.displayNoneGrupo = "";
             }
           }
           // Ordenar lista por numParticipante
