@@ -6,7 +6,8 @@
                 <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
                     <label for="codCliente"><b>{{'Cliente(*): '}}</b></label>
                     <select name="codCliente" formControlName="codCliente" required placeholder="Seleccione Cliente..."
-                        class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente">
+                        class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente"
+                        (change)="buscarClientePorCodigo()">
                         <option [value]="" selected>Seleccionar Cliente</option>
                         <option *ngFor="let cliente of listaCliente" [value]="cliente.codigo">
                             <span>{{cliente?.persona?.nombres + " " + cliente?.persona?.apellidos + " - " +cliente?.persona?.celular}}</span>
@@ -135,7 +136,7 @@
                 <div class="col-6">
                     <label for="claveCuenta"><b>{{'Clave Cuenta(*): '}}</b></label>
                     <input type="text" name="claveCuenta" formControlName="claveCuenta" class="form-control"
-                        id="claveCuenta" placeholder="Por favor, ingrese la descripción."
+                        id="claveCuenta" placeholder="Clave Cuenta."
                         [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors, 'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
@@ -148,6 +149,24 @@
                     <input type="number" name="numDiasExtra" formControlName="numDiasExtra" class="form-control" id="numDiasExtra"
                         placeholder="999" step="01" min="000" (keyup)="onKeyDiasExtra($event)"
                         [ngClass]="{'is-valid': numDiasExtraField?.dirty && !numDiasExtraField?.invalid && !numDiasExtraField?.errors && (numDiasExtraField?.value > numDiasExtraField?.value), 'is-invalid': numDiasExtraField?.dirty && numDiasExtraField?.invalid && numDiasExtraField?.errors  && !(numDiasExtraField?.value > numDiasExtraField?.value)}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <label for="prefijoTelefonico"><b>{{'Prefijo Telefónico: '}}</b></label>
+                    <input type="text" name="prefijoTelefonico" formControlName="prefijoTelefonico" class="form-control"
+                        id="prefijoTelefonico" placeholder="Prefijo Telefónico" [attr.disabled]="true"
+                        [ngClass]="{'is-valid': prefijoTelefonicoField?.dirty && !prefijoTelefonicoField?.invalid && !prefijoTelefonicoField?.errors, 'is-invalid': prefijoTelefonicoField?.dirty && prefijoTelefonicoField?.invalid && prefijoTelefonicoField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label for="celular"><b>{{'Celular: '}}</b></label>
+                    <input type="text" name="celular" formControlName="celular" class="form-control"
+                        id="celular" placeholder="Celular" [attr.disabled]="true"
+                        [ngClass]="{'is-valid': celularField?.dirty && !celularField?.invalid && !celularField?.errors, 'is-invalid': celularField?.dirty && celularField?.invalid && celularField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>

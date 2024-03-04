@@ -34,8 +34,14 @@ export class ParticipanteService {
   listarTodosParticipante(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarTodosParticipante`);
   }
+  listarParticipanteUsuario(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipanteUsuario`);
+  }
   listarParticipantePorEstado(estado: string): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorEstado/${estado}`);
+  }
+  listarUsuarioWPDTO(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/wordpress/listarUsuarioWP`);
   }
   listarParticipantePadre(codigoAplicacion: number) {
     return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePadre/${codigoAplicacion}`);

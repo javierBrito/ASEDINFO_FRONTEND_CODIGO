@@ -15,6 +15,7 @@ import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/person
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
+import moment from 'moment';
 
 @Component({
   selector: 'app-form-transaccion',
@@ -56,6 +57,10 @@ export class FormTransaccionComponent implements OnInit {
   public nemonicoOperacion: string = 'CRE';
   public fechaHoy: string = dayjs(new Date).format("YYYY-MM-DD");
   public nombreProceso: string;
+  public prefijoTelefonico: string;
+  public celular: string;
+  public nombreCliente: string;
+
 
   /*FORMULARIOS*/
   public formTransaccion: FormGroup;
@@ -103,6 +108,11 @@ export class FormTransaccionComponent implements OnInit {
     this.buscarOperacionPorNemonico();
     this.nombreProceso = this.nombreProcesoChild;
     if (this.transaccionEditar) {
+      // Datos para envio de notificaciones
+      this.prefijoTelefonico = this.transaccionEditar?.prefijoTelefonico,
+      this.celular = this.transaccionEditar?.celular,
+      this.nombreCliente = this.transaccionEditar?.nombreCliente,
+
       this.transaccionEditarAux = this.transaccionEditar;
       this.codProducto = this.transaccionEditar?.codProducto;
       this.numMes = this.transaccionEditar?.numMes;
@@ -111,20 +121,22 @@ export class FormTransaccionComponent implements OnInit {
       this.numProducto = this.transaccionEditar?.numProducto;
       this.numExistenciaActual = this.transaccionEditar?.numExistenciaActual;
       this.formTransaccion = this.formBuilder.group({
-        codCliente: new FormControl(this.transaccionEditar.codCliente, Validators.required),
-        codProducto: new FormControl(this.transaccionEditar.codProducto, Validators.required),
-        descripcion: new FormControl(this.transaccionEditar.descripcion, Validators.required),
-        claveCuenta: new FormControl(this.transaccionEditar.claveCuenta),
-        precio: new FormControl(this.transaccionEditar.precio, Validators.required),
-        fechaInicio: new FormControl(dayjs(this.transaccionEditar.fechaInicio).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
-        fechaFin: new FormControl(dayjs(this.transaccionEditar.fechaFin).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
-        fechaCambia: new FormControl(dayjs(this.transaccionEditar.fechaCambia).format("YYYY-MM-DD")),
-        numProducto: new FormControl(this.transaccionEditar.numProducto, Validators.required),
-        numExistenciaActual: new FormControl(this.transaccionEditar.numExistenciaActual),
-        numMes: new FormControl(this.transaccionEditar.numMes),
-        numDiasExtra: new FormControl(this.transaccionEditar.numDiasExtra),
-        precioMayoreo: new FormControl(this.transaccionEditar.precioMayoreo, Validators.required),
-        monto: new FormControl(this.transaccionEditar.monto),
+        codCliente: new FormControl(this.transaccionEditar?.codCliente, Validators.required),
+        codProducto: new FormControl(this.transaccionEditar?.codProducto, Validators.required),
+        descripcion: new FormControl(this.transaccionEditar?.descripcion, Validators.required),
+        claveCuenta: new FormControl(this.transaccionEditar?.claveCuenta),
+        precio: new FormControl(this.transaccionEditar?.precio, Validators.required),
+        fechaInicio: new FormControl(dayjs(this.transaccionEditar?.fechaInicio).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
+        fechaFin: new FormControl(dayjs(this.transaccionEditar?.fechaFin).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
+        fechaCambia: new FormControl(dayjs(this.transaccionEditar?.fechaCambia).format("YYYY-MM-DD")),
+        numProducto: new FormControl(this.transaccionEditar?.numProducto, Validators.required),
+        numExistenciaActual: new FormControl(this.transaccionEditar?.numExistenciaActual),
+        numMes: new FormControl(this.transaccionEditar?.numMes),
+        numDiasExtra: new FormControl(this.transaccionEditar?.numDiasExtra),
+        precioMayoreo: new FormControl(this.transaccionEditar?.precioMayoreo, Validators.required),
+        monto: new FormControl(this.transaccionEditar?.monto),
+        prefijoTelefonico: new FormControl(this.transaccionEditar?.prefijoTelefonico),
+        celular: new FormControl(this.transaccionEditar?.celular),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
@@ -143,6 +155,8 @@ export class FormTransaccionComponent implements OnInit {
         numDiasExtra: new FormControl(''),
         precioMayoreo: new FormControl(''),
         monto: new FormControl(''),
+        prefijoTelefonico: new FormControl(""),
+        celular: new FormControl(""),
       })
     }
   }
@@ -200,6 +214,21 @@ export class FormTransaccionComponent implements OnInit {
         this.formTransaccion.controls.numExistenciaActual.setValue(this.producto?.numExistenciaActual);
         this.numExistenciaActual = this.producto?.numExistenciaActual;
         this.precio = this.producto?.precioCosto;
+      }
+    );
+  }
+
+  buscarClientePorCodigo() {
+    // Receptar el codCliente de formTransaccion.value
+    let formTransaccionTemp = this.formTransaccion.value;
+    this.clienteService.buscarClientePorCodigo(formTransaccionTemp?.codCliente).subscribe(
+      (respuesta) => {
+        this.cliente = respuesta['objeto'];
+        this.prefijoTelefonico = this.cliente?.prefijoTelefonico;
+        this.celular = this.cliente?.celular;
+        this.nombreCliente = this.cliente?.nombrePersona;
+        this.formTransaccion.controls.prefijoTelefonico.setValue(this.cliente?.prefijoTelefonico);
+        this.formTransaccion.controls.celular.setValue(this.cliente?.celular);
       }
     );
   }
@@ -288,6 +317,7 @@ export class FormTransaccionComponent implements OnInit {
   addRegistro() {
     if (this.formTransaccion?.valid) {
       let transaccionTemp = this.formTransaccion.value;
+   
       let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       let fechaFinString = dayjs(transaccionTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS");
       if (transaccionTemp?.numMes != "" && transaccionTemp?.numMes != 0) {
@@ -324,6 +354,9 @@ export class FormTransaccionComponent implements OnInit {
         fechaRegistra: dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS"),
         numDiasRenovar: 0,
         estado: 'A',
+        prefijoTelefonico: this.prefijoTelefonico,
+        celular: this.celular,
+        nombreCliente: this.nombreCliente,
       });
     }
     if (this.transaccionEditar) {
@@ -333,7 +366,12 @@ export class FormTransaccionComponent implements OnInit {
         this.transaccion['data'].codigo = 0;
       }
       this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
-        next: (response) => {
+        next: async (response) => {
+          // Enviar notificaciones respectivas cuando es R o C
+          if (this.nombreProceso == "RENOVAR" || this.nombreProceso == "CLONAR") {
+            this.enviarWhatsappApi(this.transaccion['data']);
+          }
+
           // Actualizamos registro existente con R de renovacion 
           if (this.transaccionEditar?.estado == "R") {
             this.transaccionEditarAux.fechaInicio = dayjs(this.transaccionEditarAux.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")
@@ -368,6 +406,7 @@ export class FormTransaccionComponent implements OnInit {
     } else {
       this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: async (response) => {
+          this.enviarWhatsappApi(this.transaccion['data']);
           this.listarTransaccionPorDescripcion();
           this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
           this.parentDetail.closeDetail();
@@ -390,25 +429,6 @@ export class FormTransaccionComponent implements OnInit {
 
   compararCliente(o1, o2) {
     return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
-  }
-
-  validateFormat(event) {
-    let key;
-    if (event.type === 'paste') {
-      key = event.clipboardData.getData('text/plain');
-    } else {
-      key = event.keyCode;
-      key = String.fromCharCode(key);
-    }
-
-    const regex = /[0-9]/;
-
-    if (!regex.test(key)) {
-      event.returnValue = false;
-      if (event.preventDefault) {
-        event.preventDefault();
-      }
-    }
   }
 
   // Tomar el valor de meses para obtener la fecha fin y el monto
@@ -501,6 +521,41 @@ export class FormTransaccionComponent implements OnInit {
     this.formTransaccion.controls.monto.setValue(this.monto);
   }
 
+  async enviarWhatsappApi(transaccion: Transaccion) {
+    let dia = moment(transaccion?.fechaFin).format("D");
+    let mes = moment(transaccion?.fechaFin).format("MMMM");
+    let año = moment(transaccion?.fechaFin).format("YYYY");
+    let mensajeRenovaCaduca = "";
+    let mensajeClaveCuenta = "";
+    if (this.nombreProceso == "RENOVAR") {
+      mensajeRenovaCaduca = " se ha renovado exitosamente hasta el ";
+    } else {
+      mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
+      mensajeClaveCuenta = " Recuerde que su licencia/código o credenciales son las siguientes: " + transaccion?.claveCuenta;
+    }
+    
+    let mensajeNotificacion = "*Mensaje Automático* Estimado(a) " + transaccion?.nombreCliente 
+    + " el servicio de " + transaccion?.descripcion
+    + mensajeRenovaCaduca
+    + dia + " de "+ mes + " de " + año 
+    + ", favor su ayuda en el caso de presentar inconvenientes notificarlos oportunamente por este medio... Un excelente dia, tarde o noche...."
+    + mensajeClaveCuenta;
+    // Validar prefijo telefonico
+    if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
+      transaccion.prefijoTelefonico = "593";
+    }
+    let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
+    // Enviar mensaje
+    this.transaccionService.enviarMensajeWhatsapp(celularEnvioWhatsapp, mensajeNotificacion).subscribe({
+      next: async (response) => {
+        this.mensajeService.mensajeCorrecto('Las notificación se envió con éxito...');
+      },
+      error: (error) => {
+        this.mensajeService.mensajeError('Ha habido un problema al enviar la notificación ' + error);
+      }
+    });
+  }
+
   get descripcionField() {
     return this.formTransaccion.get('descripcion');
   }
@@ -545,6 +600,12 @@ export class FormTransaccionComponent implements OnInit {
   }
   get numDiasExtraField() {
     return this.formTransaccion.get('numDiasExtra');
+  }
+  get prefijoTelefonicoField() {
+    return this.formTransaccion.get('prefijoTelefonico');
+  }
+  get celularField() {
+    return this.formTransaccion.get('celular');
   }
 
 }

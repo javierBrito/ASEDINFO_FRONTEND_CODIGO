@@ -418,7 +418,7 @@ export class ParticipantePrincipalComponent implements OnInit {
       })
       .then(resultado => {
         if (resultado.value) {
-          // Hicieron click en "Sí, eliminar"
+          // Hicieron click en "Sí, cargar"
           this.participanteService.migrarUsuarioWP().subscribe({
             next: (response) => {
               this.mensajeService.mensajeCorrecto('Se ha cargado los participantes...');

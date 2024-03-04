@@ -422,25 +422,6 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.listaTransaccion = null;
   }
 
-  validateFormat(event) {
-    let key;
-    if (event.type === 'paste') {
-      key = event.clipboardData.getData('text/plain');
-    } else {
-      key = event.keyCode;
-      key = String.fromCharCode(key);
-    }
-
-    const regex = /[0-9]/;
-
-    if (!regex.test(key)) {
-      event.returnValue = false;
-      if (event.preventDefault) {
-        event.preventDefault();
-      }
-    }
-  }
-
   async confirmarEnviarNotificacion(transaccion: Transaccion) {
     this.enviarNotificacion = false;
     Swal
@@ -458,7 +439,7 @@ export class TransaccionPrincipalComponent implements OnInit {
             this.seEnvioWhatsapp = false;
             this.enviarWhatsappApi(transaccion);
             if (this.seEnvioWhatsapp) {
-              this.mensajeService.mensajeCorrecto('Las notificación se envió con éxito...');
+              this.mensajeService.mensajeCorrecto('Las notificación se enviaron con éxito...');
             } else {
               this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
             }
@@ -499,40 +480,6 @@ export class TransaccionPrincipalComponent implements OnInit {
     })
   }
 
-  async enviarWhatsapp(ele: Transaccion) {
-    this.seEnvioWhatsapp = true;
-    let nombreCliente = ele.nombreCliente;
-    let descripcionProducto = ele.descripcionProducto;
-    let fechaFin = ele.fechaFin;
-    this.mensajeCaduca = "<b>*Mensaje Automático*</b> Estimado(a) " 
-    + nombreCliente + " el servicio de " + descripcionProducto 
-    + " que tiene contratado con nosotros está por caducar el " + fechaFin 
-    + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
-    this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    var api = "https://script.google.com/macros/s/AKfycbyoBhxuklU5D3LTguTcYAS85klwFINHxxd-FroauC4CmFVvS0ua/exec";
-    var payload = {
-      "op": "registermessage", "token_qr": this.token, "mensajes": [
-        { "numero": this.celularEnvioWhatsapp, "mensaje": this.mensajeCaduca }
-      ]
-    };
-    console.log(payload);
-    console.log(api);
-    ajax({
-      url: api,
-      jsonp: "callback",
-      method: 'POST',
-      data: JSON.stringify(payload),
-      async: false,
-      success: function (respuestaSolicitud) {
-        this.respuestaEnvioWhatsapp = respuestaSolicitud.message;
-        //alert(respuestaSolicitud.message);
-        if (this.respuestaEnvioWhatsapp != 'Se notifico asincrono v3') {
-          this.seEnvioWhatsapp = false;
-        }
-      }
-    });
-  }
-
   async enviarWhatsappApi(transaccion: Transaccion) {
     //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
     let dia = moment(transaccion?.fechaFin).format("D");
@@ -545,9 +492,12 @@ export class TransaccionPrincipalComponent implements OnInit {
     + " que tiene contratado con nosotros está por caducar en " 
     + transaccion?.numDiasRenovar +" día(s) el " + dia + " de "+ mes + " de " + año 
     + ", favor su ayuda confirmando la renovación con el pago correspondiente para poder registrarlo, caso contrario el día de corte procederemos con la suspención del servicio... Un excelente dia, tarde o noche....";
-    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    this.celularEnvioWhatsapp = transaccion.prefijoTelefonico + transaccion.celular.substring(1, 15).trim();
-
+    // Validar prefijo telefonico
+    if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
+      transaccion.prefijoTelefonico = "593";
+    }
+    this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
+    // Enviar mensaje
     this.transaccionService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensajeCaduca).subscribe({
       next: async (response) => {
         this.seEnvioWhatsapp = true;
@@ -578,4 +528,5 @@ export class TransaccionPrincipalComponent implements OnInit {
   get codClienteField() {
     return this.formTransaccion.get('codCliente');
   }
+
 }

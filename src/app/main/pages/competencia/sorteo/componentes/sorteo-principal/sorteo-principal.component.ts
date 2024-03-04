@@ -325,7 +325,7 @@ export class SorteoPrincipalComponent implements OnInit {
                 this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
                   (respuesta) => {
                     this.listaParticipante = respuesta['listado'];
-                    console.log("this.listaParticipante Sin Soprt = ", this.listaParticipante)
+                    console.log("this.listaParticipante Sin Sort = ", this.listaParticipante)
                     if (this.listaParticipante.length > 0) {
                       this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
                       this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
@@ -358,14 +358,11 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   async listarSubcategoria(categoria: Categoria) {
-    //console.log("categoria?.denominacion = ", categoria?.denominacion)
     return new Promise((resolve, rejects) => {
       this.participanteService.listarSubcategoriaPorCategoria(categoria?.codigo).subscribe({
         next: (respuesta) => {
           this.listaSubcategoria = respuesta['listado'];
-          //console.log("this.listaSubcategoria = ", this.listaSubcategoria);
           this.listaSubcategoria.sort((firstItem, secondItem) => firstItem.codigo - secondItem.codigo);
-          //console.log("this.listaSubcategoria Sort = ", this.listaSubcategoria);
           resolve(respuesta);
         }, error: (error) => {
           this.mensajeService.mensajeError('Error al traer la lista. Subcategoria Error = ' + error)
@@ -399,7 +396,6 @@ export class SorteoPrincipalComponent implements OnInit {
 
   sorteoTotalAsync = async () => {
     await this.listaCategoria.sort((firstItem, secondItem) => firstItem.codigo - secondItem.codigo);
-    //console.log("this.listaCategoria = ", this.listaCategoria)
     for (let categoria of this.listaCategoria) {
       await this.listarSubcategoria(categoria);
       for (let subcategoria of this.listaSubcategoria) {
@@ -443,61 +439,7 @@ export class SorteoPrincipalComponent implements OnInit {
     );
   }
 
-  cambiarEstado(participante: Participante) {
-    switch (participante?.codEstadoCompetencia) {
-      case 1: {
-        participante.codEstadoCompetencia = 2;
-        this.participante = participante;
-        this.addRegistroParticipante();
-        break;
-      }
-      case 2: {
-        participante.codEstadoCompetencia = 3;
-        this.participante = participante;
-        this.addRegistroParticipante();
-        break;
-      }
-      case 3: {
-        participante.codEstadoCompetencia = 4;
-        this.participante = participante;
-        this.addRegistroParticipante();
-        break;
-      }
-      case 4: {
-        participante.codEstadoCompetencia = 5;
-        this.participante = participante;
-        this.addRegistroParticipante();
-        break;
-      }
-      case 5: {
-        //participante.codEstadoCompetencia = 4;
-        this.mensajeService.mensajeError('Su participación ha sido completada...');
-        break;
-      }
-      default: {
-        //participante.codEstadoCompetencia = 1;
-        this.mensajeService.mensajeError('Defina un estado para el participante...');
-        break;
-      }
-    }
-  }
-
   async actualizarListaParticipante() {
-    /*
-    this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
-      next: (response) => {
-        this.displayBotonGuardar = "none";
-        this.habilitarAgregarParticipante = true;
-        //this.listarParticipantePorSubcategoriaInstancia();
-        this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
-      },
-      error: (error) => {
-        //this.listarParticipantePorSubcategoriaInstancia();
-        this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
-      }
-    });
-    */
-
     return new Promise((resolve, rejects) => {
       this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
         next: (respuesta) => {
@@ -511,20 +453,6 @@ export class SorteoPrincipalComponent implements OnInit {
         }
       })
     })
-  }
-
-  addRegistroParticipante() {
-    this.participante.dateLastActive = dayjs(this.participante?.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-    this.participanteService.guardarParticipante(this.participante).subscribe({
-      next: (response) => {
-        this.listarParticipantePorSubcategoriaInstancia();
-        this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
-      },
-      error: (error) => {
-        this.listarParticipantePorSubcategoriaInstancia();
-        this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
-      }
-    });
   }
 
   listarParticipanteActivoActualizada(event) {
@@ -614,20 +542,6 @@ export class SorteoPrincipalComponent implements OnInit {
         if (resultado.value) {
           // Hicieron click en "Sí, sortear"
           this.sorteoTotalAsync();
-          /*
-          this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
-            next: (response) => {
-              this.displayBotonGuardar = "none";
-              this.habilitarAgregarParticipante = true;
-              //this.listarParticipantePorSubcategoriaInstancia();
-              this.mensajeService.mensajeCorrecto('Se ha sorteado los participantes...');
-            },
-            error: (error) => {
-              //this.listarParticipantePorSubcategoriaInstancia();
-              this.mensajeService.mensajeError('Ha habido un problema al sortear los participantes...');
-            }
-          });
-          */
         } else {
           // Hicieron click en "Cancelar"
           console.log("*Se cancela el proceso...*");
