@@ -290,6 +290,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   mostrarListaTransaccion = async () => {
+    this.page = 1;
     for (const ele of this.listaTransaccion) {
       ele.colorFila = "green";
       ele.visibleBoton = "none";

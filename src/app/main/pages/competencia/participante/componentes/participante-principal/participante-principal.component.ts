@@ -378,7 +378,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.showDetail = true;
   }
 
-  openRemoverDetail(persona: Persona) {
+  openRemoverDetail(participante: Participante) {
     Swal
       .fire({
         title: "Eliminar Registro",
@@ -391,7 +391,7 @@ export class ParticipantePrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, eliminar"
-          this.participanteService.eliminarParticipantePorId(persona.codigo).subscribe({
+          this.personaService.eliminarPersonaPorId(participante?.codPersona).subscribe({
             next: (response) => {
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
             },
@@ -590,6 +590,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        // Ordenar lista por numParticipante
+        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
@@ -602,8 +604,6 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.displayNoneGrupo = "";
             }
           }
-          // Ordenar lista por numParticipante
-          this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
           this.generarPDF();
         }
       }

@@ -133,6 +133,9 @@ export class PuntajeService {
   listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number, codEstadoCompetencia: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}/${codEstadoCompetencia}`);
   }
+  listarParticipantePorEstadoCompetencia(codEstadoCompetencia: number) {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorEstadoCompetencia/${codEstadoCompetencia}`);
+  }
   listarUsuarioModeloPuntajePorUsuario(codUsuario: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarUsuarioModeloPuntajePorUsuario/${codUsuario}`);
   }

@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="col-3">
-                    <label for="numExistenciaActual"><b>{{'Existencia(*):'}}</b></label>
+                    <label for="numExistenciaActual"><b>{{'Existencia:'}}</b></label>
                     <input type="number" name="numExistenciaActual" formControlName="numExistenciaActual"
                         class="form-control" id="numExistenciaActual" placeholder="999" [attr.disabled]="true">
                 </div>
@@ -97,12 +97,12 @@
                     </div>
                 </div>
                 <div class="col-4">
-                    <label for="precioMayoreo"><b>{{'Por Mayor(*):'}}</b></label>
+                    <label for="precioMayoreo"><b>{{'Por Mayor:'}}</b></label>
                     <input type="number" name="precioMayoreo" formControlName="precioMayoreo" class="form-control"
                         id="precioMayoreo" placeholder="999.99" [attr.disabled]="true">
                 </div>
                 <div class="col-4">
-                    <label for="fechaCambia"><b>{{'Fecha Cambiar(*): '}}</b></label>
+                    <label for="fechaCambia"><b>{{'Fecha Cambiar: '}}</b></label>
                     <input type="date" name="fechaCambia" formControlName="fechaCambia" class="form-control"
                         id="fechaCambia"
                         [ngClass]="{'is-valid': fechaCambiaField?.dirty && !fechaCambiaField?.invalid && !fechaCambiaField?.errors,'is-invalid': fechaCambiaField?.dirty && fechaCambiaField?.invalid && fechaCambiaField?.errors}">
@@ -145,7 +145,7 @@
             </div>
             <div class="row form-group">
                 <div class="col-3">
-                    <label for="numDiasExtra"><b>{{'Días Extra(*):'}}</b></label>
+                    <label for="numDiasExtra"><b>{{'Días Extra:'}}</b></label>
                     <input type="number" name="numDiasExtra" formControlName="numDiasExtra" class="form-control" id="numDiasExtra"
                         placeholder="999" step="01" min="000" (keyup)="onKeyDiasExtra($event)"
                         [ngClass]="{'is-valid': numDiasExtraField?.dirty && !numDiasExtraField?.invalid && !numDiasExtraField?.errors && (numDiasExtraField?.value > numDiasExtraField?.value), 'is-invalid': numDiasExtraField?.dirty && numDiasExtraField?.invalid && numDiasExtraField?.errors  && !(numDiasExtraField?.value > numDiasExtraField?.value)}">
@@ -154,7 +154,7 @@
                     </div>
                 </div>
                 <div class="col-3">
-                    <label for="prefijoTelefonico"><b>{{'Prefijo Telefónico: '}}</b></label>
+                    <label for="prefijoTelefonico"><b>{{'Prefijo: '}}</b></label>
                     <input type="text" name="prefijoTelefonico" formControlName="prefijoTelefonico" class="form-control"
                         id="prefijoTelefonico" placeholder="Prefijo Telefónico" [attr.disabled]="true"
                         [ngClass]="{'is-valid': prefijoTelefonicoField?.dirty && !prefijoTelefonicoField?.invalid && !prefijoTelefonicoField?.errors, 'is-invalid': prefijoTelefonicoField?.dirty && prefijoTelefonicoField?.invalid && prefijoTelefonicoField?.errors}">

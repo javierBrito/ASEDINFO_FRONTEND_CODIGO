@@ -63,14 +63,6 @@
                                         <div>
                                             <h3><b>{{'Lista Puntaje del juez '}} {{nombreUsuario}}
                                                 </b></h3>
-                                            <!--
-                                            <button type="submit" (click)="openDetail(1)"
-                                                matTooltip="Agregar Nuevo Puntaje"
-                                                class="btn btn-block btn-primary form-control mt-2">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                                {{'Agregar Puntaje'}}
-                                            </button>
-                                            -->
                                             <table class="table" *ngIf="listaParticipantePresentacion?.length > 0"
                                                 id="tablaPuntaje">
                                                 <thead>
@@ -91,10 +83,11 @@
                                                         *ngFor="let participante of listaParticipantePresentacion | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
                                                         <td>{{participante?.nombrePersona}}</td>
-                                                        <td *ngFor="let nota of participante?.listaNotas" scope="col">
+                                                        <td *ngFor="let puntaje of participante?.listaPuntajes" scope="col">
                                                             <div align="center">
                                                                 <input style="width: 50px; text-align:center"
-                                                                    [(ngModel)]="nota.puntaje" (keyup)="onKey($event)"
+                                                                    [(ngModel)]="puntaje.puntaje" (keyup)="onKey($event)"
+                                                                    placeholder="9.99" step="1.01" min="1.01" max="10.00"
                                                                     (change)="capturarInputs(participante)"
                                                                     [ngModelOptions]="{standalone: true}"
                                                                     [disabled]="idInput!='curso_'+index" type="text"
@@ -105,11 +98,11 @@
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
                                                                 <button [disabled]="idInput!='curso_'+index"
-                                                                    (click)="guardarNotas(participante, 'curso_'+index)"
+                                                                    (click)="verificarGuardarPuntajes(participante, 'curso_'+index)"
                                                                     type="button" class="btn btn-success"
                                                                     rippleEffect><i class="fa fa-floppy-o"></i></button>
                                                                 <button
-                                                                    (click)="editarNota(participante, 'curso_'+index)"
+                                                                    (click)="editarPuntaje(participante, 'curso_'+index)"
                                                                     type=" button" class="btn btn-primary" rippleEffect
                                                                     round><i class="fa fa-pencil"></i></button>
                                                             </div>
@@ -146,7 +139,7 @@
 </div>
 
 <app-form-puntaje [puntajeEditar]="puntajeSeleccionado" [codigoChild]="codigo" [descripcionChild]="descripcion"
-    [listaPuntajeChild]="listaPuntaje" (listaPuntaje)="listaPuntajeActualizada($event)" (close)="closeDetail($event)"
+    [listaPuntajeChild]="listaPuntaje" (close)="closeDetail($event)"
     *ngIf="showDetail">
 </app-form-puntaje>
 

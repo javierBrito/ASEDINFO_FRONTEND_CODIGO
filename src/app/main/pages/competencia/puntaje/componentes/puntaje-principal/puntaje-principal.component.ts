@@ -35,11 +35,6 @@ export class PuntajePrincipalComponent implements OnInit {
   public codigo: number;
   public institucion: any;
   public colorFila: string;
-  public nemonicoModulo: string = 'VEN';
-  public nemonicoOperacion: string = 'CRE';
-  public fechaHoy = dayjs(new Date).format("YYYY-MM-DD");
-  public fechaInicio: string;
-  public fechaFin: string;
   public celularEnvioWhatsapp: string;
   public codigoPostal: string = '593';
   public descripcionProducto: string;
@@ -142,7 +137,8 @@ export class PuntajePrincipalComponent implements OnInit {
     this.listarCategoriaActivo();
     if (this.currentUser.cedula == 'JUEZ') {
       this.displayNone = 'none';
-      this.obtenerParametros();
+      //this.obtenerParametros();
+      this.listarPuntajePorParticipante();
     }
   }
 
@@ -179,9 +175,11 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
         this.listaModeloPuntajeAux = respuesta['listado'];
+        console.log("this.listaModeloPuntajeAux = ", this.listaModeloPuntajeAux)
         this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.currentUser?.codigoUsuario).subscribe(
           (respuesta) => {
             this.listaUsuarioModeloPuntaje = respuesta['listado'];
+            console.log("this.listaUsuarioModeloPuntaje = ", this.listaUsuarioModeloPuntaje)
             if (this.listaUsuarioModeloPuntaje.length > 0) {
               for (const ele of this.listaModeloPuntajeAux) {
                 ele.asignado = false;
@@ -195,6 +193,7 @@ export class PuntajePrincipalComponent implements OnInit {
             }
           }
         )
+        console.log("this.listaModeloPuntaje = ", this.listaModeloPuntaje)
       }
     )
   }
@@ -304,7 +303,7 @@ export class PuntajePrincipalComponent implements OnInit {
     }
 
     if (this.activarInput) {
-      this.editarNota(this.participante, " ");
+      this.editarPuntaje(this.participante, " ");
       return;
     }
 
@@ -312,20 +311,21 @@ export class PuntajePrincipalComponent implements OnInit {
     this.activarInput = false;
 
     await new Promise((resolve, rejects) => {
-      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, this.codEstadoCompetencia).subscribe({
+      //this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, this.codEstadoCompetencia).subscribe({
+      this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
           for (const est of this.listaParticipantePresentacion) {
             await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, this.codSubcategoria, this.codInstancia, this.currentUser.codigoUsuario).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
                 next: (respuesta) => {
-                  let listNotas: PuntajeAux[] = [];
-                  let listNotasConsulta: PuntajeAux[] = respuesta['listado'];
+                  let listPuntajes: PuntajeAux[] = [];
+                  let listPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
                   for (const modelo of this.listaModeloPuntaje) {
-                    let auxBusqueda = listNotasConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
+                    let auxBusqueda = listPuntajesConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
                     if (auxBusqueda) {
                       auxBusqueda.porcentaje = modelo.porcentaje;
-                      listNotas.push(auxBusqueda)
+                      listPuntajes.push(auxBusqueda)
                     } else {
                       let nuevoPuntajeAux = new PuntajeAux();
                       nuevoPuntajeAux = {
@@ -340,10 +340,10 @@ export class PuntajePrincipalComponent implements OnInit {
                         nombreParticipante: est?.nombreParticipante,
                         codUsuarioJuez: 0,
                       }
-                      listNotas.push(nuevoPuntajeAux)
+                      listPuntajes.push(nuevoPuntajeAux)
                     }
                   }
-                  est.listaNotas = listNotas;
+                  est.listaPuntajes = listPuntajes;
                   resolve("OK");
                 }, error: (error) => {
                   console.log(error);
@@ -361,23 +361,11 @@ export class PuntajePrincipalComponent implements OnInit {
     });
   }
 
-  listaPuntajeActualizada(event) {
-    this.listaPuntaje = event;
-  }
-
-  openDetail(codjornada) {
-    this.showDetail = true;
-  }
-
-  openEditarDetail(puntaje: Puntaje) {
-    this.puntajeSeleccionado = puntaje;
-    this.showDetail = true;
-  }
-
-  async guardarNotas(participante, indexSelec) {
+  async guardarPuntajes(participante, indexSelec) {
+    console.log("participante guardarPuntajes = ", participante)
     if (this.idInput === null) {
       // Guardar el primer registro en la misma fila
-      this.guardarNota(participante, indexSelec);
+      this.guardarPuntaje(participante, indexSelec);
       this.datosEditar = null;
       return;
     }
@@ -386,7 +374,7 @@ export class PuntajePrincipalComponent implements OnInit {
       await this.verificarGuardarPendiente();
       if (this.continuarGuardarPendiente) {
         // Primero guardar los campos anteriores
-        this.guardarNota(participante, indexSelec);
+        this.guardarPuntaje(participante, indexSelec);
 
         // Reseteamos variables
         this.idInput = null;
@@ -394,18 +382,24 @@ export class PuntajePrincipalComponent implements OnInit {
         this.activarInput = false;
       }
     } else {
-      this.guardarNota(participante, indexSelec);
+      this.guardarPuntaje(participante, indexSelec);
       this.idInput = null;
       this.datosEditar = null;
       this.activarInput = false;
     }
   }
 
-  async guardarNota(participante, indexSelec) {
+  async guardarPuntaje(participante, indexSelec) {
+    console.log("participante guardarPuntaje = ", participante)
     let puntajeTotal = 0;
     let notaGuardada = 0;
     let errorGuardar = 0;
-    for (const puntajeAux of participante.listaNotas) {
+    for (let puntajeAux of participante.listaPuntajes) {
+      puntajeAux.codSubcategoria = participante?.codSubcategoria
+      puntajeAux.codInstancia = participante?.codInstancia
+      this.codSubcategoria = participante?.codSubcategoria
+      this.codInstancia = participante?.codInstancia
+      console.log("puntajeAux = ", puntajeAux)
       if (puntajeAux?.puntaje > 0 &&
         puntajeAux?.puntaje <= 10 &&
         puntajeAux?.puntaje != 0) {
@@ -416,7 +410,9 @@ export class PuntajePrincipalComponent implements OnInit {
         puntajeTotal = puntajeTotal + (puntajeAux?.porcentaje / 100) * Number(puntajeAux ? puntajeAux?.puntaje : 0);
         await new Promise((resolve, rejects) => {
           let puntaje = new Puntaje;
+          console.log("puntajeAux 2 = ", puntajeAux)
           puntaje = this.moverDatosPuntaje(puntajeAux);
+          console.log("puntaje 1 = ", puntaje)
           this.puntajeService.guardarPuntaje(puntaje).subscribe({
             next: (respuesta) => {
               puntaje.codigo = respuesta['objeto'].codigo;
@@ -502,7 +498,7 @@ export class PuntajePrincipalComponent implements OnInit {
     return puntaje;
   }
 
-  editarNota = async (participante, indexSelec) => {
+  editarPuntaje = async (participante, indexSelec) => {
     this.participante = participante;
     this.indexSelec = indexSelec;
     if (!this.datosEditar) { this.datosEditar = participante; }
@@ -510,7 +506,7 @@ export class PuntajePrincipalComponent implements OnInit {
       await this.verificarGuardarPendiente();
       if (this.continuarGuardarPendiente) {
         // Hicieron click en "Sí, Guardar"
-        this.guardarNota(this.datosEditar, indexSelec);
+        this.guardarPuntaje(this.datosEditar, indexSelec);
         this.idInput = indexSelec;
         this.activarInput = false;
         this.datosEditar = null;
@@ -549,11 +545,36 @@ export class PuntajePrincipalComponent implements OnInit {
     })
   }
 
+  async verificarGuardarPuntajes(participante, indexSelec) {
+    console.log("participante verificarGuardarPuntajes = ", participante)
+    await new Promise((resolve, rejects) => {
+      Swal
+        .fire({
+          title: "Registrar Puntajes",
+          text: "¿Revisar, ya que no existe reversa...?'",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: "Sí, guardar",
+          cancelButtonText: "Cancelar",
+        })
+        .then(async resultado => {
+          if (resultado.value) {
+            // Hicieron click en "Sí, Guardar"
+            await this.guardarPuntajes(participante, indexSelec);
+          } else {
+            // Hicieron click en "Cancelar"
+            console.log("*Se cancela el proceso...*");
+          }
+          resolve(resultado);
+        });
+    })
+  }
+
   // Contar los caracteres de la cedula para activar boton <Buscar>
   onKey(event) {
-    if (event.target.value < 0 || event.target.value > 10) {
+    if (event.target.value < 1 || event.target.value > 10) {
       event.target.value = 0;
-      this.mensajeService.mensajeError('Valor del puntaje incorrecto, ingrese en el rango de 1 a 10...');
+      this.mensajeService.mensajeError('Puntaje incorrecto, ingresar en el rango de 1 a 10...');
     }
   }
 
@@ -582,106 +603,8 @@ export class PuntajePrincipalComponent implements OnInit {
     this.listaPuntaje = null;
   }
 
-  validateFormat(event) {
-    let key;
-    if (event.type === 'paste') {
-      key = event.clipboardData.getData('text/plain');
-    } else {
-      key = event.keyCode;
-      key = String.fromCharCode(key);
-    }
-
-    const regex = /[0-9]/;
-
-    if (!regex.test(key)) {
-      event.returnValue = false;
-      if (event.preventDefault) {
-        event.preventDefault();
-      }
-    }
-  }
-
-  async confirmarEnviarNotificacion() {
-    this.enviarNotificacion = false;
-    Swal
-      .fire({
-        title: "Continuar envío Whatsapp...",
-        text: "¿Quiere enviar las notificaciones?'",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: "Sí, enviar",
-        cancelButtonText: "No, cancelar",
-      })
-      .then(async resultado => {
-        if (resultado.isConfirmed) {
-          this.enviarNotificacion = true;
-          //this.listarPuntajeACaducarse();
-        } else if (resultado.isDismissed) {
-          console.log("No envia notificaciones");
-        }
-      });
-  }
-
-  enviarCorreo() {
-    this.reporteDTO = new ReporteDTO({
-      cedula: "",
-      apellidoNombre: "",
-      fechaNacimiento: "",
-      edad: "",
-      from: "transparenciame@educacion.gob.ec",
-      nombreArchivo: "lista_caducarse_" + ".pdf",
-      subject: "Lista de servicios a caducarse - LISTACADUCARSE",
-      text: "<b>Texto en html, se lo genera en el servicio</b>",
-      //to: "javier.brito@educacion.gob.ec"      
-      to: "vjbritoa@hotmail.com",
-    });
-    this.puntajeService.enviarCorreo(this.reporteDTO['data']).subscribe({
-      next: (respuesta) => {
-        if (respuesta['codigoRespuesta'] == "Ok") {
-          this.mensajeService.mensajeCorrecto('Se a enviado el correo a ' + this.reporteDTO['data'].to);
-        } else {
-          this.mensajeService.mensajeError(respuesta['mensaje']);
-        }
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    })
-  }
-
-  async enviarWhatsapp(ele: Puntaje) {
-    this.seEnvioWhatsapp = true;
-    //this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
-    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    var api = "https://script.google.com/macros/s/AKfycbyoBhxuklU5D3LTguTcYAS85klwFINHxxd-FroauC4CmFVvS0ua/exec";
-    var payload = {
-      "op": "registermessage", "token_qr": this.token, "mensajes": [
-        { "numero": this.celularEnvioWhatsapp, "mensaje": this.mensaje }
-      ]
-    };
-    console.log(payload);
-    console.log(api);
-    ajax({
-      url: api,
-      jsonp: "callback",
-      method: 'POST',
-      data: JSON.stringify(payload),
-      async: false,
-      success: function (respuestaSolicitud) {
-        this.respuestaEnvioWhatsapp = respuestaSolicitud.message;
-        //alert(respuestaSolicitud.message);
-        if (this.respuestaEnvioWhatsapp != 'Se notifico asincrono v3') {
-          this.seEnvioWhatsapp = false;
-        }
-      }
-    });
-  }
-
   async enviarWhatsappApi(ele: Puntaje) {
     this.seEnvioWhatsapp = true;
-    //this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
-    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-
     this.puntajeService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
       next: async (response) => {
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');

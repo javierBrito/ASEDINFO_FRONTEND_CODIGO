@@ -50,6 +50,7 @@ export class FormParticipanteComponent implements OnInit {
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
   @ViewChild("modal_error", { static: false }) modal_error: TemplateRef<any>;
   @ViewChild(DetailComponent, { static: false }) parentDetail: DetailComponent;
+  @ViewChild("modalIntegrante", { static: false }) modalIntegrante: TemplateRef<any>;
 
   /*VARIABLES */
   public showDetail: boolean;
@@ -74,6 +75,9 @@ export class FormParticipanteComponent implements OnInit {
   public edadMaxima: number;
   public existeIdentificacion: boolean;
   public disabledIdentificacion: boolean;
+  public disabledApellidos: boolean;
+  public codParticipante: number = 0;
+  public siActualizaIntegrante: boolean;
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -109,6 +113,7 @@ export class FormParticipanteComponent implements OnInit {
   public listaSubcategoria: Subcategoria[] = [];
   public listaInstancia: Instancia[] = [];
   public listaIntegrante: Integrante[] = [];
+  public listaIntegranteAux: Integrante[] = [];
   public integrante: Integrante;
   public listaPersona: Persona[] = [];
 
@@ -132,10 +137,11 @@ export class FormParticipanteComponent implements OnInit {
     this.listarEstadoCompetenciaActivo();
     this.listarSubcategoriaActivo();
     if (this.participanteEditar) {
+      this.codParticipante = this.participanteEditar?.codigo;
       // S identificacion de usuario == identificacion de participante NO MODIFICA
-      if (this.currentUser?.identificacion == this.participanteEditar?.identificacion) {
-        this.disabledIdentificacion = true;
-      }
+      //if (this.currentUser?.identificacion == this.participanteEditar?.identificacion) {
+      this.disabledIdentificacion = true;
+      //}
       this.desSubcategoria = this.participanteEditar?.desSubcategoria;
       if (this.participanteEditar?.fechaNacimiento != "" && this.participanteEditar?.fechaNacimiento != null) {
         this.fechaNacimiento = dayjs(this.participanteEditar?.fechaNacimiento).format("YYYY-MM-DD");
@@ -163,6 +169,7 @@ export class FormParticipanteComponent implements OnInit {
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
+      this.codSubcategoriaChild = 0;
       this.formParticipante = this.formBuilder.group({
         identificacion: new FormControl('', Validators.required),
         nombres: new FormControl('', Validators.required),
@@ -181,20 +188,21 @@ export class FormParticipanteComponent implements OnInit {
       })
     }
     this.codSubcategoria = this.codSubcategoriaChild;
-    this.buscarSubcategoriaPorCodigo();
+    if (this.codSubcategoria != 0) {
+      this.buscarSubcategoriaPorCodigo();
+    }
     this.displayInstancia = 'none';
+    this.displayIntegranteGrupo = 'none';
+    this.disabledApellidos = false;
+    this.displayIntegrante2 = 'none';
     if (this.currentUser.cedula == "Suscriptor") {
       this.displayParticipante = 'none';
-      this.displayIntegrante2 = 'none';
-      this.displayIntegranteGrupo = 'none';
       this.displayCategoria = '';
       this.listarCategoriaActivo();
       //this.listarSubcategoriaPorCategoria();
       this.listarInstanciaActivo();
     } else {
       this.displayCategoria = 'none';
-      this.displayIntegrante2 = 'none';
-      this.displayIntegranteGrupo = 'none';
       //this.codSubcategoria = this.codSubcategoriaChild;
       //this.buscarSubcategoriaPorCodigo();
     }
@@ -253,6 +261,7 @@ export class FormParticipanteComponent implements OnInit {
   listarSubcategoriaPorCategoria() {
     this.displayIntegrante2 = "none";
     this.displayIntegranteGrupo = "none";
+    this.disabledApellidos = false;
     // Receptar la descripción de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.codCategoria = participanteTemp?.codCategoria;
@@ -274,6 +283,7 @@ export class FormParticipanteComponent implements OnInit {
   obtenerCodInstancia() {
     this.displayIntegrante2 = "none";
     this.displayIntegranteGrupo = "none";
+    this.disabledApellidos = false;
     // Receptar la codSubcategoria y codInstancia de formParticipante.value
     let participanteTemp = this.formParticipante.value;
     this.codSubcategoria = participanteTemp?.codSubcategoria;
@@ -294,12 +304,14 @@ export class FormParticipanteComponent implements OnInit {
         this.desCategoria = this.subcategoria?.desCategoria;
         this.desSubcategoria = this.subcategoria?.denominacion;
         this.codCategoria = this.subcategoria.codCategoria;
-        if (this.desSubcategoria.includes("PAREJA")) {
+        if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("SAME GENDER")) {
+          this.disabledApellidos = false;
           this.displayIntegrante2 = "";
         }
         if (this.desSubcategoria.includes("GRUPOS")) {
           this.displayIntegrante2 = "";
           this.displayIntegranteGrupo = "";
+          this.disabledApellidos = true;
         }
       }
     )
@@ -471,7 +483,7 @@ export class FormParticipanteComponent implements OnInit {
         }
       }
       let apellidos = "";
-      if (this.desSubcategoria.includes("PAREJA")) {
+      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("SAME GENDER")) {
         apellidos = participanteTemp?.apellidos;
       }
       this.persona = new Persona({
@@ -526,7 +538,7 @@ export class FormParticipanteComponent implements OnInit {
     if (this.formParticipante?.valid) {
       let participanteTemp = this.formParticipante.value;
       let lastName = "";
-      if (this.desSubcategoria.includes("PAREJA")) {
+      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("SAME GENDER")) {
         lastName = participanteTemp?.apellidos;
       }
       this.participanteAux = new Participante({
@@ -553,9 +565,9 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.lastName = this.participanteAux['data'].lastName;
       this.participante.username = this.participanteAux['data'].username;
       //if (this.currentUser.cedula == "Suscriptor") {
-        this.participante.email = this.participanteAux['data'].email;
+      this.participante.email = this.participanteAux['data'].email;
       //} else {
-        //this.participante.email = this.participanteEditar?.email;
+      //this.participante.email = this.participanteEditar?.email;
       //}
       this.participante.codSubcategoria = this.codSubcategoriaChild,
         this.participante.codInstancia = this.codInstanciaChild,
@@ -565,9 +577,28 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
       this.participanteService.guardarParticipante(this.participante).subscribe({
         next: (response) => {
-          this.listarParticipantePorSubcategoriaInstancia();
-          this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
-          this.parentDetail.closeDetail();
+          this.participante = response['objeto'];
+          if (this.listaIntegrante.length > 0 && this.siActualizaIntegrante) {
+            for (let ele of this.listaIntegrante) {
+              ele.codParticipante = this.participante?.codigo;
+            }
+            this.participanteService.guardarListaIntegrante(this.listaIntegrante).subscribe({
+              next: async (response) => {
+                this.listarParticipantePorSubcategoriaInstancia();
+                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.listarParticipantePorSubcategoriaInstancia();
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          } else {
+            this.listarParticipantePorSubcategoriaInstancia();
+            this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+            this.parentDetail.closeDetail();
+          }
         },
         error: (error) => {
           this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
@@ -590,7 +621,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
-          if (this.listaIntegrante.length > 0) {
+          if (this.listaIntegrante.length > 0 && this.siActualizaIntegrante) {
             for (const ele of this.listaIntegrante) {
               ele.codParticipante = this.participante.codigo;
             }
@@ -656,9 +687,11 @@ export class FormParticipanteComponent implements OnInit {
   blurIdentificacion(event) {
     if (event.target.value.length != 0) {
       let participanteTemp = this.formParticipante.value;
-      if (participanteTemp?.identificacion == "") {
+      //if (participanteTemp?.identificacion == "") {
         this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
-      }
+        // Verificar si ya existe la persona con esa identificacion
+        this.listarPersonaPorIdentificacion(event.target.value.replaceAll(" ", "."));
+      //}
     }
   }
 
@@ -820,6 +853,66 @@ export class FormParticipanteComponent implements OnInit {
     this.fileStatus.requestType = requestType;
     this.fileStatus.percent = Math.round(100 * loaded / total);
 
+  }
+
+  procesarListaIntegrante = async () => {
+    this.listaIntegrante = [];
+    await this.listarIntegrantePorParticipante(this.codParticipante);
+    await this.verModalIntegrante();
+  }
+
+  listarIntegrantePorParticipante(codParticipante: number) {
+    return new Promise((resolve, rejects) => {
+      this.participanteService.listarIntegrantePorParticipante(codParticipante).subscribe({
+        next: (respuesta) => {
+          this.listaIntegrante = respuesta['listado'];
+          let index = 0;
+          if (this.listaIntegrante.length > 0) {
+            index = this.listaIntegrante.length;
+          }
+          for (index; index < 20; index++) {
+            this.integrante = new Integrante();
+            this.integrante = {
+              codigo: 0,
+              nombre: "",
+              codParticipante: 0,
+              estado: "A",
+            }
+            this.listaIntegrante.push(this.integrante);
+          }
+          resolve(respuesta);
+        }, error: (error) => {
+          rejects("Error");
+          console.log("Error =", error);
+        }
+      })
+    })
+  }
+
+  async verModalIntegrante() {
+    this.siActualizaIntegrante = false;
+    this.listaIntegranteAux = [];
+    this.modalService.open(this.modalIntegrante).result.then(proceso => {
+      console.log("Tu respuesta ha sido: " + proceso);
+      if (proceso == "Si") {
+        this.siActualizaIntegrante = true;
+        for (let integranteAux of this.listaIntegrante) {
+          if (integranteAux?.nombre != "") {
+            this.integrante = new Integrante();
+            this.integrante = {
+              codigo: integranteAux?.codigo,
+              nombre: integranteAux?.nombre,
+              codParticipante: integranteAux?.codParticipante,
+              estado: integranteAux?.estado,
+            }
+            this.listaIntegranteAux.push(this.integrante);
+          }
+        }
+        this.listaIntegrante = this.listaIntegranteAux;
+      }
+    }, error => {
+      console.log(error);
+    });
   }
 
   get identificacionField() {
