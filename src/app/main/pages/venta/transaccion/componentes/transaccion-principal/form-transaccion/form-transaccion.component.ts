@@ -531,10 +531,10 @@ export class FormTransaccionComponent implements OnInit {
       mensajeRenovaCaduca = " se ha renovado exitosamente hasta el ";
     } else {
       mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
-      mensajeClaveCuenta = " Recuerde que su licencia/código o credenciales son las siguientes: " + transaccion?.claveCuenta;
+      mensajeClaveCuenta = " Recuerde que su licencia/código o credenciales son las siguientes: " 
+                         + "*" + transaccion?.claveCuenta +"*";
     }
-    
-    let mensajeNotificacion = "*Mensaje Automático* Estimado(a) " + transaccion?.nombreCliente 
+    let mensajeNotificacion = "*Notificación Automática* Estimado(a) " + transaccion?.nombreCliente 
     + " el servicio de " + transaccion?.descripcion
     + mensajeRenovaCaduca
     + dia + " de "+ mes + " de " + año 

@@ -25,6 +25,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { UsuarioWPDTO } from 'app/main/pages/compartidos/modelos/UsuarioWPDTO';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -67,6 +68,7 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
+  public listaParticipanteUsuario: Participante[] = [];
   public listaPersona: Persona[] = [];
   public listaCategoria: Categoria[] = [];
   public listaSubcategoria: Subcategoria[] = [];
@@ -576,6 +578,28 @@ export class ParticipantePrincipalComponent implements OnInit {
         }
       })
     })
+  }
+
+  listarParticipantePDF = async () => {
+    //this.listaParticipante = [];
+    if (this.currentUser?.cedula == "Suscriptor") {
+      this.generarPDF();
+    } else {
+      this.listarParticipantePorEstado();     
+    }
+  }
+
+  listarParticipanteUsuario() {
+    this.listaParticipanteUsuario = [];
+    this.participanteService.listarParticipanteUsuario().subscribe(
+      (respuesta) => {
+        this.listaParticipanteUsuario = respuesta['listado'];
+        if (this.listaParticipanteUsuario.length > 0) {
+          this.listaParticipante = this.listaParticipanteUsuario;
+          this.generarPDF();
+        }
+      }
+    );
   }
 
   async verModalIntegrante() {

@@ -3,8 +3,8 @@
         <div class="card box-shadow-sm">
             <div class="card-footer">
                 <form detail-content [formGroup]="formParticipanteParametro">
-                    <div class="row form-group" [ngStyle]="{'display': displayNone}">
-                        <div class="col-2">
+                    <div class="row form-group">
+                        <div class="col-2" [ngStyle]="{'display': displayNone}">
                             <label for="codCategoria">
                                 <h4><b>{{'Categoría(*): '}}</b></h4>
                             </label>
@@ -20,7 +20,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-2">
+                        <div class="col-2" [ngStyle]="{'display': displayNone}">
                             <label for="codSubcategoria">
                                 <h4><b>{{'Subcategoría(*): '}}</b></h4>
                             </label>
@@ -36,7 +36,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-2">
+                        <div class="col-2" [ngStyle]="{'display': displayNone}">
                             <label for="codInstancia">
                                 <h4><b>{{'Instancia(*): '}}</b></h4>
                             </label>
@@ -52,16 +52,27 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': displayNone}">
+                        <div class="col-md-2 col-1 form-group">
                             <br/>
                             <br/>
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                (click)="listarParticipantePorEstado()">
-                                <b>{{ "Generer Archivo PDF"}}</b>
+                                (click)="listarParticipantePDF()">
+                                <b>{{ "Lista Participantes"}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fas fa-copy" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
+                        <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': displayNone}">
+                            <br/>
+                            <br/>
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="listarParticipanteUsuario()">
+                                <b>{{ "Lista Registrados WP"}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                            </button>
+                        </div>
+
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': displayNone}">
                             <br/>
                             <br/>

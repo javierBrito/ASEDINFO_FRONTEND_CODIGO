@@ -175,11 +175,9 @@ export class PuntajePrincipalComponent implements OnInit {
     this.puntajeService.listarModeloPuntajeActivo().subscribe(
       (respuesta) => {
         this.listaModeloPuntajeAux = respuesta['listado'];
-        console.log("this.listaModeloPuntajeAux = ", this.listaModeloPuntajeAux)
         this.puntajeService.listarUsuarioModeloPuntajePorUsuario(this.currentUser?.codigoUsuario).subscribe(
           (respuesta) => {
             this.listaUsuarioModeloPuntaje = respuesta['listado'];
-            console.log("this.listaUsuarioModeloPuntaje = ", this.listaUsuarioModeloPuntaje)
             if (this.listaUsuarioModeloPuntaje.length > 0) {
               for (const ele of this.listaModeloPuntajeAux) {
                 ele.asignado = false;
@@ -193,7 +191,6 @@ export class PuntajePrincipalComponent implements OnInit {
             }
           }
         )
-        console.log("this.listaModeloPuntaje = ", this.listaModeloPuntaje)
       }
     )
   }
@@ -362,7 +359,6 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   async guardarPuntajes(participante, indexSelec) {
-    console.log("participante guardarPuntajes = ", participante)
     if (this.idInput === null) {
       // Guardar el primer registro en la misma fila
       this.guardarPuntaje(participante, indexSelec);
@@ -390,7 +386,6 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   async guardarPuntaje(participante, indexSelec) {
-    console.log("participante guardarPuntaje = ", participante)
     let puntajeTotal = 0;
     let notaGuardada = 0;
     let errorGuardar = 0;
@@ -399,7 +394,6 @@ export class PuntajePrincipalComponent implements OnInit {
       puntajeAux.codInstancia = participante?.codInstancia
       this.codSubcategoria = participante?.codSubcategoria
       this.codInstancia = participante?.codInstancia
-      console.log("puntajeAux = ", puntajeAux)
       if (puntajeAux?.puntaje > 0 &&
         puntajeAux?.puntaje <= 10 &&
         puntajeAux?.puntaje != 0) {
@@ -410,9 +404,7 @@ export class PuntajePrincipalComponent implements OnInit {
         puntajeTotal = puntajeTotal + (puntajeAux?.porcentaje / 100) * Number(puntajeAux ? puntajeAux?.puntaje : 0);
         await new Promise((resolve, rejects) => {
           let puntaje = new Puntaje;
-          console.log("puntajeAux 2 = ", puntajeAux)
           puntaje = this.moverDatosPuntaje(puntajeAux);
-          console.log("puntaje 1 = ", puntaje)
           this.puntajeService.guardarPuntaje(puntaje).subscribe({
             next: (respuesta) => {
               puntaje.codigo = respuesta['objeto'].codigo;
@@ -546,7 +538,6 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   async verificarGuardarPuntajes(participante, indexSelec) {
-    console.log("participante verificarGuardarPuntajes = ", participante)
     await new Promise((resolve, rejects) => {
       Swal
         .fire({

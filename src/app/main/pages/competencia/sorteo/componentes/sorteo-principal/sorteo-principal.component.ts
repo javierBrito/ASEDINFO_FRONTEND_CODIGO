@@ -309,23 +309,17 @@ export class SorteoPrincipalComponent implements OnInit {
     if (this.listaCategoria.length > 0) {
       // Ordenar lista por codigo
       this.listaCategoria.sort((firstItem, secondItem) => firstItem.codigo - secondItem.codigo);
-      console.log("this.listaCategoria = ", this.listaCategoria)
       for (let categoria of this.listaCategoria) {
-        console.log("categoria?.denominacion = ", categoria?.denominacion)
         this.participanteService.listarSubcategoriaPorCategoria(categoria?.codigo).subscribe(
           (respuesta) => {
             this.listaSubcategoria = respuesta['listado'];
-            console.log("this.listaSubcategoria = ", this.listaSubcategoria);
             if (this.listaSubcategoria.length > 0) {
               for (let subcategoria of this.listaSubcategoria) {
-                console.log("subcategoria = ", subcategoria);
-                //this.codCategoria = subcategoria?.categoria?.codigo;
                 this.codSubcategoria = subcategoria?.codigo;
                 this.codInstancia = 1;
                 this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
                   (respuesta) => {
                     this.listaParticipante = respuesta['listado'];
-                    console.log("this.listaParticipante Sin Sort = ", this.listaParticipante)
                     if (this.listaParticipante.length > 0) {
                       this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
                       this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
@@ -337,7 +331,6 @@ export class SorteoPrincipalComponent implements OnInit {
                         }
                       });
                     }
-                    console.log("this.listaParticipante Con Soprt = ", this.listaParticipante)
                   }
                 );
               }
@@ -380,10 +373,7 @@ export class SorteoPrincipalComponent implements OnInit {
         next: (respuesta) => {
           this.listaParticipante = respuesta['listado'];
           if (this.listaParticipante.length > 0) {
-            console.log("subcategoria?.denominacion = ", subcategoria?.denominacion)
-            console.log("this.listaParticipante = ", this.listaParticipante);
             this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
-            console.log("this.listaParticipante Sort = ", this.listaParticipante);
           }
           resolve(respuesta);
         }, error: (error) => {

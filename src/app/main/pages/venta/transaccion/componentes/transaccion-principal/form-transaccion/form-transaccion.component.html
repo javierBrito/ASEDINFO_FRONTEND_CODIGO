@@ -128,12 +128,12 @@
                         <span *ngIf="numProductoField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-2">
                     <label for="monto"><b>{{'Monto(*):'}}</b></label>
                     <input type="number" name="monto" formControlName="monto" class="form-control" id="monto"
                         placeholder="999.99" [attr.disabled]="true">
                 </div>
-                <div class="col-6">
+                <div class="col-7">
                     <label for="claveCuenta"><b>{{'Clave Cuenta(*): '}}</b></label>
                     <input type="text" name="claveCuenta" formControlName="claveCuenta" class="form-control"
                         id="claveCuenta" placeholder="Clave Cuenta."
