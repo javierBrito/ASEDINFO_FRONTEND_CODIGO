@@ -31,7 +31,7 @@ export class PuntajeService {
   listarPuntajePorParticipanteSubcategoriaInstancia(codParticipante: number, codSubcategoria: number, codInstancia: number, codUsuarioJuez: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstancia/${codParticipante}/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}`);
   }
-  listarPuntajePorParticipanteRegTotal(codParticipante: number, codSubcategoria: number, codInstancia: number, codModeloPuntaje: number, codUsuarioJuez: number) {
+  listarPuntajePorParticipanteRegTotal(codParticipante: number, codSubcategoria: number, codInstancia: number, codUsuarioJuez: number, codModeloPuntaje: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteRegTotal/${codParticipante}/${codInstancia}/${codSubcategoria}/${codUsuarioJuez}/${codModeloPuntaje}`);
   }
   listarPuntajePorRangoFechas(fechaInicio: string, fechaFin: string) {

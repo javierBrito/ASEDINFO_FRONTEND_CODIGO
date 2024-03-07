@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-3">
+                <div class="col-2">
                     <label for="numMes"><b>{{'Meses(*):'}}</b></label>
                     <input type="number" name="numMes" formControlName="numMes" class="form-control" id="numMes"
                         placeholder="999" step="01" min="000" (keyup)="onKeyMes($event)"
@@ -84,7 +84,7 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-3">
+                <div class="col-2">
                     <label for="precio"><b>{{'Precio(*):'}}</b></label>
                     <input type="number" name="precio" formControlName="precio" class="form-control" id="precio"
                         placeholder="999.99" step="0.01" min="0.01" (keyup)="onKeyPrecio($event)"
@@ -96,10 +96,12 @@
                         <span *ngIf="precioField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-2">
                     <label for="precioMayoreo"><b>{{'Por Mayor:'}}</b></label>
                     <input type="number" name="precioMayoreo" formControlName="precioMayoreo" class="form-control"
                         id="precioMayoreo" placeholder="999.99" [attr.disabled]="true">
+                </div>
+                <div class="col-2">
                 </div>
                 <div class="col-4">
                     <label for="fechaCambia"><b>{{'Fecha Cambiar: '}}</b></label>
@@ -116,7 +118,7 @@
             </div>
 
             <div class="row form-group">
-                <div class="col-3">
+                <div class="col-2">
                     <label for="numProducto"><b>{{'Cantidad(*):'}}</b></label>
                     <input type="number" name="numProducto" formControlName="numProducto" class="form-control"
                         id="numProducto" placeholder="999" step="001" min="001" (keyup)="onKeyCantidad($event)"
@@ -133,7 +135,7 @@
                     <input type="number" name="monto" formControlName="monto" class="form-control" id="monto"
                         placeholder="999.99" [attr.disabled]="true">
                 </div>
-                <div class="col-7">
+                <div class="col-8">
                     <label for="claveCuenta"><b>{{'Clave Cuenta(*): '}}</b></label>
                     <input type="text" name="claveCuenta" formControlName="claveCuenta" class="form-control"
                         id="claveCuenta" placeholder="Clave Cuenta."
@@ -144,7 +146,7 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-3">
+                <div class="col-2">
                     <label for="numDiasExtra"><b>{{'Días Extra:'}}</b></label>
                     <input type="number" name="numDiasExtra" formControlName="numDiasExtra" class="form-control" id="numDiasExtra"
                         placeholder="999" step="01" min="000" (keyup)="onKeyDiasExtra($event)"
@@ -153,7 +155,7 @@
                         <span>{{ "Exito"}}</span>
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-2">
                     <label for="prefijoTelefonico"><b>{{'Prefijo: '}}</b></label>
                     <input type="text" name="prefijoTelefonico" formControlName="prefijoTelefonico" class="form-control"
                         id="prefijoTelefonico" placeholder="Prefijo Telefónico" [attr.disabled]="true"
@@ -162,7 +164,7 @@
                         <span>{{ "Exito"}}</span>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-3">
                     <label for="celular"><b>{{'Celular: '}}</b></label>
                     <input type="text" name="celular" formControlName="celular" class="form-control"
                         id="celular" placeholder="Celular" [attr.disabled]="true"

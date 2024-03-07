@@ -12,6 +12,7 @@ export interface Iparticipante {
     numPuntajeJuez?: number;
     numParticipante?: number;
     nombreCancion?: string;
+    numJueces: number;
 
     customerId: number;
     userId: number;

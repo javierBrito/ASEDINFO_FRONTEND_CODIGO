@@ -65,6 +65,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public pathCancion: string = "./assets/musica/";
   public tituloLista: string = "";
   public nombreArchivoDescarga: string;
+  public crearPDF: boolean = false;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -163,6 +164,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     } else {
       this.disabledEstado = false;
       this.displayNone1 = 'none';
+      this.listarParticipantePorEstado();
     }
     //this.listarIntegranteActivo();
   }
@@ -268,9 +270,6 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
-        if (this.listaParticipante.length < this.itemsRegistros) {
-          this.page = 1;
-        }
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             ele.displayNoneGrupo = "none";
@@ -284,6 +283,10 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          }
+          if (this.crearPDF) {
+            this.generarPDF();
+            this.crearPDF = false;
           }
         }
       }
@@ -357,10 +360,10 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.guardarParticipante(this.participante).subscribe({
       next: (response) => {
         this.listarParticipantePorSubcategoriaInstancia();
+        this.listarParticipantePorEstado();
         this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
       },
       error: (error) => {
-        this.listarParticipantePorSubcategoriaInstancia();
         this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
       }
     });
@@ -395,6 +398,11 @@ export class ParticipantePrincipalComponent implements OnInit {
           // Hicieron click en "Sí, eliminar"
           this.personaService.eliminarPersonaPorId(participante?.codPersona).subscribe({
             next: (response) => {
+              if (this.currentUser?.cedula == "Suscriptor") {
+                this.listarParticipantePorEmail();
+              } else {
+                this.listarParticipantePorEstado();
+              }
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
             },
             error: (error) => {
@@ -580,10 +588,11 @@ export class ParticipantePrincipalComponent implements OnInit {
     })
   }
 
-  listarParticipantePDF = async () => {
-    //this.listaParticipante = [];
+  listarParticipantePDF() {
+    this.listaParticipante = [];
+    this.crearPDF = true;
     if (this.currentUser?.cedula == "Suscriptor") {
-      this.generarPDF();
+      this.listarParticipantePorEmail();     
     } else {
       this.listarParticipantePorEstado();     
     }
@@ -597,6 +606,8 @@ export class ParticipantePrincipalComponent implements OnInit {
         if (this.listaParticipanteUsuario.length > 0) {
           this.listaParticipante = this.listaParticipanteUsuario;
           this.generarPDF();
+          this.crearPDF = false;
+          this.listarParticipantePorEstado();     
         }
       }
     );
@@ -628,7 +639,10 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.displayNoneGrupo = "";
             }
           }
-          this.generarPDF();
+          if (this.crearPDF) {
+            this.generarPDF();
+            this.crearPDF = false;
+          }
         }
       }
     );

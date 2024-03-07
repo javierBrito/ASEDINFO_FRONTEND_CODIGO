@@ -550,7 +550,8 @@ export class FormParticipanteComponent implements OnInit {
         userId: this.userIdChild,
         //email: participanteTemp.identificacion,
         //email: this.currentUser.identificacion,
-        email: this.currentUser.correo,
+        //email: this.currentUser.correo,
+        email: participanteTemp?.correo,
         codSubcategoria: this.codSubcategoriaChild,
         codInstancia: this.codInstanciaChild,
         country: participanteTemp?.country,
@@ -565,13 +566,13 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.lastName = this.participanteAux['data'].lastName;
       this.participante.username = this.participanteAux['data'].username;
       //if (this.currentUser.cedula == "Suscriptor") {
-      this.participante.email = this.participanteAux['data'].email;
+        this.participante.email = this.participanteAux['data'].email;
       //} else {
-      //this.participante.email = this.participanteEditar?.email;
+      //  this.participante.email = this.participanteEditar?.email;
       //}
-      this.participante.codSubcategoria = this.codSubcategoriaChild,
-        this.participante.codInstancia = this.codInstanciaChild,
-        this.participante.country = this.participanteAux['data'].country;
+      this.participante.codSubcategoria = this.codSubcategoriaChild;
+      this.participante.codInstancia = this.codInstanciaChild;
+      this.participante.country = this.participanteAux['data'].country;
       this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
@@ -614,10 +615,10 @@ export class FormParticipanteComponent implements OnInit {
       } else {
         this.participanteAux['data'].email = this.persona?.correo;
       }
-      */
       if (this.currentUser.cedula != "Suscriptor") {
         this.participanteAux['data'].email = this.currentUser?.correo;
       }
+      */
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
@@ -688,9 +689,9 @@ export class FormParticipanteComponent implements OnInit {
     if (event.target.value.length != 0) {
       let participanteTemp = this.formParticipante.value;
       //if (participanteTemp?.identificacion == "") {
-        this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
-        // Verificar si ya existe la persona con esa identificacion
-        this.listarPersonaPorIdentificacion(event.target.value.replaceAll(" ", "."));
+      this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
+      // Verificar si ya existe la persona con esa identificacion
+      this.listarPersonaPorIdentificacion(event.target.value.replaceAll(" ", "."));
       //}
     }
   }

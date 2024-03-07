@@ -229,7 +229,7 @@ export class PuntajePrincipalComponent implements OnInit {
           }
           this.participanteService.guardarParticipante(this.participanteAux).subscribe({
             next: (response) => {
-              this.listarPuntajePorParticipante();
+              //this.listarPuntajePorParticipante();
               this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
             },
             error: (error) => {
@@ -312,6 +312,7 @@ export class PuntajePrincipalComponent implements OnInit {
       this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
+          console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion)
           for (const est of this.listaParticipantePresentacion) {
             await new Promise((resolve, rejects) => {
               this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
@@ -458,11 +459,13 @@ export class PuntajePrincipalComponent implements OnInit {
   async verificarExistenciaRegistroTotal() {
     this.codPuntaje = 0;
     return new Promise((resolve, rejects) => {
-      this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal.codParticipante, this.codSubcategoria, this.puntajeAuxTotal.codInstancia, this.currentUser.codigoUsuario, 99).subscribe({
+      console.log("this.puntajeAuxTotal = ", this.puntajeAuxTotal)
+      this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal?.codParticipante, this.puntajeAuxTotal?.codSubcategoria, this.puntajeAuxTotal?.codInstancia, this.currentUser?.codigoUsuario, 99).subscribe({
         next: (respuesta) => {
           this.listaPuntajeAux = respuesta['listado'];
           if (this.listaPuntajeAux.length > 0) {
             this.codPuntaje = this.listaPuntajeAux[0].codigo;
+            console.log("this.codPuntaje = ", this.codPuntaje)
           }
           resolve(respuesta);
         }, error: (error) => {
