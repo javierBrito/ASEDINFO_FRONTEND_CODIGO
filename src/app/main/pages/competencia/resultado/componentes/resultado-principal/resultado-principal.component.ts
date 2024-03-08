@@ -240,19 +240,6 @@ export class ResultadoPrincipalComponent implements OnInit {
     });
   }
 
-  listaResultadoActualizada(event) {
-    this.listaResultado = event;
-  }
-
-  openDetail(codjornada) {
-    this.showDetail = true;
-  }
-
-  openEditarDetail(puntaje: Puntaje) {
-    this.puntajeSeleccionado = puntaje;
-    this.showDetail = true;
-  }
-
   async guardarNotas(participante, indexSelec) {
     if (this.idInput === null) {
       // Guardar el primer registro en la misma fila
@@ -431,10 +418,6 @@ export class ResultadoPrincipalComponent implements OnInit {
     })
   }
 
-  capturarInputs(datosParticipante) {
-    this.datosEditar = datosParticipante;
-  }
-
   compararCategoria(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
@@ -453,118 +436,6 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   resetTheForm(): void {
     this.listaResultado = null;
-  }
-
-  validateFormat(event) {
-    let key;
-    if (event.type === 'paste') {
-      key = event.clipboardData.getData('text/plain');
-    } else {
-      key = event.keyCode;
-      key = String.fromCharCode(key);
-    }
-
-    const regex = /[0-9]/;
-
-    if (!regex.test(key)) {
-      event.returnValue = false;
-      if (event.preventDefault) {
-        event.preventDefault();
-      }
-    }
-  }
-
-  async confirmarEnviarNotificacion() {
-    this.enviarNotificacion = false;
-    Swal
-      .fire({
-        title: "Continuar envío Whatsapp...",
-        text: "¿Quiere enviar las notificaciones?'",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: "Sí, enviar",
-        cancelButtonText: "No, cancelar",
-      })
-      .then(async resultado => {
-        if (resultado.isConfirmed) {
-          this.enviarNotificacion = true;
-          //this.listarPuntajeACaducarse();
-        } else if (resultado.isDismissed) {
-          console.log("No envia notificaciones");
-        }
-      });
-  }
-
-  enviarCorreo() {
-    this.reporteDTO = new ReporteDTO({
-      cedula: "",
-      apellidoNombre: "",
-      fechaNacimiento: "",
-      edad: "",
-      from: "transparenciame@educacion.gob.ec",
-      nombreArchivo: "lista_caducarse_" + ".pdf",
-      subject: "Lista de servicios a caducarse - LISTACADUCARSE",
-      text: "<b>Texto en html, se lo genera en el servicio</b>",
-      //to: "javier.brito@educacion.gob.ec"      
-      to: "vjbritoa@hotmail.com",
-    });
-    this.resultadoService.enviarCorreo(this.reporteDTO['data']).subscribe({
-      next: (respuesta) => {
-        if (respuesta['codigoRespuesta'] == "Ok") {
-          this.mensajeService.mensajeCorrecto('Se a enviado el correo a ' + this.reporteDTO['data'].to);
-        } else {
-          this.mensajeService.mensajeError(respuesta['mensaje']);
-        }
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    })
-  }
-
-  async enviarWhatsapp(ele: Puntaje) {
-    this.seEnvioWhatsapp = true;
-    //this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
-    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-    var api = "https://script.google.com/macros/s/AKfycbyoBhxuklU5D3LTguTcYAS85klwFINHxxd-FroauC4CmFVvS0ua/exec";
-    var payload = {
-      "op": "registermessage", "token_qr": this.token, "mensajes": [
-        { "numero": this.celularEnvioWhatsapp, "mensaje": this.mensaje }
-      ]
-    };
-    console.log(payload);
-    console.log(api);
-    ajax({
-      url: api,
-      jsonp: "callback",
-      method: 'POST',
-      data: JSON.stringify(payload),
-      async: false,
-      success: function (respuestaSolicitud) {
-        this.respuestaEnvioWhatsapp = respuestaSolicitud.message;
-        //alert(respuestaSolicitud.message);
-        if (this.respuestaEnvioWhatsapp != 'Se notifico asincrono v3') {
-          this.seEnvioWhatsapp = false;
-        }
-      }
-    });
-  }
-
-  async enviarWhatsappApi(ele: Puntaje) {
-    this.seEnvioWhatsapp = true;
-    //this.mensaje = "Estimad@: " + ele.nombreCliente + ", por recordarle que su licencia de " + ele.descripcionProducto + " finaliza el " + ele.fechaFin + " Por favor, haganos saber por éste medio de su renovación, gracias su atención.";
-    //this.celularEnvioWhatsapp = this.codigoPostal + ele.celular.substring(1, 10);
-
-    this.resultadoService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
-      next: async (response) => {
-        //console.log("response = ", response);
-        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
-      },
-      error: (error) => {
-        console.log("error = ", error);
-        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
-      }
-    });
   }
 
   /* Variables del html, para receptar datos y validaciones*/

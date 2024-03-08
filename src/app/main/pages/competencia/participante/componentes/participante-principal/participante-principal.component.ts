@@ -321,25 +321,25 @@ export class ParticipantePrincipalComponent implements OnInit {
       case 1: {
         participante.codEstadoCompetencia = 2;
         this.participante = participante;
-        this.addRegistroParticipante();
+        this.actualizarParticipanteEstadoCompetencia();
         break;
       }
       case 2: {
         participante.codEstadoCompetencia = 3;
         this.participante = participante;
-        this.addRegistroParticipante();
+        this.actualizarParticipanteEstadoCompetencia();
         break;
       }
       case 3: {
         participante.codEstadoCompetencia = 4;
         this.participante = participante;
-        this.addRegistroParticipante();
+        this.actualizarParticipanteEstadoCompetencia();
         break;
       }
       case 4: {
         participante.codEstadoCompetencia = 5;
         this.participante = participante;
-        this.addRegistroParticipante();
+        this.actualizarParticipanteEstadoCompetencia();
         break;
       }
       case 5: {
@@ -355,12 +355,12 @@ export class ParticipantePrincipalComponent implements OnInit {
     }
   }
 
-  addRegistroParticipante() {
+  actualizarParticipanteEstadoCompetencia() {
     this.participante.dateLastActive = dayjs(this.participante?.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
     this.participanteService.guardarParticipante(this.participante).subscribe({
       next: (response) => {
         this.listarParticipantePorSubcategoriaInstancia();
-        this.listarParticipantePorEstado();
+        //this.listarParticipantePorEstado();
         this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
       },
       error: (error) => {

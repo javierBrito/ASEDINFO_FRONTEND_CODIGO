@@ -323,6 +323,11 @@
             <!--{{listaIntegrante}}-->
             <table class="table" *ngIf="listaIntegrante?.length > 0" id="tablaIntegrante">
                 <thead>
+                    <div>
+                        <button type="button" class="btn btn-primary" (click)="modal.close('Si')">Actualizar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            (click)="modal.close('No')">Cancelar</button>
+                    </div>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">

@@ -6,11 +6,9 @@ import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/men
 import Swal from 'sweetalert2';
 import { PuntajeService } from '../../servicios/puntaje.service';
 import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
-import dayjs from "dayjs";
 import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model';
-import { ajax } from 'jquery';
 import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
 import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
@@ -226,15 +224,13 @@ export class PuntajePrincipalComponent implements OnInit {
           this.participanteAux = respuesta['objeto'];
           this.participanteAux.numPuntajeJuez = this.participanteAux?.numPuntajeJuez + 1;
           // Verificar si ya han puntuado los JUECES jbrito-20240223
-          //if (this.participanteAux.numPuntajeJuez == 3) {
-          console.log("this.participanteAux = ", this.participanteAux)
           if (this.participanteAux.numPuntajeJuez == this.participanteAux?.numJueces) {
             // Cambiar el estado de la competencia a Completado
             this.participanteAux.codEstadoCompetencia = 5;
           }
           this.participanteService.guardarParticipante(this.participanteAux).subscribe({
             next: (response) => {
-              //this.listarPuntajePorParticipante();
+              this.listarPuntajePorParticipante();
               this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
             },
             error: (error) => {
@@ -317,18 +313,17 @@ export class PuntajePrincipalComponent implements OnInit {
       this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
-          console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion)
           for (const est of this.listaParticipantePresentacion) {
             await new Promise((resolve, rejects) => {
               this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
                 next: (respuesta) => {
-                  let listPuntajes: PuntajeAux[] = [];
-                  let listPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
+                  let listaPuntajes: PuntajeAux[] = [];
+                  let listaPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
                   for (const modelo of this.listaModeloPuntaje) {
-                    let auxBusqueda = listPuntajesConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
+                    let auxBusqueda = listaPuntajesConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
                     if (auxBusqueda) {
                       auxBusqueda.porcentaje = modelo.porcentaje;
-                      listPuntajes.push(auxBusqueda)
+                      listaPuntajes.push(auxBusqueda)
                     } else {
                       let nuevoPuntajeAux = new PuntajeAux();
                       nuevoPuntajeAux = {
@@ -343,10 +338,10 @@ export class PuntajePrincipalComponent implements OnInit {
                         nombreParticipante: est?.nombreParticipante,
                         codUsuarioJuez: 0,
                       }
-                      listPuntajes.push(nuevoPuntajeAux)
+                      listaPuntajes.push(nuevoPuntajeAux)
                     }
                   }
-                  est.listaPuntajes = listPuntajes;
+                  est.listaPuntajes = listaPuntajes;
                   resolve("OK");
                 }, error: (error) => {
                   console.log(error);
@@ -355,8 +350,7 @@ export class PuntajePrincipalComponent implements OnInit {
               });
             });
           }
-          this.participante = this.listaParticipantePresentacion['data'].get(0);
-          console.log("this.participante = ", this.participante)
+          this.participante = this.listaParticipantePresentacion['0'];
           resolve("OK");
         }, error: (error) => {
           console.log(error);
@@ -466,14 +460,11 @@ export class PuntajePrincipalComponent implements OnInit {
   async verificarExistenciaRegistroTotal() {
     this.codPuntaje = 0;
     return new Promise((resolve, rejects) => {
-      console.log("this.puntajeAuxTotal = ", this.puntajeAuxTotal)
-      console.log("1 = ", this.puntajeAuxTotal?.codParticipante + " " + this.puntajeAuxTotal?.codSubcategoria + " " + this.puntajeAuxTotal?.codInstancia + " " + this.currentUser?.codigoUsuario + " 99")
       this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal?.codParticipante, this.puntajeAuxTotal?.codSubcategoria, this.puntajeAuxTotal?.codInstancia, this.currentUser?.codigoUsuario, 99).subscribe({
         next: (respuesta) => {
           this.listaPuntajeAux = respuesta['listado'];
           if (this.listaPuntajeAux.length > 0) {
             this.codPuntaje = this.listaPuntajeAux[0].codigo;
-            console.log("this.codPuntaje = ", this.codPuntaje)
           }
           resolve(respuesta);
         }, error: (error) => {
@@ -502,7 +493,6 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   editarPuntaje = async (participante, indexSelec) => {
-    console.log("participante = ", participante + " " + indexSelec)
     this.participante = participante;
     this.indexSelec = indexSelec;
     if (!this.datosEditar) { this.datosEditar = participante; }
@@ -550,6 +540,16 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   async verificarGuardarPuntajes(participante, indexSelec) {
+    if (this.participante != null) {
+      if (this.participante['listaPuntajes']?.length > 0) {
+        for (let puntaje of this.participante['listaPuntajes']) {
+          if (puntaje?.puntaje < 1 || puntaje?.puntaje > 10) {
+            this.mensajeService.mensajeError('Puntaje incorrecto, ingresar en el rango de 1 a 10...');
+            return;
+          };
+        }
+      }
+    }
     await new Promise((resolve, rejects) => {
       Swal
         .fire({
@@ -574,7 +574,7 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   // Contar los caracteres de la cedula para activar boton <Buscar>
-  onKey(event) {
+  outFocus(event) {
     if (event.target.value < 1 || event.target.value > 10) {
       event.target.value = 0;
       this.mensajeService.mensajeError('Puntaje incorrecto, ingresar en el rango de 1 a 10...');

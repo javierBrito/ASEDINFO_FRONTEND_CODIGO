@@ -75,7 +75,7 @@
                                                             <div align="center">{{modeloPuntaje?.porcentaje}} {{' %'}}
                                                             </div>
                                                         </th>
-                                                        <th scope="col">Acciones</th>
+                                                        <th scope="col" align="center">Guardar</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -86,8 +86,8 @@
                                                         <td *ngFor="let puntaje of participante?.listaPuntajes" scope="col">
                                                             <div align="center">
                                                                 <input style="width: 50px; text-align:center"
-                                                                    [(ngModel)]="puntaje.puntaje" (keyup)="onKey($event)"
-                                                                    placeholder="9.99" step="1.01" min="1.01" max="10.00"
+                                                                    [(ngModel)]="puntaje.puntaje" (blur)="outFocus($event)"
+                                                                    placeholder="99" 
                                                                     (change)="capturarInputs(participante)"
                                                                     [ngModelOptions]="{standalone: true}"
                                                                     [disabled]="idInput!='curso_'+index" type="text"
@@ -99,9 +99,9 @@
                                                                 aria-label="Basic example">
                                                                 <button [disabled]="idInput!='curso_'+index"
                                                                     (click)="verificarGuardarPuntajes(participante, 'curso_'+index)"
-                                                                    type="button" class="btn btn-success"
+                                                                    type="button" class="btn btn-success" matTooltip="Guardar Puntaje"
                                                                     rippleEffect><i class="fa fa-floppy-o"></i></button>
-                                                                <button
+                                                                <button [ngStyle]="{'display': 'none'}"
                                                                     (click)="editarPuntaje(participante, 'curso_'+index)"
                                                                     type=" button" class="btn btn-primary" rippleEffect
                                                                     round><i class="fa fa-pencil"></i></button>
@@ -110,7 +110,7 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <div class="row mt-5" *ngIf="listaPuntaje?.length > itemsRegistros">
+                                            <div class="row mt-5" *ngIf="listaParticipantePresentacion?.length > itemsRegistros">
                                                 <div class="col-12 text-center">
                                                     <pagination-controls id="paginacionMatutino" class="paginacion"
                                                         [responsive]="true" [autoHide]="true" previousLabel="Anterior"
@@ -119,7 +119,7 @@
                                                     </pagination-controls>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="listaPuntaje?.length === 0">
+                                            <ng-container *ngIf="listaParticipantePresentacion?.length === 0">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p>No hay datos disponibles</p>

@@ -65,11 +65,11 @@
                                             <h3><b>{{'Lista Resultados de : '}} {{desCategoria}}
                                                 - {{desSubcategoria}} - {{desInstancia}}
                                             </b></h3>
-                                            <button type="submit" (click)="openDetail(1)"
+                                            <button type="submit"
                                                 matTooltip="" [disabled]="true"
                                                 class="btn btn-block btn-primary form-control mt-2">
                                                 <i class="fa fa-search" aria-hidden="true"></i>
-                                                {{'Podio de Ganadores'}}
+                                                {{'PODIO DE GANADORES'}}
                                             </button>
                                             <table class="table" *ngIf="listaPuntajeTotal?.length > 0"
                                                 id="tablaResultado">
@@ -79,48 +79,28 @@
                                                         <th scope="col">Podio</th>
                                                         <th scope="col">Participante</th>
                                                         <th scope="col"><div align="center">Puntaje Total</div></th>
-                                                        <!--
-                                                        <th *ngFor="let modeloResultado of this.listaModeloResultado; let index=index"
-                                                            scope="col">{{modeloResultado?.denominacion}}</th>
-                                                        <th scope="col">Acciones</th>
-                                                        -->
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr [ngStyle]="{'color': puntaje?.colorFila}"
-                                                        *ngFor="let puntaje of listaPuntajeTotal | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
-                                                        <!--"./assets/images/trofeo/trofeo{{index+1}}.png"-->
+                                                        *ngFor="let puntaje of listaPuntajeTotal | paginate: {id:'paginacion', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
                                                         <td><img src="./assets/images/trofeo/trofeo{{index+1}}.png"></td>
-                                                        <td>{{puntaje?.nombreParticipante}}</td>
-                                                        <td><div class="text-center">{{puntaje?.puntaje}}</div></td>
-                                                        <!--
-                                                        <td>
-                                                            <div class="btn-group" role="group"
-                                                                aria-label="Basic example">
-                                                                <button [disabled]="idInput!='curso_'+index"
-                                                                    (click)="guardarNotas(participante, 'curso_'+index)"
-                                                                    type="button" class="btn btn-success"
-                                                                    rippleEffect><i class="fa fa-floppy-o"></i></button>
-                                                                <button (click)="editarNota(participante, 'curso_'+index)"
-                                                                    type=" button" class="btn btn-primary" rippleEffect
-                                                                    round><i class="fa fa-pencil"></i></button>
-                                                            </div>
-                                                        </td>
-                                                        -->
+                                                        <td><b>{{puntaje?.nombreParticipante}}</b></td>
+                                                        <td><div class="text-center"><b>{{puntaje?.puntaje}}</b></div></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <div class="row mt-5" *ngIf="listaResultado?.length > itemsRegistros">
+                                            <div class="row mt-5" *ngIf="listaPuntajeTotal?.length > itemsRegistros">
                                                 <div class="col-12 text-center">
-                                                    <pagination-controls id="paginacionMatutino" class="paginacion"
+                                                    <pagination-controls id="paginacion" class="paginacion"
                                                         [responsive]="true" [autoHide]="true" previousLabel="Anterior"
                                                         nextLabel="Siguiente" (pageChange)="page = $event"
                                                         screenReaderCurrentLabel="Tú estas en la página:">
                                                     </pagination-controls>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="listaResultado.length === 0">
+                                            <ng-container *ngIf="listaPuntajeTotal.length === 0">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <p>No hay datos disponibles</p>

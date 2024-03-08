@@ -34,6 +34,7 @@ export class AuthLoginV2Component implements OnInit {
   public returnUrl: string;
   public error = '';
   public passwordTextType: boolean;
+  //public passwordTextType1: boolean;
   public aplicacionVEN: boolean = false;
   menu: any;
 
@@ -100,8 +101,20 @@ export class AuthLoginV2Component implements OnInit {
   togglePasswordTextType() {
     this.passwordTextType = !this.passwordTextType;
   }
+  /*
+  togglePasswordTextType1() {
+    this.passwordTextType1 = !this.passwordTextType1;
+  }
+  */
 
   onSubmit() {
+    /*
+    console.log("this.f.password.value = ", this.f.password.value)
+    console.log("this.f.password1.value = ", this.f.password1.value)
+    if (this.f.password1.value != null) {
+      console.log("Cambiar Contraseña e ingresar al sistema");
+    }
+    */
     this.submitted = true;
 
     // stop here if form is invalid
@@ -145,7 +158,6 @@ export class AuthLoginV2Component implements OnInit {
           this.loading = false;
         }
       );
-
   }
 
   obtenerMenu() {
@@ -290,6 +302,7 @@ export class AuthLoginV2Component implements OnInit {
     this.loginForm = this._formBuilder.group({
       usuario: [null, Validators.required],
       password: [null, Validators.required],
+      password1: [null, Validators.required],
       //captcha: ['', Validators.required]
     });
 

@@ -13,7 +13,8 @@
           </div>
           <div class="card-body">
             <h5 class="card-title" style="color: #130591;">AsedInfo-Sistemas</h5>
-            <p class="card-text">Es una plataforma de sistemas, para la gestión y administración de procesos de VENTAS y COMPETENCIAS</p>
+            <p class="card-text">Es una plataforma de sistemas, para la gestión y administración de procesos de VENTAS y
+              COMPETENCIAS</p>
             <img class="img-fluid" style="width: 400px;" [src]="
             coreConfig.layout.skin === 'dark'
               ? 'assets/images/pages/login/colmena-login-img.svg'
@@ -32,14 +33,8 @@
       <div class="col-12 col-sm-8 col-md-6 col-lg-12 px-xl-2 mx-auto">
         <!--<img class="rounded mx-auto d-block img-fluid" src="assets/images/fondo/colmena-fondo.svg"
           style="width: 150px;">-->
-          <span class="avatar"
-          ><img
-            class="round"
-            src="assets/images/portrait/small/user_info.png"
-            alt="avatar"
-            height="35"
-            width="35" /><span class="avatar-status-online"></span
-        ></span>
+        <span class="avatar"><img class="round" src="assets/images/portrait/small/user_info.png" alt="avatar"
+            height="35" width="35" /><span class="avatar-status-online"></span></span>
         <h2 class="card-title font-weight-bold mb-1">Ingrese credenciales...</h2>
         <ngb-alert [type]="'danger'" [dismissible]="false" *ngIf="error">
           <div class="alert-body">
@@ -102,6 +97,33 @@
           <button [disabled]="loading" class="btn btn-primary btn-block" tabindex="4" rippleEffect>
             <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Ingresar
           </button>
+          
+          <!-- Para cambiar la contraseña 
+          <div class="form-group" [ngStyle]="{'display': 'none'}">
+            <div class="d-flex justify-content-between">
+              <label for="login-password1">Nueva Contraseña</label>
+            </div>
+            <div class="input-group input-group-merge form-password-toggle">
+              <input [type]="passwordTextType1 ? 'text' : 'password'" formControlName="password1"
+                class="form-control form-control-merge"
+                [ngClass]="{ 'is-invalid error': submitted && f.password1.errors }" placeholder="············"
+                aria-describedby="login-password1" tabindex="5" />
+              <div class="input-group-append">
+                <span class="input-group-text cursor-pointer"><i class="feather font-small-4" [ngClass]="{
+                      'icon-eye-off': passwordTextType1,
+                      'icon-eye': !passwordTextType1
+                    }" (click)="togglePasswordTextType1()"></i></span>
+              </div>
+            </div>
+            <div *ngIf="submitted && f.password1.errors" class="invalid-feedback"
+              [ngClass]="{ 'd-block': submitted && f.password1.errors }">
+              <div *ngIf="f.password1.errors.required">Clave es Requerida</div>
+            </div>
+          </div>
+          <button [disabled]="loading" class="btn btn-primary btn-block" tabindex="6" rippleEffect [ngStyle]="{'display': 'none'}">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Cambiar Contraseña
+          </button>
+          -->
         </form>
       </div>
     </div>

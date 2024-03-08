@@ -45,7 +45,7 @@
                                 class="form-control mr-sm-2 custom-select" id="codInstancia"
                                 (change)="listarParticipanteGeneral()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
-                                <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
+                                <option *ngFor="let instancia of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>
                                 </option>
                             </select>
