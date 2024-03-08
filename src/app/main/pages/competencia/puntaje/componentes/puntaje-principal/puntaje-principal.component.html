@@ -82,7 +82,7 @@
                                                     <tr [ngStyle]="{'color': puntaje?.colorFila}"
                                                         *ngFor="let participante of listaParticipantePresentacion | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{participante?.nombrePersona}}</td>
+                                                        <td><b>{{participante?.nombrePersona}}</b></td>
                                                         <td *ngFor="let puntaje of participante?.listaPuntajes" scope="col">
                                                             <div align="center">
                                                                 <input style="width: 50px; text-align:center"

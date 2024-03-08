@@ -62,6 +62,7 @@ export class PuntajePrincipalComponent implements OnInit {
   public codEstadoCompetencia: number;
   public nombreUsuario: string;
   public siActualizaNumJuez: boolean = false;
+  public numJueces: number = 0;
 
   /*LISTAS*/
   public listaPuntaje: Puntaje[] = [];
@@ -139,6 +140,8 @@ export class PuntajePrincipalComponent implements OnInit {
       this.displayNone = 'none';
       //this.obtenerParametros();
       this.listarPuntajePorParticipante();
+      // Para habilitar el ingreso de puntajes directo
+      this.editarPuntaje(this.participante, 'curso_0')
     }
   }
 
@@ -223,7 +226,9 @@ export class PuntajePrincipalComponent implements OnInit {
           this.participanteAux = respuesta['objeto'];
           this.participanteAux.numPuntajeJuez = this.participanteAux?.numPuntajeJuez + 1;
           // Verificar si ya han puntuado los JUECES jbrito-20240223
-          if (this.participanteAux.numPuntajeJuez == 3) {
+          //if (this.participanteAux.numPuntajeJuez == 3) {
+          console.log("this.participanteAux = ", this.participanteAux)
+          if (this.participanteAux.numPuntajeJuez == this.participanteAux?.numJueces) {
             // Cambiar el estado de la competencia a Completado
             this.participanteAux.codEstadoCompetencia = 5;
           }
@@ -350,6 +355,8 @@ export class PuntajePrincipalComponent implements OnInit {
               });
             });
           }
+          this.participante = this.listaParticipantePresentacion['data'].get(0);
+          console.log("this.participante = ", this.participante)
           resolve("OK");
         }, error: (error) => {
           console.log(error);
@@ -460,6 +467,7 @@ export class PuntajePrincipalComponent implements OnInit {
     this.codPuntaje = 0;
     return new Promise((resolve, rejects) => {
       console.log("this.puntajeAuxTotal = ", this.puntajeAuxTotal)
+      console.log("1 = ", this.puntajeAuxTotal?.codParticipante + " " + this.puntajeAuxTotal?.codSubcategoria + " " + this.puntajeAuxTotal?.codInstancia + " " + this.currentUser?.codigoUsuario + " 99")
       this.puntajeService.listarPuntajePorParticipanteRegTotal(this.puntajeAuxTotal?.codParticipante, this.puntajeAuxTotal?.codSubcategoria, this.puntajeAuxTotal?.codInstancia, this.currentUser?.codigoUsuario, 99).subscribe({
         next: (respuesta) => {
           this.listaPuntajeAux = respuesta['listado'];
@@ -494,6 +502,7 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   editarPuntaje = async (participante, indexSelec) => {
+    console.log("participante = ", participante + " " + indexSelec)
     this.participante = participante;
     this.indexSelec = indexSelec;
     if (!this.datosEditar) { this.datosEditar = participante; }

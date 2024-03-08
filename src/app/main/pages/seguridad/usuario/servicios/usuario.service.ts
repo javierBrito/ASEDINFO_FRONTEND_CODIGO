@@ -36,7 +36,6 @@ export class UsuarioService {
     return this.http.get<Usuario>(`${environment.url_seguridad}/seguridad/buscarUsuarioPorCodigo/${codigo}`);
   }
   guardarUsuario(usuario) {
-    console.log("usuario = ", usuario);
     return this.http.post<Usuario>(`${environment.url_seguridad}/seguridad/guardarUsuario`, usuario);
   }
 
