@@ -35,6 +35,9 @@ export class UsuarioService {
   buscarUsuarioPorCodigo(codigo: number) {
     return this.http.get<Usuario>(`${environment.url_seguridad}/seguridad/buscarUsuarioPorCodigo/${codigo}`);
   }
+  cambiarClave(usuario) {
+    return this.http.post<Usuario>(`${environment.url_seguridad}/seguridad/cambiarClave`, usuario);
+  }
   guardarUsuario(usuario) {
     return this.http.post<Usuario>(`${environment.url_seguridad}/seguridad/guardarUsuario`, usuario);
   }

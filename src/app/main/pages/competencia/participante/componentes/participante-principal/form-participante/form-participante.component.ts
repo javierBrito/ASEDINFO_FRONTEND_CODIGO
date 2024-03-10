@@ -304,7 +304,7 @@ export class FormParticipanteComponent implements OnInit {
         this.desCategoria = this.subcategoria?.desCategoria;
         this.desSubcategoria = this.subcategoria?.denominacion;
         this.codCategoria = this.subcategoria.codCategoria;
-        if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("SAME GENDER")) {
+        if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO PASOS LIBRES")) {
           this.disabledApellidos = false;
           this.displayIntegrante2 = "";
         }
@@ -364,7 +364,8 @@ export class FormParticipanteComponent implements OnInit {
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipanteChild) {
             ele.displayNoneGrupo = "none";
-            if (ele?.identificacion == this.currentUser.identificacion) {
+            //if (ele?.identificacion == this.currentUser.identificacion) {
+            if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }
@@ -483,7 +484,7 @@ export class FormParticipanteComponent implements OnInit {
         }
       }
       let apellidos = "";
-      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("SAME GENDER")) {
+      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO PASOS LIBRES")) {
         apellidos = participanteTemp?.apellidos;
       }
       this.persona = new Persona({
@@ -538,7 +539,7 @@ export class FormParticipanteComponent implements OnInit {
     if (this.formParticipante?.valid) {
       let participanteTemp = this.formParticipante.value;
       let lastName = "";
-      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("SAME GENDER")) {
+      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO PASOS LIBRES")) {
         lastName = participanteTemp?.apellidos;
       }
       this.participanteAux = new Participante({
@@ -566,7 +567,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.lastName = this.participanteAux['data'].lastName;
       this.participante.username = this.participanteAux['data'].username;
       //if (this.currentUser.cedula == "Suscriptor") {
-        this.participante.email = this.participanteAux['data'].email;
+      this.participante.email = this.participanteAux['data'].email;
       //} else {
       //  this.participante.email = this.participanteEditar?.email;
       //}
@@ -689,10 +690,11 @@ export class FormParticipanteComponent implements OnInit {
     if (event.target.value.length != 0) {
       let participanteTemp = this.formParticipante.value;
       //if (participanteTemp?.identificacion == "") {
-      this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
-      // Verificar si ya existe la persona con esa identificacion
-      this.listarPersonaPorIdentificacion(event.target.value.replaceAll(" ", "."));
-      //}
+      if (participanteTemp?.username == "") {
+        this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
+        // Verificar si ya existe la persona con esa identificacion
+        this.listarPersonaPorIdentificacion(event.target.value.replaceAll(" ", "."));
+      }
     }
   }
 

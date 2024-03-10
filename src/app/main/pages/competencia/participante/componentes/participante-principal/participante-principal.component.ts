@@ -267,7 +267,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.codInstancia = participanteParametroTemp?.codInstancia;
     //this.habilitarAgregarParticipante = true;
     this.habilitarAgregarParticipante = false;
-    this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
+    // Trabajar con el correo del Participante migrado
+    this.participanteService.listarParticipantePorEmail(this.currentUser.correo).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length > 0) {
@@ -275,7 +276,8 @@ export class ParticipantePrincipalComponent implements OnInit {
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
-            if (ele?.identificacion == this.currentUser.identificacion) {
+            //if (ele?.identificacion == this.currentUser.identificacion) {
+            if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }
@@ -592,9 +594,9 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.listaParticipante = [];
     this.crearPDF = true;
     if (this.currentUser?.cedula == "Suscriptor") {
-      this.listarParticipantePorEmail();     
+      this.listarParticipantePorEmail();
     } else {
-      this.listarParticipantePorEstado();     
+      this.listarParticipantePorEstado();
     }
   }
 
@@ -607,7 +609,7 @@ export class ParticipantePrincipalComponent implements OnInit {
           this.listaParticipante = this.listaParticipanteUsuario;
           this.generarPDF();
           this.crearPDF = false;
-          this.listarParticipantePorEstado();     
+          this.listarParticipantePorEstado();
         }
       }
     );
@@ -630,7 +632,8 @@ export class ParticipantePrincipalComponent implements OnInit {
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-            if (ele?.identificacion == this.currentUser.identificacion) {
+            //if (ele?.identificacion == this.currentUser.identificacion) {
+            if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }

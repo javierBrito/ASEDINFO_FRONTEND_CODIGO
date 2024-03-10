@@ -7,4 +7,5 @@ export interface IloginAplicacion {
     accesoConcedido: boolean;
     observacion: string;
     sede: Sede;
+    correo: string;
 }

@@ -11,6 +11,8 @@ import { CoreMenu } from '@core/types';
 import { Recurso } from 'app/auth/models/recurso.model';
 import { Rol } from 'app/auth/models/rol.model';
 import { AuthenticationService } from 'app/auth/service';
+import { UsuarioService } from '../../seguridad/usuario/servicios/usuario.service';
+import { Usuario } from '../../compartidos/modelos/Usuario';
 
 @Component({
   selector: 'app-auth-login-v2',
@@ -34,9 +36,11 @@ export class AuthLoginV2Component implements OnInit {
   public returnUrl: string;
   public error = '';
   public passwordTextType: boolean;
-  //public passwordTextType1: boolean;
+  public passwordTextType1: boolean;
   public aplicacionVEN: boolean = false;
   menu: any;
+  public usuario: Usuario;
+  public displayCambiarContrasenia: string = "";
 
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -57,8 +61,10 @@ export class AuthLoginV2Component implements OnInit {
     private _route: ActivatedRoute,
     private _router: Router,
     private _authenticationService: AuthenticationService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private usuarioServicio: UsuarioService,
   ) {
+    this.displayCambiarContrasenia = "none";
     // redirect to home if already logged in
     if (this._authenticationService.currentUserValue) {
       this._router.navigate(['/']);
@@ -101,24 +107,68 @@ export class AuthLoginV2Component implements OnInit {
   togglePasswordTextType() {
     this.passwordTextType = !this.passwordTextType;
   }
-  /*
+
   togglePasswordTextType1() {
     this.passwordTextType1 = !this.passwordTextType1;
   }
-  */
+
+  cambiarContrasenia() {
+    console.log("this.displayCambiarContrasenia = ", this.displayCambiarContrasenia)
+    if (this.displayCambiarContrasenia = "") {
+      this.displayCambiarContrasenia = "none";
+    } else {
+      this.displayCambiarContrasenia = "";
+    }
+  }
 
   onSubmit() {
-    /*
     console.log("this.f.password.value = ", this.f.password.value)
     console.log("this.f.password1.value = ", this.f.password1.value)
-    if (this.f.password1.value != null) {
+    if (this.f.password1?.value != null) {
+      // verificar clave anterior y obtener codigo usuario
+      this._authenticationService
+        .login(this.f.usuario.value, this.f.password.value)
+        .pipe(first())
+        .subscribe(
+          data => {
+            if (data.accesoConcedido == true) {
+              console.log("data", data)
+              this.usuario = new Usuario({
+                codigo: data?.codigoUsuario,
+                codPersona: 0,
+                cambioClave: this.f.password1.value,
+                actualizacionDatos: "",
+                estado: 'A',
+                codSede: "",
+              });      
+              // cambiar la clave y obtener usuario
+              this.usuarioServicio.cambiarClave(this.usuario['data']).subscribe({
+                next: (response) => {
+                  this.f.password.setValue(this.f.password1?.value);
+                },
+                error: (error) => {
+                  this.error = "Error al cambiar la contraseña...";
+                }
+              });
+            } else {
+              this.error = data.observacion;
+            }
+          },
+          error => {
+            this.error = error;
+          }
+        );
       console.log("Cambiar Contraseña e ingresar al sistema");
+    } else {
+      this.f.password1.setValue(this.f.password?.value);
     }
-    */
+    console.log("this.f.password1.value = ", this.f.password1.value)
+
     this.submitted = true;
 
     // stop here if form is invalid
     if (this.loginForm.invalid) {
+      console.log("aca")
       return;
     }
 
@@ -138,8 +188,8 @@ export class AuthLoginV2Component implements OnInit {
         data => {
           if (data.accesoConcedido == true) {
             this.obtenerMenu();
-
             this._router.navigate([this.returnUrl]);
+
             // jbrito-20230114
             //this.modalService.open(this.modal_acuerdo_confidencialidad, this.modalOption).result.then(result => {
             //  if (result === 'no') {

@@ -40,7 +40,7 @@ export class ParticipanteService {
   listarParticipantePorEstado(estado: string): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorEstado/${estado}`);
   }
-  listarUsuarioWPDTO(): Observable<any> | undefined {
+  listarUsuarioWP(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/wordpress/listarUsuarioWP`);
   }
   listarParticipantePadre(codigoAplicacion: number) {

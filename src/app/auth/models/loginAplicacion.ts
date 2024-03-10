@@ -47,4 +47,11 @@ export class LoginAplicacion implements IloginAplicacion {
     set sede(value: Sede) {
         set(this, 'data.sede', value);
     }
+    get correo(): string {
+        return get(this, 'data.correo');
+    }
+    set correo(value: string) {
+        set(this, 'data.correo', value);
+    }
+
 }

@@ -143,7 +143,7 @@ export class EstadoPrincipalComponent implements OnInit {
 
   listarUsuarioWPDTO() {
     this.listaUsuarioWPDTO = [];
-    this.participanteService.listarUsuarioWPDTO().subscribe(
+    this.participanteService.listarUsuarioWP().subscribe(
       (respuesta) => {
         this.listaUsuarioWPDTO = respuesta['listado'];
         // Listar usuarios registrados en asedinfo_data
