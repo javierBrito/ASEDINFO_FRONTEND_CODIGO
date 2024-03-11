@@ -13,7 +13,7 @@
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
                         <div class="col-2">
                             <label for="codCategoria">
-                                <h4><b>{{'Categoría(*): '}}</b></h4>
+                                <h4><b>{{'Categoría '}}</b></h4>
                             </label>
                             <select name="codCategoria" formControlName="codCategoria" required
                                 [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
@@ -29,12 +29,12 @@
                         </div>
                         <div class="col-2">
                             <label for="codSubcategoria">
-                                <h4><b>{{'Subcategoría(*): '}}</b></h4>
+                                <h4><b>{{'Subcategoría '}}</b></h4>
                             </label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                                 class="form-control mr-sm-2 custom-select" id="codSubcategoria"
-                                (change)="listarParticipantePorSubcategoriaInstancia()">
+                                (change)="listarInstanciaActivo()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let subcategoria  of listaSubcategoria" [value]="subcategoria.codigo">
                                     <span><b>{{subcategoria?.denominacion}}</b></span>
@@ -43,14 +43,14 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3" [ngStyle]="{'display': 'none'}">
+                        <div class="col-2" [ngStyle]="{'display': ''}">
                             <label for="codInstancia">
-                                <h4><b>{{'Instancia(*): '}}</b></h4>
+                                <h4><b>{{'Instancia '}}</b></h4>
                             </label>
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
                                 class="form-control mr-sm-2 custom-select" id="codInstancia"
-                                (change)="listarParticipanteGeneral()">
+                                (change)="listarParticipantePorSubcategoriaInstancia()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>
@@ -59,7 +59,21 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3" align="center" [ngStyle]="{'display': displayBotonGuardar}">
+                        <div class="col-2">
+                            <label for="dateLastActive">
+                                <h4><b>{{'Fecha/Hora Competencia '}}</b></h4>
+                            </label>
+                            <input type="datetime-local" name="dateLastActive" formControlName="dateLastActive"
+                                class="form-control" id="dateLastActive"
+                                [ngClass]="{'is-valid': dateLastActiveField?.dirty && !dateLastActiveField?.invalid && !dateLastActiveField?.errors,'is-invalid': dateLastActiveField?.dirty && dateLastActiveField?.invalid && dateLastActiveField?.errors}">
+                            <div class="valid-feedback">
+                                <span>{{ "Exito"}}</span>
+                            </div>
+                            <div class="invalid-feedback">
+                                <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
+                            </div>
+                        </div>                        
+                        <div class="col-2" align="center" [ngStyle]="{'display': displayBotonGuardar}">
                             <br />
                             <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
@@ -69,7 +83,17 @@
                                 <i class="fa fa-save" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
-                        <div class="col-3" align="center" [ngStyle]="{'display': 'none'}">
+                        <div class="col-md-2 col-1 form-group">
+                            <br/>
+                            <br/>
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="listarParticipantePDF()" *ngIf="listaParticipante?.length > 0">
+                                <b>{{ "Lista Participantes"}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                            </button>
+                        </div>
+                        <div class="col-2" align="center" [ngStyle]="{'display': 'none'}">
                             <br />
                             <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
@@ -122,7 +146,6 @@
                                                     <tr
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <!--<td>{{participante?.identificacion}}</td>-->
                                                         <td>{{participante?.firstName + ' - ' + participante?.lastName}}
                                                         </td>
                                                         <td>
@@ -215,7 +238,6 @@
 
 <app-form-sorteo [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
     [codSubcategoriaChild]="codSubcategoria" [codInstanciaChild]="codInstancia" [customerIdChild]="customerId"
-    [userIdChild]="userId" [identificacionChild]="identificacion"
     (listaParticipante)="listarParticipanteActivoActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-sorteo>
 

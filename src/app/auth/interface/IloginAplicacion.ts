@@ -8,4 +8,6 @@ export interface IloginAplicacion {
     observacion: string;
     sede: Sede;
     correo: string;
+    prefijoTelefonico: string;
+    celular: string;
 }

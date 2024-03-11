@@ -11,12 +11,14 @@ import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
-import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
-import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
 import { AuthenticationService } from 'app/auth/service';
+import moment from 'moment';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-sorteo-principal',
@@ -36,9 +38,7 @@ export class SorteoPrincipalComponent implements OnInit {
 
   /*VARIABLES*/
   public codigo: number;
-  public institucion: any;
   public codigoSede = null;
-  public identificacion: string;
   public codCategoria: number;
   public codSubcategoria: number;
   public codInstancia: number;
@@ -46,40 +46,21 @@ export class SorteoPrincipalComponent implements OnInit {
   public desSubcategoria: string;
   public desInstancia: string;
   public habilitarAgregarParticipante: boolean;
-  public habilitarSeleccionarArchivo: boolean;
   public displayNone: string = '';
   public displayNone1: string = 'none';
   public displayBotonGuardar: string = 'none';
   public disabledEstado: boolean;
-  public customerId: number;
-  public userId: number;
-  public urlCancion: string;
+  public dateLastActive: string;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
-  public listaPersona: Persona[] = [];
+  public listaParticipanteAux: Participante[] = [];
   public listaCategoria: Categoria[] = [];
   public listaSubcategoria: Subcategoria[] = [];
   public listaInstancia: Instancia[] = [];
   public listaEstadoCompetencia: EstadoCompetencia[] = [];
   public listaIntegrante: Integrante[] = [];
 
-  // TRATAR ARCHIVOS
-  // Lista de archivos seleccionados
-  public selectedFiles: FileList;
-  // Es el array que contiene los items para mostrar el progreso de subida de cada archivo
-  public progressInfo = [];
-  // Mensaje que almacena la respuesta de las Apis
-  public message = '';
-  // Nombre del archivo para usarlo posteriormente en la vista html
-  public fileName = "";
-  // Lista para obtener los archivos
-  public fileInfos: CargarArchivoModelo[] = [];
-  public pdfFileURL: any;
-  public fileStatus = { status: '', requestType: '', percent: 0 };
-  public filenames: string[] = [];
-  public listaBase64: any;
-  public nombreArchivoDescarga: string;
 
   /*TABS*/
   public selectedTab: number;
@@ -136,12 +117,11 @@ export class SorteoPrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.habilitarAgregarParticipante = true;
-    this.habilitarSeleccionarArchivo = false;
     this.formSorteo = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
       codInstancia: new FormControl('', Validators.required),
-      identificacion: new FormControl(''),
+      dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD HH:mm")),
     })
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
@@ -188,8 +168,8 @@ export class SorteoPrincipalComponent implements OnInit {
     this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codCategoria de formSorteo.value
-    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
-    this.codCategoria = sorteoCompetenciaParametroTemp?.codCategoria;
+    let formSorteoTemp = this.formSorteo.value;
+    this.codCategoria = formSorteoTemp?.codCategoria;
     this.buscarCategoriaPorCodigo();
     this.participanteService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
       (respuesta) => {
@@ -207,12 +187,12 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   listarInstanciaActivo() {
-    this.habilitarAgregarParticipante = false;
+    this.habilitarAgregarParticipante = true;
     this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codSubcategoria de formSorteo.value
-    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
-    this.codSubcategoria = sorteoCompetenciaParametroTemp?.codSubcategoria;
+    let formSorteoTemp = this.formSorteo.value;
+    this.codSubcategoria = formSorteoTemp?.codSubcategoria;
     this.buscarSubcategoriaPorCodigo();
     this.participanteService.listarInstanciaActivo().subscribe(
       (respuesta) => {
@@ -237,72 +217,6 @@ export class SorteoPrincipalComponent implements OnInit {
         this.buscarCategoriaPorCodigo();
       }
     )
-  }
-
-  listarParticipanteGeneral() {
-    if (this.currentUser.cedula == "Suscriptor") {
-      this.listarParticipantePorEmail();
-    } else {
-      this.listarParticipantePorSubcategoriaInstancia();
-    }
-  }
-
-  listarParticipantePorEmail() {
-    // Receptar la codSubcategoria y codInstancia de formSorteo.value
-    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
-    this.codSubcategoria = sorteoCompetenciaParametroTemp?.codSubcategoria;
-    this.codInstancia = sorteoCompetenciaParametroTemp?.codInstancia;
-    this.habilitarAgregarParticipante = false;
-    this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
-      (respuesta) => {
-        this.listaParticipante = respuesta['listado'];
-        if (this.listaParticipante.length < this.itemsRegistros) {
-          this.page = 1;
-        }
-        if (this.listaParticipante.length > 0) {
-          for (const ele of this.listaParticipante) {
-            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-            ele.displayNoneGrupo = "none";
-            this.customerId = ele.customerId;
-            this.userId = ele.userId;
-            if (ele?.identificacion == this.currentUser.identificacion) {
-              ele.desCategoria = "DIRECTOR";
-              ele.desSubcategoria = "ACADEMIA";
-            }
-            if (ele?.desSubcategoria.includes("GRUPOS")) {
-              ele.displayNoneGrupo = "";
-            }
-          }
-        }
-      }
-    );
-  }
-
-  listarParticipantePorEstado() {
-    this.habilitarAgregarParticipante = true;
-    this.participanteService.listarParticipantePorEstado("A").subscribe(
-      (respuesta) => {
-        this.listaParticipante = respuesta['listado'];
-        if (this.listaParticipante.length < this.itemsRegistros) {
-          this.page = 1;
-        }
-        if (this.listaParticipante.length > 0) {
-          for (const ele of this.listaParticipante) {
-            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-            ele.displayNoneGrupo = "none";
-            this.customerId = ele.customerId;
-            this.userId = ele.userId;
-            if (ele?.identificacion == this.currentUser.identificacion) {
-              ele.desCategoria = "DIRECTOR";
-              ele.desSubcategoria = "ACADEMIA";
-            }
-            if (ele?.desSubcategoria.includes("GRUPOS")) {
-              ele.displayNoneGrupo = "";
-            }
-          }
-        }
-      }
-    );
   }
 
   sorteoTotal() {
@@ -399,32 +313,51 @@ export class SorteoPrincipalComponent implements OnInit {
 
   sortearParticipante() {
     this.displayBotonGuardar = "";
-    return this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
+    this.habilitarAgregarParticipante = true;
+
+    // Sortear aleatoriamente los participantes
+    this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
+
+    let formSorteoTemp = this.formSorteo.value;
+    this.dateLastActive = formSorteoTemp?.dateLastActive;
+    let tiempo = "00:05";
+    let fechaASumar: any;
+    // Actualizar la fecha de competencia de los participantes
+    for (let participante of this.listaParticipante) {
+      fechaASumar = moment(this.dateLastActive);
+      participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD h:mm');
+      this.dateLastActive = participante?.dateLastActive;
+    }
+
+    //return this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
   }
 
   listarParticipantePorSubcategoriaInstancia() {
-    this.habilitarAgregarParticipante = false;
+    this.habilitarAgregarParticipante = true;
     this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codSubcategoria de formSorteo.value
-    let sorteoCompetenciaParametroTemp = this.formSorteo.value;
-    this.codSubcategoria = sorteoCompetenciaParametroTemp?.codSubcategoria;
+    let formSorteoTemp = this.formSorteo.value;
+    this.codSubcategoria = formSorteoTemp?.codSubcategoria;
     this.buscarSubcategoriaPorCodigo();
-    //this.codInstancia = sorteoCompetenciaParametroTemp?.codInstancia;
-    this.codInstancia = 1;
+    this.codInstancia = formSorteoTemp?.codInstancia;
+    //this.codInstancia = 1;
     this.buscarInstanciaPorCodigo();
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
-        for (const ele of this.listaParticipante) {
-          ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
-          ele.displayNoneGrupo = "none";
-          if (ele.desSubcategoria.includes("GRUPOS")) {
-            ele.displayNoneGrupo = "";
+        if (this.listaParticipante?.length > 0) {
+          this.habilitarAgregarParticipante = false;
+          for (const ele of this.listaParticipante) {
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+            ele.displayNoneGrupo = "none";
+            if (ele.desSubcategoria.includes("GRUPOS")) {
+              ele.displayNoneGrupo = "";
+            }
           }
+          // Ordenar lista por numParticipante
+          this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
         }
-        // Ordenar lista por numParticipante
-        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
       }
     );
   }
@@ -445,12 +378,53 @@ export class SorteoPrincipalComponent implements OnInit {
     })
   }
 
-  listarParticipanteActivoActualizada(event) {
-    this.listaParticipante = event;
+  listarParticipantePDF() {
+    if (this.listaParticipante.length > 0) {
+      this.generarPDF();
+    }
   }
 
-  openDetail(codjornada) {
-    this.showDetail = true;
+  generarPDF() {
+    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.identificacion, participante?.dateLastActive, ' ... '+participante?.numParticipante, participante?.postcode]);
+    const pdfDefinition: any = {
+      content: [
+        { text: 'Sorteo Participantes: ' + this.desCategoria + '/' + this.desSubcategoria, style: 'datoTituloGeneral' },
+        {
+          table: {
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            body: [
+              ['#', 'Nombre', 'Identificación', 'Fecha Competir', '# Orden', 'Chequeo'],
+              ...bodyData
+            ],
+          },
+          style: 'datosTabla'
+        },
+      ],
+      styles: {
+        datosTabla: {
+          fontSize: 10,
+          margin: [50, 5, 5, 0], // Margen inferior para separar la tabla de otros elementos
+          fillColor: '#F2F2F2', // Color de fondo de la tabla
+        },
+        datoTitulo: {
+          fontSize: 10
+        },
+        datoTituloGeneral: {
+          fontSize: 15,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 0, 0, 10], // Puedes ajustar el margen según tus preferencias
+        },
+        datoSubtitulo: {
+          fontSize: 10,
+          bold: true,
+          alignment: 'center', // Alineado a la izquierda
+          margin: [0, 0, 0, 10], // Ajusta el margen según tus preferencias
+        }
+      },
+    }
+    const pdf = pdfMake.createPdf(pdfDefinition);
+    pdf.open();
   }
 
   openEditarDetail(participante: Participante) {
@@ -499,8 +473,13 @@ export class SorteoPrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, sortear"
+          // Actualizar formato fecha lista participantes
+          for (let participante of this.listaParticipante) {
+            participante.dateLastActive = dayjs(participante?.dateLastActive).format('YYYY-MM-DD h:mm:ss.SSS');
+          }
           this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
             next: (response) => {
+              this.listaParticipante = response['listado'];
               this.displayBotonGuardar = "none";
               this.habilitarAgregarParticipante = true;
               this.listarParticipantePorSubcategoriaInstancia();
@@ -544,10 +523,6 @@ export class SorteoPrincipalComponent implements OnInit {
     this.participanteSeleccionado = null;
   }
 
-  resetTheForm(): void {
-    this.listaPersona = null;
-  }
-
   validateFormat(event) {
     let key;
     if (event.type === 'paste') {
@@ -565,73 +540,6 @@ export class SorteoPrincipalComponent implements OnInit {
         event.preventDefault();
       }
     }
-  }
-
-  // Tratar Archivos
-  selectFiles(event) {
-    this.progressInfo = [];
-    event.target.files.length == 1 ? this.fileName = event.target.files[0].name : this.fileName = event.target.files.length + " archivos";
-    this.selectedFiles = event.target.files;
-  }
-
-  cargarArchivos() {
-    this.message = '';
-    for (let i = 0; i < this.selectedFiles.length; i++) {
-      this.cargarArchivo(i, this.selectedFiles[i]);
-      this.previsualizarArchivo(i, this.selectedFiles[i]);
-    }
-  }
-
-  previsualizarArchivo(index, file) {
-    //Previsualizar documento
-    this.pdfFileURL = URL.createObjectURL(file);
-    document.getElementById('vistaPreviaDJ').setAttribute('src', this.pdfFileURL);
-  }
-
-  cargarArchivo(index, file) {
-    this.participanteService.cargarArchivo(file, "").subscribe(
-      async (respuesta) => {
-        //console.log("respuesta = ", respuesta);
-      }, err => {
-        console.log("err = ", err);
-        if (err == "OK") {
-          this.habilitarAgregarParticipante = false;
-          this.habilitarSeleccionarArchivo = true;
-          this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta');
-        } else {
-          this.message = 'No se puede subir el archivo ' + file.name;
-        }
-      }
-    );
-  }
-
-  deleteFile(filename: string) {
-    this.participanteService.deleteFile(filename).subscribe(res => {
-      this.message = res['message'];
-      this.listarArchivos();
-    });
-  }
-
-  // Descargar archivos PDF desde una carpeta y los muestra en una lista
-  listarArchivos() {
-    this.participanteService.descargarArchivos().subscribe(
-      (respuesta) => {
-        this.fileInfos = respuesta;
-      }
-    );
-  }
-
-  // Descargar archivo PDF desde una carpeta
-  descargarArchivo(filename: string): void {
-    this.nombreArchivoDescarga = filename;
-    this.participanteService.descargarArchivo(filename, '1').subscribe(
-      event => {
-        console.log(event);
-      },
-      (error: HttpErrorResponse) => {
-        console.log(error);
-      }
-    );
   }
 
   compararCategoria(o1, o2) {
@@ -678,9 +586,6 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   /* Variables del html, para receptar datos y validaciones*/
-  get identificacionField() {
-    return this.formSorteo.get('identificacion');
-  }
   get codCategoriaField() {
     return this.formSorteo.get('codCategoria');
   }
@@ -689,6 +594,9 @@ export class SorteoPrincipalComponent implements OnInit {
   }
   get codInstanciaField() {
     return this.formSorteo.get('codInstancia');
+  }
+  get dateLastActiveField() {
+    return this.formSorteo.get('dateLastActive');
   }
 
 }

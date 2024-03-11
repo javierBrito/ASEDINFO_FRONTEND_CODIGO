@@ -157,6 +157,8 @@ export class EstadoPrincipalComponent implements OnInit {
     this.participanteService.listarParticipanteUsuario().subscribe(
       (respuesta) => {
         this.listaParticipanteUsuario = respuesta['listado'];
+        console.log("this.listaUsuarioWPDTO.length = ", this.listaUsuarioWPDTO.length)
+        console.log("this.listaParticipanteUsuario.length - 1) = ", (this.listaParticipanteUsuario.length - 1))
         if (this.listaUsuarioWPDTO.length > (this.listaParticipanteUsuario.length - 1)) {
           this.migrarUsuarioWP();
         }

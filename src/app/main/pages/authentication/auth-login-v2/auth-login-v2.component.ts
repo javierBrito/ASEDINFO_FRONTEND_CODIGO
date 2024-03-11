@@ -122,6 +122,8 @@ export class AuthLoginV2Component implements OnInit {
   }
 
   onSubmit() {
+    let currentUser = this._authenticationService.currentUserValue;
+    console.log("currentUser = ", currentUser)
     console.log("this.f.password.value = ", this.f.password.value)
     console.log("this.f.password1.value = ", this.f.password1.value)
     if (this.f.password1?.value != null) {
@@ -140,11 +142,14 @@ export class AuthLoginV2Component implements OnInit {
                 actualizacionDatos: "",
                 estado: 'A',
                 codSede: "",
-              });      
+              });
               // cambiar la clave y obtener usuario
               this.usuarioServicio.cambiarClave(this.usuario['data']).subscribe({
                 next: (response) => {
                   this.f.password.setValue(this.f.password1?.value);
+                  // Enviar notificación de cambio de clave
+                  let currentUser = this._authenticationService.currentUserValue;
+                  console.log("currentUser = ", currentUser)
                 },
                 error: (error) => {
                   this.error = "Error al cambiar la contraseña...";
