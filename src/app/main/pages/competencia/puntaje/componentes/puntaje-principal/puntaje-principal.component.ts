@@ -14,6 +14,7 @@ import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { PuntajeAux } from 'app/main/pages/compartidos/modelos/PuntajeAux';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
+import { Seguimiento } from 'app/main/pages/compartidos/modelos/Seguimiento';
 
 @Component({
   selector: 'app-puntaje-principal',
@@ -75,6 +76,8 @@ export class PuntajePrincipalComponent implements OnInit {
   public listaParticipante: any[];
   public listaParticipantePresentacion: any[] = [];
   public listaUsuarioModeloPuntaje: any[];
+  public listaSeguimiento: Seguimiento[] = [];
+  public listaParticipanteSeguimiento: any[];
 
   /*TABS*/
   public selectedTab: number;
@@ -134,6 +137,7 @@ export class PuntajePrincipalComponent implements OnInit {
     });
     this.listarModeloPuntajeActivo();
     this.listarCategoriaActivo();
+    this.listarSeguimientoActivo();
     if (this.currentUser.cedula == 'JUEZ') {
       this.displayNone = 'none';
       //this.obtenerParametros();
@@ -141,6 +145,36 @@ export class PuntajePrincipalComponent implements OnInit {
       // Para habilitar el ingreso de puntajes directo
       this.editarPuntaje(this.participante, 'curso_0')
     }
+  }
+
+  guardarParticipanteSeguimiento() {
+
+  }
+
+  async listarSeguimientoActivo() {
+    this.puntajeService.listarSeguimientoActivo().subscribe(
+      (respuesta) => {
+        this.listaSeguimiento = respuesta['listado'];
+        this.puntajeService.listarParticipanteSeguimientoPorParticipante(7).subscribe(
+          (respuesta) => {
+            this.listaParticipanteSeguimiento = respuesta['listado'];
+            if (this.listaParticipanteSeguimiento == null) {
+              this.listaParticipanteSeguimiento = [];
+            }
+            if (this.listaParticipanteSeguimiento.length > 0) {
+              for (const ele of this.listaSeguimiento) {
+                ele.asignado = false;
+                for (const ele1 of this.listaParticipanteSeguimiento) {
+                  if (ele?.codigo == ele1?.codSeguimiento) {
+                    ele.asignado = true;
+                  }
+                }
+              }
+            }
+          }
+        );
+      }
+    );
   }
 
   obtenerParametros() {
@@ -604,19 +638,6 @@ export class PuntajePrincipalComponent implements OnInit {
 
   resetTheForm(): void {
     this.listaPuntaje = null;
-  }
-
-  async enviarWhatsappApi(ele: Puntaje) {
-    this.seEnvioWhatsapp = true;
-    this.puntajeService.enviarMensajeWhatsapp(this.celularEnvioWhatsapp, this.mensaje).subscribe({
-      next: async (response) => {
-        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
-      },
-      error: (error) => {
-        console.log("error = ", error);
-        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
-      }
-    });
   }
 
   /* Variables del html, para receptar datos y validaciones*/

@@ -126,6 +126,22 @@
                                                     </div>
                                                 </div>
                                             </ng-container>
+                                            <br/>
+                                            <div class="row form-group">
+                                                <div class="col-12">
+                                                    <label for="seguimiento"><h3><b>{{'Seguimiento del Participante:'}}</b></h3></label>
+                                                    <div class="form-group form-check" *ngFor="let seguimiento of listaSeguimiento; let indice=index">
+                                                        <input type="checkbox" [value]="seguimiento" (click)="guardarParticipanteSeguimiento(seguimiento, $event, indice)"
+                                                            class="form-check-input" id="exampleCheck{{indice}}" [checked]="seguimiento.asignado">
+                                                        <label class="form-check-label" for="exampleCheck1"><h4><b>{{seguimiento?.descripcion}}</b></h4></label>
+                                                    </div>
+                                                    <br>
+                                                    <div class="valid-feedback">
+                                                        <span>{{ "Exito"}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                
                                         </div>
                                     </section>
                                 </mat-tab>

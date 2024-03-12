@@ -171,14 +171,4 @@ export class ResultadoService {
       body.appendChild(script);
     });
   }
-
-  enviarMensajeWhatsapp(celular: string, mensaje: string) {
-    let objeto = { message: mensaje, mode: 'no-cors' };
-    return this.http.post(`${environment.url_externo}/chat/sendmessage/${celular}`, objeto);
-  }
-
-  enviarMensajeWhatsappQR(celular: string, mensaje: string) {
-    return this.http.get(`${environment.url_externo}/auth/getqr`);
-  }
-
 }

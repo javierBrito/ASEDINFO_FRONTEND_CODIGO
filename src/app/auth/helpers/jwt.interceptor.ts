@@ -23,9 +23,10 @@ export class JwtInterceptor implements HttpInterceptor {
     const currentUser = this._authenticationService.currentUserValue;
     const isLoggedIn = currentUser && currentUser.token;
     const isApiUrl = request.url.startsWith(environment.url_seguridad);
-    const isApiUrlExterno = request.url.startsWith(environment.url_externo);
+    const isApiUrlWspAI = request.url.startsWith(environment.url_wspAI);
+    const isApiUrlWspND = request.url.startsWith(environment.url_wspND);
 
-    if (isLoggedIn && (isApiUrl || isApiUrlExterno)) {//agregar url a interceptar
+    if (isLoggedIn && (isApiUrl || isApiUrlWspAI || isApiUrlWspND)) {//agregar url a interceptar
       if (this.tokenExpired(currentUser.token)) {
         // token expired
         this._authenticationService.logout();

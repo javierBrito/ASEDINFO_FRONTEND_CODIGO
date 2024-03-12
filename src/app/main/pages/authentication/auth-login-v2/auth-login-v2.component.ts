@@ -13,6 +13,10 @@ import { Rol } from 'app/auth/models/rol.model';
 import { AuthenticationService } from 'app/auth/service';
 import { UsuarioService } from '../../seguridad/usuario/servicios/usuario.service';
 import { Usuario } from '../../compartidos/modelos/Usuario';
+import moment from 'moment';
+import { TransaccionService } from '../../venta/transaccion/servicios/transaccion.service';
+import { MensajeService } from '../../compartidos/servicios/mensaje/mensaje.service';
+import { HttpParameterCodec, HttpUrlEncodingCodec } from "@angular/common/http";
 
 @Component({
   selector: 'app-auth-login-v2',
@@ -41,6 +45,7 @@ export class AuthLoginV2Component implements OnInit {
   menu: any;
   public usuario: Usuario;
   public displayCambiarContrasenia: string = "";
+  public currentUser: any;
 
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -63,7 +68,10 @@ export class AuthLoginV2Component implements OnInit {
     private _authenticationService: AuthenticationService,
     private modalService: NgbModal,
     private usuarioServicio: UsuarioService,
+    private transaccionService: TransaccionService,
+    private mensajeService: MensajeService
   ) {
+    moment.locale("es");
     this.displayCambiarContrasenia = "none";
     // redirect to home if already logged in
     if (this._authenticationService.currentUserValue) {
@@ -113,7 +121,7 @@ export class AuthLoginV2Component implements OnInit {
   }
 
   cambiarContrasenia() {
-    console.log("this.displayCambiarContrasenia = ", this.displayCambiarContrasenia)
+    // Habilitar objetos
     if (this.displayCambiarContrasenia == "") {
       this.displayCambiarContrasenia = "none";
     } else {
@@ -122,10 +130,7 @@ export class AuthLoginV2Component implements OnInit {
   }
 
   onSubmit() {
-    let currentUser = this._authenticationService.currentUserValue;
-    console.log("currentUser = ", currentUser)
-    console.log("this.f.password.value = ", this.f.password.value)
-    console.log("this.f.password1.value = ", this.f.password1.value)
+    console.log("this.f.password1?.value = ", this.f.password1?.value)
     if (this.f.password1?.value != null) {
       // verificar clave anterior y obtener codigo usuario
       this._authenticationService
@@ -146,10 +151,12 @@ export class AuthLoginV2Component implements OnInit {
               // cambiar la clave y obtener usuario
               this.usuarioServicio.cambiarClave(this.usuario['data']).subscribe({
                 next: (response) => {
+                  // Obtener el usuario actual
+                  this.currentUser = this._authenticationService.currentUserValue;
+                  // Enviar notificación al usuario
+                  this.enviarWhatsappApi();
+                  // Para que ingrese al sistema con la nueva contraseña
                   this.f.password.setValue(this.f.password1?.value);
-                  // Enviar notificación de cambio de clave
-                  let currentUser = this._authenticationService.currentUserValue;
-                  console.log("currentUser = ", currentUser)
                 },
                 error: (error) => {
                   this.error = "Error al cambiar la contraseña...";
@@ -163,17 +170,15 @@ export class AuthLoginV2Component implements OnInit {
             this.error = error;
           }
         );
-      console.log("Cambiar Contraseña e ingresar al sistema");
     } else {
+      // Cuando no cambia la contraseña
       this.f.password1.setValue(this.f.password?.value);
     }
-    console.log("this.f.password1.value = ", this.f.password1.value)
 
     this.submitted = true;
 
     // stop here if form is invalid
     if (this.loginForm.invalid) {
-      console.log("aca")
       return;
     }
 
@@ -204,6 +209,7 @@ export class AuthLoginV2Component implements OnInit {
             //}).catch((res) => {
             //});
           } else {
+            this.f.password1.setValue(null);
             this.error = data.observacion;
             this.loading = false;
           }
@@ -391,4 +397,39 @@ export class AuthLoginV2Component implements OnInit {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
+
+  async enviarWhatsappApi() {
+    let dia = moment(new Date()).format("D");
+    let mes = moment(new Date()).format("MMMM");
+    let año = moment(new Date()).format("YYYY");
+    let mensajeNotificacion = "*New Dance Ec / 0998069137* Estimado(a) "
+      + "Con fecha " + dia + " de " + mes + " de " + año
+      + ", se ha modificado su contraseña con éxito ... (" + this.f.password1.value
+      + "), link para el acceso al sistema www.sistema.asedinfo.com "
+      + "%0aCualquier cosa estamos atentos... Un excelente dia, tarde o noche...."
+      + "%0a*New Dance Ec / Congress Abril-2024*" + "%0a*Quito-Ecuador*";
+
+    // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
+    const codec = new HttpUrlEncodingCodec();
+    //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
+    const decodedValue = codec.decodeValue(mensajeNotificacion); // Decodes the value as 'Hello World!'
+
+    // Validar prefijo telefonico
+    if (this.currentUser?.prefijoTelefonico == "" || this.currentUser?.prefijoTelefonico == null) {
+      this.currentUser.prefijoTelefonico = "593";
+    }
+    let celularEnvioWhatsapp = this.currentUser?.prefijoTelefonico + this.currentUser?.celular.substring(1, 15).trim();
+    //let celularEnvioWhatsapp = "593" + "0992752367".substring(1, 15).trim();
+    // Enviar mensaje
+    this.transaccionService.enviarMensajeWhatsappND(celularEnvioWhatsapp, decodedValue).subscribe({
+      next: async (response) => {
+        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito, a su móvil ' + celularEnvioWhatsapp);
+      },
+      error: (error) => {
+        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
+      }
+    });
+  }
+
+
 }

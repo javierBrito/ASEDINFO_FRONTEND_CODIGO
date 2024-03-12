@@ -16,6 +16,7 @@ import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import moment from 'moment';
+import { HttpUrlEncodingCodec } from '@angular/common/http';
 
 @Component({
   selector: 'app-form-transaccion',
@@ -531,22 +532,28 @@ export class FormTransaccionComponent implements OnInit {
       mensajeRenovaCaduca = " se ha renovado exitosamente hasta el ";
     } else {
       mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
-      mensajeClaveCuenta = " Recuerde que su licencia/código o credenciales son las siguientes: " 
-                         + "*" + transaccion?.claveCuenta +"*";
+      mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: " 
+                         + "%0a*" + transaccion?.claveCuenta +"*";
     }
-    let mensajeNotificacion = "*Notificación Automática* Estimado(a) " + transaccion?.nombreCliente 
+    let mensajeNotificacion = "*Notificación Automática*%0aEstimado(a) " + transaccion?.nombreCliente 
     + " el servicio de " + transaccion?.descripcion
     + mensajeRenovaCaduca
     + dia + " de "+ mes + " de " + año 
     + ", favor su ayuda en el caso de presentar inconvenientes notificarlos oportunamente por este medio... Un excelente dia, tarde o noche...."
     + mensajeClaveCuenta;
+    
+    // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
+    const codec = new HttpUrlEncodingCodec();
+    //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
+    const decodedValue = codec.decodeValue(mensajeNotificacion); // Decodes the value as 'Hello World!'
+
     // Validar prefijo telefonico
     if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
       transaccion.prefijoTelefonico = "593";
     }
     let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
     // Enviar mensaje
-    this.transaccionService.enviarMensajeWhatsapp(celularEnvioWhatsapp, mensajeNotificacion).subscribe({
+    this.transaccionService.enviarMensajeWhatsappAI(celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
         this.mensajeService.mensajeCorrecto('Las notificación se envió con éxito...');
       },

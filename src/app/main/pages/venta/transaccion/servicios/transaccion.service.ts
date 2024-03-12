@@ -118,13 +118,18 @@ export class TransaccionService {
     });
   }
 
-  enviarMensajeWhatsapp(celular: string, mensaje: string) {
+  enviarMensajeWhatsappAI(celular: string, mensaje: string) {
     let objeto = { message: mensaje, mode: 'no-cors' };
-    return this.http.post(`${environment.url_externo}/chat/sendmessage/${celular}`, objeto);
+    return this.http.post(`${environment.url_wspAI}/chat/sendmessage/${celular}`, objeto);
+  }
+
+  enviarMensajeWhatsappND(celular: string, mensaje: string) {
+    let objeto = { message: mensaje, mode: 'no-cors' };
+    return this.http.post(`${environment.url_wspND}/chat/sendmessage/${celular}`, objeto);
   }
 
   enviarMensajeWhatsappQR(celular: string, mensaje: string) {
-    return this.http.get(`${environment.url_externo}/auth/getqr`);
+    return this.http.get(`${environment.url_wspAI}/auth/getqr`);
   }
 
 }

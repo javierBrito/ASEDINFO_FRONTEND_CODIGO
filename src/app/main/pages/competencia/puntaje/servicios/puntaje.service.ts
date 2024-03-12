@@ -120,6 +120,9 @@ export class PuntajeService {
   listarModeloPuntajeActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarModeloPuntajeActivo`);
   }
+  listarSeguimientoActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSeguimientoActivo`);
+  }
   // Servicios de Modelo Participante
   buscarParticipantejePorCodigo(codigo: number) {
     return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarParticipantejePorCodigo/${codigo}`);
@@ -138,6 +141,9 @@ export class PuntajeService {
   }
   listarUsuarioModeloPuntajePorUsuario(codUsuario: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarUsuarioModeloPuntajePorUsuario/${codUsuario}`);
+  }
+  listarParticipanteSeguimientoPorParticipante(codParticipante: number) {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipanteSeguimientoPorParticipante/${codParticipante}`);
   }
   guardarlistaUsuarioModeloPuntaje(listaUsuarioModeloPuntaje: UsuarioModeloPuntaje[]) {
     return this.http.post<UsuarioModeloPuntaje[]>(`${environment.url_seguridad}/competencia/guardarListaUsuarioModeloPuntaje`, listaUsuarioModeloPuntaje);
@@ -171,15 +177,6 @@ export class PuntajeService {
       script.defer = true;
       body.appendChild(script);
     });
-  }
-
-  enviarMensajeWhatsapp(celular: string, mensaje: string) {
-    let objeto = { message: mensaje, mode: 'no-cors' };
-    return this.http.post(`${environment.url_externo}/chat/sendmessage/${celular}`, objeto);
-  }
-
-  enviarMensajeWhatsappQR(celular: string, mensaje: string) {
-    return this.http.get(`${environment.url_externo}/auth/getqr`);
   }
 
 }
