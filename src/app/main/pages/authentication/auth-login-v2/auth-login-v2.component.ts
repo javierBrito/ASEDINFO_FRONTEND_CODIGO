@@ -114,7 +114,7 @@ export class AuthLoginV2Component implements OnInit {
 
   cambiarContrasenia() {
     console.log("this.displayCambiarContrasenia = ", this.displayCambiarContrasenia)
-    if (this.displayCambiarContrasenia = "") {
+    if (this.displayCambiarContrasenia == "") {
       this.displayCambiarContrasenia = "none";
     } else {
       this.displayCambiarContrasenia = "";
