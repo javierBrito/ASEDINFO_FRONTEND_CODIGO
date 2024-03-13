@@ -505,7 +505,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     }
     this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
     // Enviar mensaje
-    this.transaccionService.enviarMensajeWhatsappAI(decodedValue, this.mensajeCaduca).subscribe({
+    this.transaccionService.enviarMensajeWhatsappAI(this.celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
         this.seEnvioWhatsapp = true;
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
