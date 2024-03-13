@@ -7,7 +7,6 @@ import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/men
 import Swal from 'sweetalert2';
 import { UsuarioService } from '../../servicios/usuario.service';
 import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
-import { MyValidators } from 'app/utils/validators';
 import { SedeService } from 'app/main/pages/seguridad/sede/servicios/sede.service';
 import dayjs from "dayjs";
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';

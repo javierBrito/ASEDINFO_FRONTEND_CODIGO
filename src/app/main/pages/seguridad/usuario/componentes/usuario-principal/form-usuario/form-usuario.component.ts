@@ -362,7 +362,7 @@ export class FormUsuarioComponent implements OnInit {
             ele.codUsuario = this.usuario.codigo;
           }
           if (this.listaUsuarioModeloPuntaje.length > 0) {
-            this.puntajeService.guardarlistaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
+            this.puntajeService.guardarListaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
               next: async (response) => {
                 this.listarUsuarioPorIdentificacion();
                 this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
@@ -389,11 +389,11 @@ export class FormUsuarioComponent implements OnInit {
       this.usuarioService.guardarUsuario(this.usuario['data']).subscribe({
         next: async (response) => {
           this.usuario = response['objeto'];
-          for (const ele of this.listaUsuarioModeloPuntaje) {
-            ele.codUsuario = this.usuario.codigo;
-          }
           if (this.listaUsuarioModeloPuntaje.length > 0) {
-            this.puntajeService.guardarlistaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
+            for (let ele of this.listaUsuarioModeloPuntaje) {
+              ele.codUsuario = this.usuario.codigo;
+            }
+            this.puntajeService.guardarListaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
               next: async (response) => {
                 this.listarUsuarioPorIdentificacion();
                 this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');

@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import axios from 'axios';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { UsuarioModeloPuntaje } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntaje';
+import { ParticipanteSeguimiento } from 'app/main/pages/compartidos/modelos/ParticipanteSeguimiento';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class PuntajeService {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstancia/${codParticipante}/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}`);
   }
   listarPuntajePorParticipanteRegTotal(codParticipante: number, codSubcategoria: number, codInstancia: number, codUsuarioJuez: number, codModeloPuntaje: number) {
-    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteRegTotal/${codParticipante}/${codInstancia}/${codSubcategoria}/${codUsuarioJuez}/${codModeloPuntaje}`);
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteRegTotal/${codParticipante}/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}/${codModeloPuntaje}`);
   }
   listarPuntajePorRangoFechas(fechaInicio: string, fechaFin: string) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/catalogo/listarPuntajePorRangoFechas/${fechaInicio}/${fechaFin}`);
@@ -145,8 +146,11 @@ export class PuntajeService {
   listarParticipanteSeguimientoPorParticipante(codParticipante: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipanteSeguimientoPorParticipante/${codParticipante}`);
   }
-  guardarlistaUsuarioModeloPuntaje(listaUsuarioModeloPuntaje: UsuarioModeloPuntaje[]) {
+  guardarListaUsuarioModeloPuntaje(listaUsuarioModeloPuntaje: UsuarioModeloPuntaje[]) {
     return this.http.post<UsuarioModeloPuntaje[]>(`${environment.url_seguridad}/competencia/guardarListaUsuarioModeloPuntaje`, listaUsuarioModeloPuntaje);
+  }
+  guardarListaParticipanteSeguimiento(listaParticipanteSeguimiento: ParticipanteSeguimiento[]) {
+    return this.http.post<ParticipanteSeguimiento[]>(`${environment.url_seguridad}/competencia/guardarListaParticipanteSeguimiento`, listaParticipanteSeguimiento);
   }
 
   /*SERVICIOS EXTERNOS*/

@@ -15,6 +15,7 @@ import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { PuntajeAux } from 'app/main/pages/compartidos/modelos/PuntajeAux';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
 import { Seguimiento } from 'app/main/pages/compartidos/modelos/Seguimiento';
+import { ParticipanteSeguimiento } from 'app/main/pages/compartidos/modelos/ParticipanteSeguimiento';
 
 @Component({
   selector: 'app-puntaje-principal',
@@ -62,6 +63,7 @@ export class PuntajePrincipalComponent implements OnInit {
   public nombreUsuario: string;
   public siActualizaNumJuez: boolean = false;
   public numJueces: number = 0;
+  public codParticipante: number = 0;
 
   /*LISTAS*/
   public listaPuntaje: Puntaje[] = [];
@@ -93,6 +95,7 @@ export class PuntajePrincipalComponent implements OnInit {
   public puntajeAuxTotal: any = null;
   public participante: Participante;
   public participanteAux: Participante;
+  public participanteSeguimiento: ParticipanteSeguimiento;
 
   /*DETAIL*/
   public showDetail: boolean;
@@ -137,7 +140,7 @@ export class PuntajePrincipalComponent implements OnInit {
     });
     this.listarModeloPuntajeActivo();
     this.listarCategoriaActivo();
-    this.listarSeguimientoActivo();
+    //this.listarSeguimientoActivo(this.participante);
     if (this.currentUser.cedula == 'JUEZ') {
       this.displayNone = 'none';
       //this.obtenerParametros();
@@ -147,34 +150,61 @@ export class PuntajePrincipalComponent implements OnInit {
     }
   }
 
-  guardarParticipanteSeguimiento() {
-
+  guardarParticipanteSeguimiento(participanteSeguimiento: ParticipanteSeguimiento, event: any, indice: number) {
+    if (event.target.checked) {
+      this.participanteSeguimiento = new ParticipanteSeguimiento();
+      this.participanteSeguimiento = {
+        codigo: 0,
+        codParticipante: this.codParticipante,
+        codSeguimiento: participanteSeguimiento?.codigo,
+        estado: 'A',
+      };
+      this.listaParticipanteSeguimiento.push(this.participanteSeguimiento);
+    } else {
+      let indice1 = 0;
+      if (this.listaParticipanteSeguimiento.length > 0) {
+        for (const ele1 of this.listaParticipanteSeguimiento) {
+          if (participanteSeguimiento.codigo == ele1?.codSeguimiento) {
+            break;
+          }
+          indice1 = indice1 + 1;
+        }
+      }
+      this.listaParticipanteSeguimiento.splice(indice1, 1);
+    }
   }
 
-  async listarSeguimientoActivo() {
-    this.puntajeService.listarSeguimientoActivo().subscribe(
-      (respuesta) => {
-        this.listaSeguimiento = respuesta['listado'];
-        this.puntajeService.listarParticipanteSeguimientoPorParticipante(7).subscribe(
-          (respuesta) => {
-            this.listaParticipanteSeguimiento = respuesta['listado'];
-            if (this.listaParticipanteSeguimiento == null) {
-              this.listaParticipanteSeguimiento = [];
-            }
-            if (this.listaParticipanteSeguimiento.length > 0) {
-              for (const ele of this.listaSeguimiento) {
-                ele.asignado = false;
-                for (const ele1 of this.listaParticipanteSeguimiento) {
-                  if (ele?.codigo == ele1?.codSeguimiento) {
-                    ele.asignado = true;
+  async listarSeguimientoActivo(participante: Participante) {
+    if (this.listaSeguimiento.length == 0) {
+      this.puntajeService.listarSeguimientoActivo().subscribe(
+        (respuesta) => {
+          this.listaSeguimiento = respuesta['listado'];
+          if (participante == null || participante == undefined) {
+            this.codParticipante = 0;
+          } else {
+            this.codParticipante = participante?.codigo;
+          }
+          this.puntajeService.listarParticipanteSeguimientoPorParticipante(this.codParticipante).subscribe(
+            (respuesta) => {
+              this.listaParticipanteSeguimiento = respuesta['listado'];
+              if (this.listaParticipanteSeguimiento === null) {
+                this.listaParticipanteSeguimiento = [];
+              }
+              if (this.listaParticipanteSeguimiento.length > 0) {
+                for (const ele of this.listaSeguimiento) {
+                  ele.asignado = false;
+                  for (const ele1 of this.listaParticipanteSeguimiento) {
+                    if (ele?.codigo == ele1?.codSeguimiento) {
+                      ele.asignado = true;
+                    }
                   }
                 }
               }
             }
-          }
-        );
-      }
-    );
+          );
+        }
+      );
+    }
   }
 
   obtenerParametros() {
@@ -264,8 +294,21 @@ export class PuntajePrincipalComponent implements OnInit {
           }
           this.participanteService.guardarParticipante(this.participanteAux).subscribe({
             next: (response) => {
-              this.listarPuntajePorParticipante();
-              this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+              this.participante = response['objeto'];
+              if (this.listaParticipanteSeguimiento.length > 0) {
+                this.puntajeService.guardarListaParticipanteSeguimiento(this.listaParticipanteSeguimiento).subscribe({
+                  next: async (response) => {
+                    this.listarPuntajePorParticipante();
+                    this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                  },
+                  error: (error) => {
+                    this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                  }
+                });
+              } else {
+                this.listarPuntajePorParticipante();
+                this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+              }
             },
             error: (error) => {
               this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
@@ -385,6 +428,8 @@ export class PuntajePrincipalComponent implements OnInit {
             });
           }
           this.participante = this.listaParticipantePresentacion['0'];
+          // Recuperar datos de Seguimiento
+          await this.listarSeguimientoActivo(this.participante);
           resolve("OK");
         }, error: (error) => {
           console.log(error);
@@ -578,7 +623,7 @@ export class PuntajePrincipalComponent implements OnInit {
       if (this.participante['listaPuntajes']?.length > 0) {
         for (let puntaje of this.participante['listaPuntajes']) {
           if (puntaje?.puntaje < 1 || puntaje?.puntaje > 10) {
-            this.mensajeService.mensajeError('Puntaje incorrecto, ingresar en el rango de 1 a 10...');
+            this.mensajeService.mensajeError('Puntaje incorrecto, ingresar valores en el rango de 1 a 10...');
             return;
           };
         }
@@ -615,8 +660,8 @@ export class PuntajePrincipalComponent implements OnInit {
     }
   }
 
-  capturarInputs(datosParticipante) {
-    this.datosEditar = datosParticipante;
+  capturarInputs(participante) {
+    this.datosEditar = participante;
   }
 
   compararCategoria(o1, o2) {

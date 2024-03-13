@@ -66,6 +66,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public tituloLista: string = "";
   public nombreArchivoDescarga: string;
   public crearPDF: boolean = false;
+  public crearPDFCancion: boolean = false;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -289,6 +290,9 @@ export class ParticipantePrincipalComponent implements OnInit {
           if (this.crearPDF) {
             this.generarPDF();
             this.crearPDF = false;
+          } else {
+            this.generarPDFCancion();
+            this.crearPDFCancion = false;
           }
         }
       }
@@ -600,6 +604,16 @@ export class ParticipantePrincipalComponent implements OnInit {
     }
   }
 
+  listarParticipantePDFCancion() {
+    this.listaParticipante = [];
+    this.crearPDFCancion = true;
+    if (this.currentUser?.cedula == "Suscriptor") {
+      this.listarParticipantePorEmail();
+    } else {
+      this.listarParticipantePorEstado();
+    }
+  }
+
   listarParticipanteUsuario() {
     this.listaParticipanteUsuario = [];
     this.participanteService.listarParticipanteUsuario().subscribe(
@@ -645,6 +659,9 @@ export class ParticipantePrincipalComponent implements OnInit {
           if (this.crearPDF) {
             this.generarPDF();
             this.crearPDF = false;
+          } else {
+            this.generarPDFCancion();
+            this.crearPDFCancion = false;
           }
         }
       }
@@ -693,6 +710,47 @@ export class ParticipantePrincipalComponent implements OnInit {
     pdf.open();
   }
 
+  generarPDFCancion() {
+    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.nombreCancion == null ? '' : participante?.nombreCancion.substring(16, 50), participante?.numParticipante, participante?.postcode]);
+    const pdfDefinition: any = {
+      content: [
+        { text: 'Reporte Participante-Canción', style: 'datoTituloGeneral' },
+        {
+          table: {
+            body: [
+              ['#', 'Nombre', 'Categoría/Subcategoría', 'Canción', '# Participante', 'CheckList'],
+              ...bodyData
+            ],
+          },
+          style: 'datosTabla'
+        },
+      ],
+      styles: {
+        datosTabla: {
+          fontSize: 10,
+          margin: [5, 5, 5, 5], // Margen inferior para separar la tabla de otros elementos
+          fillColor: '#F2F2F2', // Color de fondo de la tabla
+        },
+        datoTitulo: {
+          fontSize: 10
+        },
+        datoTituloGeneral: {
+          fontSize: 16,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 0, 0, 10], // Puedes ajustar el margen según tus preferencias
+        },
+        datoSubtitulo: {
+          fontSize: 10,
+          bold: true,
+          alignment: 'center', // Alineado a la izquierda
+          margin: [0, 0, 0, 10], // Ajusta el margen según tus preferencias
+        }
+      },
+    }
+    const pdf = pdfMake.createPdf(pdfDefinition);
+    pdf.open();
+  }
   /* Variables del html, para receptar datos y validaciones*/
   get identificacionField() {
     return this.formParticipanteParametro.get('identificacion');

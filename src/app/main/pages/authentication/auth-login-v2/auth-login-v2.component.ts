@@ -130,7 +130,6 @@ export class AuthLoginV2Component implements OnInit {
   }
 
   onSubmit() {
-    console.log("this.f.password1?.value = ", this.f.password1?.value)
     if (this.f.password1?.value != null) {
       // verificar clave anterior y obtener codigo usuario
       this._authenticationService
@@ -139,7 +138,6 @@ export class AuthLoginV2Component implements OnInit {
         .subscribe(
           data => {
             if (data.accesoConcedido == true) {
-              console.log("data", data)
               this.usuario = new Usuario({
                 codigo: data?.codigoUsuario,
                 codPersona: 0,
