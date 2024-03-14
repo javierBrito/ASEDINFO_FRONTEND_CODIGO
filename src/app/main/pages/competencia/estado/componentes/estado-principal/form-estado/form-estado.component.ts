@@ -263,7 +263,7 @@ export class FormEstadoComponent implements OnInit {
         if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO PASOS LIBRES")) {
             this.displayNoneIntegrante2 = "";
         }
-        if (this.desSubcategoria.includes("GRUPOS")) {
+        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW")) {
           this.displayNoneIntegrante2 = "";
           this.displayNoneIntegranteGrupo = "";
         }

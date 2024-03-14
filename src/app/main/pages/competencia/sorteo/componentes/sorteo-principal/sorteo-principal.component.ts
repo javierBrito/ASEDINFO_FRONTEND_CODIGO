@@ -351,7 +351,7 @@ export class SorteoPrincipalComponent implements OnInit {
           for (const ele of this.listaParticipante) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
             ele.displayNoneGrupo = "none";
-            if (ele.desSubcategoria.includes("GRUPOS")) {
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
               ele.displayNoneGrupo = "";
             }
           }

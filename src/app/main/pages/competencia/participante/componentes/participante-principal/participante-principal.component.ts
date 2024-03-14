@@ -282,7 +282,7 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }
-            if (ele?.desSubcategoria.includes("GRUPOS")) {
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
               ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
@@ -314,7 +314,7 @@ export class ParticipantePrincipalComponent implements OnInit {
         for (const ele of this.listaParticipante) {
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
-          if (ele.desSubcategoria.includes("GRUPOS")) {
+          if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
             ele.displayNoneGrupo = "";
           }
         }
@@ -377,9 +377,75 @@ export class ParticipantePrincipalComponent implements OnInit {
     });
   }
 
+  listarParticipantePorSubcategoriaInstanciaAux() {
+    this.buscarInstanciaPorCodigo();
+    this.habilitarAgregarParticipante = false;
+    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        for (const ele of this.listaParticipante) {
+          ele.displayNoneGrupo = "none";
+          ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+            ele.displayNoneGrupo = "";
+          }
+        }
+        // Ordenar lista por numParticipante
+        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
+      }
+    );
+  }
+
+  listarParticipantePorEmailAux() {
+    // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
+    let participanteParametroTemp = this.formParticipanteParametro.value;
+    this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
+    this.codInstancia = participanteParametroTemp?.codInstancia;
+    //this.habilitarAgregarParticipante = true;
+    this.habilitarAgregarParticipante = false;
+    // Trabajar con el correo del Participante migrado
+    this.participanteService.listarParticipantePorEmail(this.currentUser.correo).subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length > 0) {
+          for (const ele of this.listaParticipante) {
+            ele.displayNoneGrupo = "none";
+            this.customerId = ele.customerId;
+            this.userId = ele.userId;
+            //if (ele?.identificacion == this.currentUser.identificacion) {
+            if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
+              ele.desCategoria = "DIRECTOR";
+              ele.desSubcategoria = "ACADEMIA";
+            }
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+              ele.displayNoneGrupo = "";
+            }
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          }
+          if (this.crearPDF) {
+            this.generarPDF();
+            this.crearPDF = false;
+          } else {
+            if (this.crearPDFCancion) {
+              this.generarPDFCancion();
+              this.crearPDFCancion = false;
+            }
+          }
+        }
+      }
+    );
+  }
+
   listarParticipanteActivoActualizada(event) {
     this.listaParticipante = event;
-    window.location.reload();
+    if (this.currentUser.cedula == "Suscriptor") {
+      this.listarParticipantePorEmailAux();
+    } else {
+      this.codSubcategoria = this.listaParticipante['0']?.codSubcategoria; 
+      this.codInstancia = this.listaParticipante['0']?.codInstancia;
+        this.listarParticipantePorSubcategoriaInstanciaAux();
+    }
+    //window.location.reload();
   }
 
   openDetail() {
@@ -654,7 +720,7 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.desSubcategoria = "ACADEMIA";
             }
             ele.displayNoneGrupo = "none";
-            if (ele.desSubcategoria.includes("GRUPOS")) {
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
               ele.displayNoneGrupo = "";
             }
           }
