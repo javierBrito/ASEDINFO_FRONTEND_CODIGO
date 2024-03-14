@@ -138,8 +138,8 @@ export class ResultadoService {
   listarParticipantePorSubcategoria(codSubcategoria: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoria/${codSubcategoria}`);
   }
-  listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number) {
-    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}`);
+  listarParticipantePorSubcategoriaInstancia(codSubcategoria: number, codInstancia: number, codEstadoCompetencia: number) {
+    return this.http.get<Participante[]>(`${environment.url_seguridad}/competencia/listarParticipantePorSubcategoriaInstancia/${codSubcategoria}/${codInstancia}/${codEstadoCompetencia}`);
   }
 
   /*SERVICIOS EXTERNOS*/

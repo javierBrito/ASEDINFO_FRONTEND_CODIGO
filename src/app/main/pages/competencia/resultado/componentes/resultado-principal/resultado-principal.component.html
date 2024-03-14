@@ -10,7 +10,7 @@
                 <form detail-content [formGroup]="formResultadoParametro"
                     (ngSubmit)="listarPuntajeTotalPorParticipante()">
                     <div class="row form-group">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
                             <select name="codCategoria" formControlName="codCategoria" required
                                 [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
@@ -24,7 +24,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
@@ -38,7 +38,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
@@ -51,6 +51,15 @@
                             </select>
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        <div class="col-md-3 col-1 form-group" *ngIf="listaParticipante.length > 0">
+                            <br/>
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="cargarInstancia()">
+                                <b>{{ "Siguiente Instancia"}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fa-solid fa-arrow-right" style="font-size:14px;color:red"></i>
+                            </button>
                         </div>
                     </div>
                 </form>

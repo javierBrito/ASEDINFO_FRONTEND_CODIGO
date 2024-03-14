@@ -291,8 +291,10 @@ export class ParticipantePrincipalComponent implements OnInit {
             this.generarPDF();
             this.crearPDF = false;
           } else {
-            this.generarPDFCancion();
-            this.crearPDFCancion = false;
+            if (this.crearPDFCancion) {
+              this.generarPDFCancion();
+              this.crearPDFCancion = false;
+            }
           }
         }
       }
@@ -660,8 +662,10 @@ export class ParticipantePrincipalComponent implements OnInit {
             this.generarPDF();
             this.crearPDF = false;
           } else {
-            this.generarPDFCancion();
-            this.crearPDFCancion = false;
+            if (this.crearPDFCancion) {
+              this.generarPDFCancion();
+              this.crearPDFCancion = false;
+            }
           }
         }
       }
