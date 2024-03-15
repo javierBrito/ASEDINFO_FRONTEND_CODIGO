@@ -183,6 +183,13 @@ export class Transaccion implements Itransaccion {
         set(this, 'data.claveCuenta', value);
     }
 
+    get clave(): string {
+        return get(this, 'data.clave');
+    }
+    set clave(value: string) {
+        set(this, 'data.clave', value);
+    }
+
     get fechaCambia(): string {
         return get(this, 'data.fechaCambia');
     }

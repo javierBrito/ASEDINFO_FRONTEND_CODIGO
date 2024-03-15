@@ -263,7 +263,8 @@ export class FormSorteoComponent implements OnInit {
         if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO PASOS LIBRES")) {
           this.displayNoneIntegrante2 = "";
         }
-        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW")) {
+        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW") ||
+          this.desSubcategoria.includes("SHOW DANCE")) {
           this.displayNoneIntegrante2 = "";
           this.displayNoneIntegranteGrupo = "";
         }
@@ -566,7 +567,7 @@ export class FormSorteoComponent implements OnInit {
   cargarArchivo(index, file) {
     // Receptar identificacion de formSorteo.value
     let sorteoTemp = this.formSorteo.value;
-    this.nombreCancion = sorteoTemp?.identificacion+"_"+file?.name;
+    this.nombreCancion = sorteoTemp?.identificacion + "_" + file?.name;
     this.participanteService.cargarArchivo(file, sorteoTemp?.identificacion).subscribe(
       async (respuesta) => {
         //console.log("respuesta = ", respuesta);
@@ -623,12 +624,12 @@ export class FormSorteoComponent implements OnInit {
         this.mensajeService.mensajeError("Error: No se pudo descargar el documento")
       }
     );
-   }
+  }
 
   //filenames: string[] = [];
   private resportProgress(httpEvent: HttpEvent<string[] | Blob>): void {
     switch (httpEvent.type) {
-       case HttpEventType.UploadProgress:
+      case HttpEventType.UploadProgress:
         this.updateStatus(httpEvent.loaded, httpEvent.total!, 'Uploading... ');
         break;
       case HttpEventType.DownloadProgress:
@@ -660,7 +661,7 @@ export class FormSorteoComponent implements OnInit {
     this.fileStatus.status = 'progress';
     this.fileStatus.requestType = requestType;
     this.fileStatus.percent = Math.round(100 * loaded / total);
- 
+
   }
 
   get identificacionField() {

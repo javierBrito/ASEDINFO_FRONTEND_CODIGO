@@ -126,6 +126,7 @@ export class FormTransaccionComponent implements OnInit {
         codProducto: new FormControl(this.transaccionEditar?.codProducto, Validators.required),
         descripcion: new FormControl(this.transaccionEditar?.descripcion, Validators.required),
         claveCuenta: new FormControl(this.transaccionEditar?.claveCuenta),
+        clave: new FormControl(this.transaccionEditar?.clave),
         precio: new FormControl(this.transaccionEditar?.precio, Validators.required),
         fechaInicio: new FormControl(dayjs(this.transaccionEditar?.fechaInicio).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
         fechaFin: new FormControl(dayjs(this.transaccionEditar?.fechaFin).format("YYYY-MM-DD"), Validators.compose([Validators.required, ,])),
@@ -146,6 +147,7 @@ export class FormTransaccionComponent implements OnInit {
         codProducto: new FormControl('', Validators.required),
         descripcion: new FormControl('', Validators.required),
         claveCuenta: new FormControl(''),
+        clave: new FormControl(''),
         precio: new FormControl('', Validators.required),
         fechaInicio: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
         fechaFin: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
@@ -344,6 +346,7 @@ export class FormTransaccionComponent implements OnInit {
         codOperacion: this.operacion?.codigo,
         descripcion: transaccionTemp?.descripcion,
         claveCuenta: transaccionTemp?.claveCuenta,
+        clave: transaccionTemp?.clave,
         precio: transaccionTemp?.precio,
         monto: transaccionTemp?.monto,
         numProducto: transaccionTemp?.numProducto,
@@ -533,7 +536,7 @@ export class FormTransaccionComponent implements OnInit {
     } else {
       mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
       mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: " 
-                         + "%0a*" + transaccion?.claveCuenta +"*";
+                         + "%0a*" + transaccion?.claveCuenta + transaccion?.clave + "*";
     }
     let mensajeNotificacion = "*Notificación Automática*%0aEstimado(a) " + transaccion?.nombreCliente 
     + " el servicio de " + transaccion?.descripcion
@@ -604,6 +607,9 @@ export class FormTransaccionComponent implements OnInit {
   }
   get claveCuentaField() {
     return this.formTransaccion.get('claveCuenta');
+  }
+  get claveField() {
+    return this.formTransaccion.get('clave');
   }
   get numDiasExtraField() {
     return this.formTransaccion.get('numDiasExtra');

@@ -129,7 +129,8 @@ export class EstadoPrincipalComponent implements OnInit {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }
-            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+              ele.desSubcategoria.includes("SHOW DANCE")) {
               ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")

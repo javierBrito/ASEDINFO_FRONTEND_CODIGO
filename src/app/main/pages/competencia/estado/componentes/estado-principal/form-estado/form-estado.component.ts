@@ -261,9 +261,10 @@ export class FormEstadoComponent implements OnInit {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
         this.codCategoria = respuesta['objeto']?.codCategoria;
         if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO PASOS LIBRES")) {
-            this.displayNoneIntegrante2 = "";
+          this.displayNoneIntegrante2 = "";
         }
-        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW")) {
+        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW") ||
+          this.desSubcategoria.includes("SHOW DANCE")) {
           this.displayNoneIntegrante2 = "";
           this.displayNoneIntegranteGrupo = "";
         }
@@ -566,7 +567,7 @@ export class FormEstadoComponent implements OnInit {
   cargarArchivo(index, file) {
     // Receptar identificacion de formEstado.value
     let estadoTemp = this.formEstado.value;
-    this.nombreCancion = estadoTemp?.identificacion+"_"+file?.name;
+    this.nombreCancion = estadoTemp?.identificacion + "_" + file?.name;
     this.participanteService.cargarArchivo(file, estadoTemp?.identificacion).subscribe(
       async (respuesta) => {
         //console.log("respuesta = ", respuesta);
@@ -628,7 +629,7 @@ export class FormEstadoComponent implements OnInit {
   //filenames: string[] = [];
   private resportProgress(httpEvent: HttpEvent<string[] | Blob>): void {
     switch (httpEvent.type) {
-       case HttpEventType.UploadProgress:
+      case HttpEventType.UploadProgress:
         this.updateStatus(httpEvent.loaded, httpEvent.total!, 'Uploading... ');
         break;
       case HttpEventType.DownloadProgress:
@@ -655,7 +656,7 @@ export class FormEstadoComponent implements OnInit {
       default:
         //console.log(httpEvent);
         break;
- 
+
     }
   }
 
@@ -664,7 +665,7 @@ export class FormEstadoComponent implements OnInit {
     this.fileStatus.status = 'progress';
     this.fileStatus.requestType = requestType;
     this.fileStatus.percent = Math.round(100 * loaded / total);
- 
+
   }
 
   get identificacionField() {

@@ -6,6 +6,7 @@ export interface Itransaccion {
     codOperacion?: number;
     descripcion?: string;
     claveCuenta?: string;
+    clave?: string;
     precio?: number;
     monto?: number;
     numProducto?: number;

@@ -135,11 +135,20 @@
                     <input type="number" name="monto" formControlName="monto" class="form-control" id="monto"
                         placeholder="999.99" [attr.disabled]="true">
                 </div>
-                <div class="col-8">
-                    <label for="claveCuenta"><b>{{'Clave Cuenta(*): '}}</b></label>
+                <div class="col-4">
+                    <label for="claveCuenta"><b>{{'Usuario/Cuenta(*): '}}</b></label>
                     <input type="text" name="claveCuenta" formControlName="claveCuenta" class="form-control"
-                        id="claveCuenta" placeholder="Clave Cuenta."
+                        id="claveCuenta" placeholder="Usuario/Cuenta"
                         [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors, 'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <label for="clave"><b>{{'Clave: '}}</b></label>
+                    <input type="text" name="clave" formControlName="clave" class="form-control"
+                        id="clave" placeholder="Clave"
+                        [ngClass]="{'is-valid': claveField?.dirty && !claveField?.invalid && !claveField?.errors, 'is-invalid': claveField?.dirty && claveField?.invalid && claveField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>
                     </div>

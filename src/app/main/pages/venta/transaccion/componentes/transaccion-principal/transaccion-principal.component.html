@@ -58,7 +58,6 @@
                                 </button>
                             </div>
                         </div>
-
                         <!--
                             <div class="col-12 form-group">
                                 <button [disabled]=""
@@ -72,8 +71,8 @@
                             -->
                     </div>
                     <div class="row form-group">
-                        <div class="col-2">
-                            <label for="claveCuenta"><b>{{'Clave Cuenta(*): '}}</b></label>
+                        <div class="col-4">
+                            <label for="claveCuenta"><b>{{'Usuario/Cuenta: '}}</b></label>
                             <input type="text" name="claveCuenta" id="claveCuenta" formControlName="claveCuenta"
                                 placeholder="Clave Cuenta" class="form-control" maxlength="50"
                                 [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors,'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
@@ -82,7 +81,7 @@
                             </div>
                         </div>
                         <div class="col-3">
-                            <label for="codCliente"><b>{{'Cliente(*): '}}</b></label>
+                            <label for="codCliente"><b>{{'Cliente: '}}</b></label>
                             <select name="codCliente" formControlName="codCliente" required placeholder="Nombre Cliente"
                                 class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente">
                                 <option [value]="" selected>Seleccionar Cliente</option>
@@ -118,7 +117,8 @@
                                                         <th scope="col">#</th>
                                                         <th scope="col">Cliente</th>
                                                         <th scope="col">Servicio</th>
-                                                        <th scope="col">Clave Cuenta</th>
+                                                        <th scope="col">Cuenta</th>
+                                                        <th scope="col">Clave</th>
                                                         <!--<th scope="col">Descripción</th>-->
                                                         <th scope="col">Monto</th>
                                                         <th scope="col">Cantidad</th>
@@ -133,14 +133,12 @@
                                                     <tr [ngStyle]="{'color': transaccion?.colorFila}"
                                                         *ngFor="let transaccion of listaTransaccion | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <!--<td>{{transaccion?.nombreCliente + " - " + transaccion?.celular}}</td>-->
                                                         <td>{{transaccion?.nombreCliente}}</td>
                                                         <td>{{transaccion?.descripcionProducto}}</td>
                                                         <td>{{transaccion?.claveCuenta}}</td>
-                                                        <!--<td>{{transaccion?.descripcion}}</td>-->
+                                                        <td>{{transaccion?.clave}}</td>
                                                         <td>{{transaccion?.monto}}</td>
                                                         <td>{{transaccion?.numProducto}}</td>
-                                                        <!--<td>{{transaccion?.fechaInicio}}</td>-->
                                                         <td>{{transaccion?.fechaFin}}</td>
                                                         <td>{{transaccion?.numDiasRenovar}}</td>
                                                         <td [ngStyle]="{'background-color': transaccion?.colorColumna}">

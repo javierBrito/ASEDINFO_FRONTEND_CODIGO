@@ -282,7 +282,8 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }
-            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+              ele.desSubcategoria.includes("SHOW DANCE")) {
               ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
@@ -314,7 +315,8 @@ export class ParticipantePrincipalComponent implements OnInit {
         for (const ele of this.listaParticipante) {
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
-          if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+          if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+            ele.desSubcategoria.includes("SHOW DANCE")) {
             ele.displayNoneGrupo = "";
           }
         }
@@ -386,7 +388,8 @@ export class ParticipantePrincipalComponent implements OnInit {
         for (const ele of this.listaParticipante) {
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
-          if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+          if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+            ele.desSubcategoria.includes("SHOW DANCE")) {
             ele.displayNoneGrupo = "";
           }
         }
@@ -417,7 +420,8 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }
-            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+              ele.desSubcategoria.includes("SHOW DANCE")) {
               ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
@@ -441,9 +445,9 @@ export class ParticipantePrincipalComponent implements OnInit {
     if (this.currentUser.cedula == "Suscriptor") {
       this.listarParticipantePorEmailAux();
     } else {
-      this.codSubcategoria = this.listaParticipante['0']?.codSubcategoria; 
+      this.codSubcategoria = this.listaParticipante['0']?.codSubcategoria;
       this.codInstancia = this.listaParticipante['0']?.codInstancia;
-        this.listarParticipantePorSubcategoriaInstanciaAux();
+      this.listarParticipantePorSubcategoriaInstanciaAux();
     }
     //window.location.reload();
   }
@@ -720,7 +724,8 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.desSubcategoria = "ACADEMIA";
             }
             ele.displayNoneGrupo = "none";
-            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+              ele.desSubcategoria.includes("SHOW DANCE")) {
               ele.displayNoneGrupo = "";
             }
           }

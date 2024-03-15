@@ -308,7 +308,8 @@ export class FormParticipanteComponent implements OnInit {
           this.disabledApellidos = false;
           this.displayIntegrante2 = "";
         }
-        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW")) {
+        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW") ||
+          this.desSubcategoria.includes("SHOW DANCE")) {
           this.displayIntegrante2 = "";
           this.displayIntegranteGrupo = "";
           this.disabledApellidos = true;
@@ -369,7 +370,8 @@ export class FormParticipanteComponent implements OnInit {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
             }
-            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW")) {
+            if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW") ||
+              this.desSubcategoria.includes("SHOW DANCE")) {
               ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
