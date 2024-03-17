@@ -141,6 +141,9 @@
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <!--<th scope="col">Identificación</th>-->
+                                                        <th scope="col">
+                                                            <div align="center">Escuela / Academia</div>
+                                                        </th>
                                                         <th scope="col">Nombres</th>
                                                         <th scope="col">Grupo</th>
                                                         <th scope="col">
@@ -163,7 +166,7 @@
                                                     <tr
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <!--<td>{{participante?.identificacion}}</td>-->
+                                                        <td>{{participante?.nombreEscuela}}</td>
                                                         <td>{{participante?.firstName + ' - ' + participante?.lastName}}
                                                         </td>
                                                         <td>
@@ -326,7 +329,6 @@
             </button>
         </div>
         <div class="modal-body">
-            <!--{{listaIntegrante}}-->
             <table class="table" *ngIf="listaIntegrante?.length > 0" id="tablaIntegrante">
                 <thead>
                     <tr>

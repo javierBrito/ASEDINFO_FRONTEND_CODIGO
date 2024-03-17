@@ -166,6 +166,7 @@ export class FormParticipanteComponent implements OnInit {
         codCategoria: new FormControl(this.participanteEditar?.codCategoria),
         codSubcategoria: new FormControl(this.participanteEditar?.codSubcategoria),
         codInstancia: new FormControl(this.participanteEditar?.codInstancia),
+        nombreEscuela: new FormControl(this.participanteEditar?.nombreEscuela),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
@@ -185,6 +186,7 @@ export class FormParticipanteComponent implements OnInit {
         codCategoria: new FormControl(''),
         codSubcategoria: new FormControl(''),
         codInstancia: new FormControl(''),
+        nombreEscuela: new FormControl(''),
       })
     }
     this.codSubcategoria = this.codSubcategoriaChild;
@@ -561,6 +563,7 @@ export class FormParticipanteComponent implements OnInit {
         dateLastActive: dayjs(participanteTemp.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS"),
         codEstadoCompetencia: participanteTemp?.codEstadoCompetencia,
         nombreCancion: this.nombreCancion,
+        nombreEscuela: participanteTemp?.nombreEscuela,
       });
     }
     if (this.participanteEditar) {
@@ -579,6 +582,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.dateLastActive = this.participanteAux['data'].dateLastActive;
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
+      this.participante.nombreEscuela = this.participanteAux['data'].nombreEscuela;
       this.participanteService.guardarParticipante(this.participante).subscribe({
         next: (response) => {
           this.participante = response['objeto'];
@@ -961,6 +965,9 @@ export class FormParticipanteComponent implements OnInit {
   }
   get codInstanciaField() {
     return this.formParticipante.get('codInstancia');
+  }
+  get nombreEscuelaField() {
+    return this.formParticipante.get('nombreEscuela');
   }
 
 }

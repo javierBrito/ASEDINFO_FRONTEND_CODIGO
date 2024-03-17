@@ -17,6 +17,8 @@ import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import moment from 'moment';
 import { HttpUrlEncodingCodec } from '@angular/common/http';
+import { CuentaClave } from 'app/main/pages/compartidos/modelos/CuentaClave';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-form-transaccion',
@@ -42,6 +44,7 @@ export class FormTransaccionComponent implements OnInit {
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
   @ViewChild("modal_error", { static: false }) modal_error: TemplateRef<any>;
   @ViewChild(DetailComponent, { static: false }) parentDetail: DetailComponent;
+  @ViewChild("modalCuentaClave", { static: false }) modalCuentaClave: TemplateRef<any>;
 
   /*VARIABLES */
   public showDetail: boolean;
@@ -61,7 +64,8 @@ export class FormTransaccionComponent implements OnInit {
   public prefijoTelefonico: string;
   public celular: string;
   public nombreCliente: string;
-
+  public siActualizaCuentaClave: boolean;
+  public codTransaccion: number = 0;
 
   /*FORMULARIOS*/
   public formTransaccion: FormGroup;
@@ -81,6 +85,10 @@ export class FormTransaccionComponent implements OnInit {
     { valor: "NO" },
   ];
   public transaccionEditarAux: Transaccion;
+  public listaCuentaClave: CuentaClave[] = [];
+  public listaCuentaClaveAux: CuentaClave[] = [];
+  public cuentaClave: CuentaClave;
+
 
   /*CONSTRUCTOR*/
   constructor(
@@ -91,6 +99,7 @@ export class FormTransaccionComponent implements OnInit {
     private clienteService: ClienteService,
     private productoService: ProductoService,
     private personaService: PersonaService,
+    private modalService: NgbModal
   ) {
     this.load_btn = false;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -109,12 +118,13 @@ export class FormTransaccionComponent implements OnInit {
     this.buscarOperacionPorNemonico();
     this.nombreProceso = this.nombreProcesoChild;
     if (this.transaccionEditar) {
+      this.codTransaccion = this.transaccionEditar?.codigo;
       // Datos para envio de notificaciones
       this.prefijoTelefonico = this.transaccionEditar?.prefijoTelefonico,
-      this.celular = this.transaccionEditar?.celular,
-      this.nombreCliente = this.transaccionEditar?.nombreCliente,
+        this.celular = this.transaccionEditar?.celular,
+        this.nombreCliente = this.transaccionEditar?.nombreCliente,
 
-      this.transaccionEditarAux = this.transaccionEditar;
+        this.transaccionEditarAux = this.transaccionEditar;
       this.codProducto = this.transaccionEditar?.codProducto;
       this.numMes = this.transaccionEditar?.numMes;
       this.numDiasExtra = this.transaccionEditar?.numDiasExtra;
@@ -320,7 +330,7 @@ export class FormTransaccionComponent implements OnInit {
   addRegistro() {
     if (this.formTransaccion?.valid) {
       let transaccionTemp = this.formTransaccion.value;
-   
+
       let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       let fechaFinString = dayjs(transaccionTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS");
       if (transaccionTemp?.numMes != "" && transaccionTemp?.numMes != 0) {
@@ -387,6 +397,7 @@ export class FormTransaccionComponent implements OnInit {
             }
             this.transaccionService.guardarTransaccion(this.transaccionEditarAux).subscribe({
               next: async (response) => {
+                this.transaccion = response['objeto'];
                 this.listarTransaccionPorDescripcion();
                 this.mensajeService.mensajeCorrecto('Se ha renovado el registro correctamente...');
                 this.parentDetail.closeDetail();
@@ -397,10 +408,28 @@ export class FormTransaccionComponent implements OnInit {
               }
             });
           }
-          // Recargamos la lista
-          this.listarTransaccionPorDescripcion();
-          this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
-          this.parentDetail.closeDetail();
+          if (this.listaCuentaClave.length > 0 && this.siActualizaCuentaClave) {
+            for (let ele of this.listaCuentaClave) {
+              ele.codTransaccion = this.transaccion?.codigo;
+            }
+            this.transaccionService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
+              next: async (response) => {
+                this.listarTransaccionPorDescripcion();
+                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.listarTransaccionPorDescripcion();
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          } else {
+            // Recargamos la lista
+            this.listarTransaccionPorDescripcion();
+            this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+            this.parentDetail.closeDetail();
+          }
         },
         error: (error) => {
           this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
@@ -535,16 +564,16 @@ export class FormTransaccionComponent implements OnInit {
       mensajeRenovaCaduca = " se ha renovado exitosamente hasta el ";
     } else {
       mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
-      mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: " 
-                         + "%0a*" + transaccion?.claveCuenta + transaccion?.clave + "*";
+      mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: "
+        + "%0a*" + transaccion?.claveCuenta + "  " + transaccion?.clave + "*";
     }
-    let mensajeNotificacion = "*Notificación Automática*%0aEstimado(a) " + transaccion?.nombreCliente 
-    + " el servicio de " + transaccion?.descripcion
-    + mensajeRenovaCaduca
-    + dia + " de "+ mes + " de " + año 
-    + ", favor su ayuda en el caso de presentar inconvenientes notificarlos oportunamente por este medio... Un excelente dia, tarde o noche...."
-    + mensajeClaveCuenta;
-    
+    let mensajeNotificacion = "*Notificación Automática*%0aEstimado(a) " + transaccion?.nombreCliente
+      + " el servicio de " + transaccion?.descripcion
+      + mensajeRenovaCaduca
+      + dia + " de " + mes + " de " + año
+      + ", favor su ayuda en el caso de presentar inconvenientes notificarlos oportunamente por este medio... Un excelente dia, tarde o noche...."
+      + mensajeClaveCuenta;
+
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();
     //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
@@ -563,6 +592,67 @@ export class FormTransaccionComponent implements OnInit {
       error: (error) => {
         this.mensajeService.mensajeError('Ha habido un problema al enviar la notificación ' + error);
       }
+    });
+  }
+
+  procesarListaCuentaClave = async () => {
+    this.listaCuentaClave = [];
+    await this.listarCuentaClavePorTransaccion(this.codTransaccion);
+    await this.verModalCuentaClave();
+  }
+
+  listarCuentaClavePorTransaccion(codTransaccion: number) {
+    return new Promise((resolve, rejects) => {
+      this.transaccionService.listarCuentaClavePorTransaccion(codTransaccion).subscribe({
+        next: (respuesta) => {
+          this.listaCuentaClave = respuesta['listado'];
+          let index = 0;
+          if (this.listaCuentaClave.length > 0) {
+            index = this.listaCuentaClave.length;
+          }
+          for (index; index < 20; index++) {
+            this.cuentaClave = new CuentaClave();
+            this.cuentaClave = {
+              codigo: 0,
+              cuenta: "",
+              clave: "",
+              codTransaccion: 0,
+              estado: "A",
+            }
+            this.listaCuentaClave.push(this.cuentaClave);
+          }
+          resolve(respuesta);
+        }, error: (error) => {
+          rejects("Error");
+          console.log("Error =", error);
+        }
+      })
+    })
+  }
+
+  async verModalCuentaClave() {
+    this.siActualizaCuentaClave = false;
+    this.listaCuentaClaveAux = [];
+    this.modalService.open(this.modalCuentaClave).result.then(proceso => {
+      if (proceso == "Si") {
+        this.siActualizaCuentaClave = true;
+        for (let cuentaClaveAux of this.listaCuentaClave) {
+          if (cuentaClaveAux?.clave != "") {
+            this.cuentaClave = new CuentaClave();
+            this.cuentaClave = {
+              codigo: cuentaClaveAux?.codigo,
+              cuenta: cuentaClaveAux?.cuenta,
+              clave: cuentaClaveAux?.clave,
+              codTransaccion: cuentaClaveAux?.codTransaccion,
+              estado: cuentaClaveAux?.estado,
+            }
+            this.listaCuentaClaveAux.push(this.cuentaClave);
+          }
+        }
+        this.listaCuentaClave = this.listaCuentaClaveAux;
+      }
+    }, error => {
+      console.log(error);
     });
   }
 

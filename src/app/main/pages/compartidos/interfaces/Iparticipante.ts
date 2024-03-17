@@ -13,6 +13,7 @@ export interface Iparticipante {
     numParticipante?: number;
     nombreCancion?: string;
     numJueces: number;
+    nombreEscuela: string;
 
     customerId: number;
     userId: number;

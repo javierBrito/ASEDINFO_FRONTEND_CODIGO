@@ -135,16 +135,15 @@
                     <input type="number" name="monto" formControlName="monto" class="form-control" id="monto"
                         placeholder="999.99" [attr.disabled]="true">
                 </div>
-                <div class="col-4">
+                <div class="col-5">
                     <label for="claveCuenta"><b>{{'Usuario/Cuenta(*): '}}</b></label>
                     <input type="text" name="claveCuenta" formControlName="claveCuenta" class="form-control"
-                        id="claveCuenta" placeholder="Usuario/Cuenta"
-                        [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors, 'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
+                        id="claveCuenta" placeholder="Usuario/Cuenta">
+                        <button matTooltip="Adicionar Usuario/Cuenta + Clave"
+                        type="button" class="btn btn-primary" rippleEffect round><i class="fa fa-plus"
+                            (click)="procesarListaCuentaClave()"></i></button>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <label for="clave"><b>{{'Clave: '}}</b></label>
                     <input type="text" name="clave" formControlName="clave" class="form-control"
                         id="clave" placeholder="Clave"
@@ -214,5 +213,55 @@
     <div class="modal-body">
         {{transaccionEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el
         registro.'}}
+    </div>
+</ng-template>
+
+<ng-template #modalCuentaClave let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Lista CuentaClave</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modal.close('Cerrado desde la ventana')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="modal.close('Si')">Actualizar</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                (click)="modal.close('No')">Cancelar</button>
+        </div>
+        <div class="modal-body">
+            <table class="table" *ngIf="listaCuentaClave?.length > 0" id="tablaCuentaClave">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">
+                            <div align="center">Usuario/Cuenta</div>
+                        </th>
+                        <th scope="col">
+                            <div align="center">Clave</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cuentaClave of listaCuentaClave ; let index=index">
+                        <td style="width:1%">{{index+1}}</td>
+                        <td>
+                            <input type="text" name="cuenta" style="width:135%" [(ngModel)]="cuentaClave.cuenta"
+                                id="cuenta">
+                        </td>
+                        <td>
+                            <input type="text" name="clave" style="width:120%" [(ngModel)]="cuentaClave.clave"
+                                id="clave">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="modal.close('Si')">Actualizar</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                (click)="modal.close('No')">Cancelar</button>
+        </div>
     </div>
 </ng-template>

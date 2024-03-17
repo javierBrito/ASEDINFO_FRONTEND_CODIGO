@@ -6,6 +6,7 @@ import { Transaccion } from 'app/main/pages/compartidos/modelos/Transaccion';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import axios from 'axios';
+import { CuentaClave } from 'app/main/pages/compartidos/modelos/CuentaClave';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +45,13 @@ export class TransaccionService {
   listarTransaccionPadre(codigoAplicacion: number) {
     return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPadre/${codigoAplicacion}`);
   }
+  listarCuentaClavePorTransaccion(codTransaccion: number) {
+    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/venta/listarCuentaClavePorTransaccion/${codTransaccion}`);
+  }
+  guardarListaCuentaClave(listaCuentaClave: CuentaClave[]) {
+    return this.http.post<CuentaClave[]>(`${environment.url_seguridad}/venta/guardarListaCuentaClave`, listaCuentaClave);
+  }
+
   buscarTransaccionPorCodigo(codigo: number) {
     return this.http.get<Transaccion>(`${environment.url_seguridad}/catalogo/buscarTransaccionPorCodigo/${codigo}`);
   }

@@ -48,6 +48,13 @@ export class Participante implements Iparticipante {
         set(this, 'data.nombrePersona', value);
     }
 
+    get nombreEscuela(): string {
+        return get(this, 'data.nombreEscuela');
+    }
+    set nombreEscuela(value: string) {
+        set(this, 'data.nombreEscuela', value);
+    }
+
     get persona(): any {
         return get(this, 'data.persona');
     }

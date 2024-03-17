@@ -20,6 +20,8 @@ import { ajax } from 'jquery';
 import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
 import moment from 'moment';
 import { HttpParameterCodec, HttpUrlEncodingCodec } from "@angular/common/http";
+import { CuentaClave } from 'app/main/pages/compartidos/modelos/CuentaClave';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-transaccion-principal',
@@ -34,6 +36,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   @ViewChild("modal_confirm_delete", { static: false }) modal_confirm_delete: TemplateRef<any>;
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
   @ViewChild("modal_error", { static: false }) modal_error: TemplateRef<any>;
+  @ViewChild("modalCuentaClave", { static: false }) modalCuentaClave: TemplateRef<any>;
 
   /*VARIABLES*/
   public codigo: number;
@@ -68,6 +71,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public listaAplicacion: Aplicacion[] = [];
   public listaPeriodoRegAniLec: any[];
   public listaCliente: Cliente[];
+  public listaCuentaClave: CuentaClave[];
 
   /*TABS*/
   public selectedTab: number;
@@ -102,7 +106,8 @@ export class TransaccionPrincipalComponent implements OnInit {
     private readonly clienteService: ClienteService,
     private readonly personaService: PersonaService,
     private mensajeService: MensajeService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private modalService: NgbModal
   ) {
     this.codigo = 0;
     this.itemsRegistros = 5;
@@ -133,6 +138,34 @@ export class TransaccionPrincipalComponent implements OnInit {
     //this.obtenerTransaccionACaducarse();
     this.listarTransaccionACaducarse();
     this.enviarNotificacionIndividual = false;
+  }
+
+  verListaCuentaClave = async (codParticipante: number) => {
+    //this.listaCuentaClave = [];
+    await this.listarCuentaClavePorParticipante(codParticipante);
+    await this.verModalCuentaClave();
+  }
+
+  listarCuentaClavePorParticipante(codParticipante: number) {
+    return new Promise((resolve, rejects) => {
+      this.transaccionService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
+        next: (respuesta) => {
+          this.listaCuentaClave = respuesta['listado'];
+          resolve(respuesta);
+        }, error: (error) => {
+          rejects("Error");
+          console.log("Error =", error);
+        }
+      })
+    })
+  }
+  
+  async verModalCuentaClave() {
+    this.modalService.open(this.modalCuentaClave).result.then(r => {
+      console.log("Tu respuesta ha sido: " + r);
+    }, error => {
+      console.log(error);
+    });
   }
 
   listarClienteActivoOrdenNombre() {

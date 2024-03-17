@@ -123,10 +123,20 @@
                     </button>
                     <div class="col-sm-12" *ngIf="true">
                         <embed id="vistaPreviaDJ1" type="application/pdf" with="60" height="50">
-                        <!--
-                        <embed [src]="pdfFileURL" type="application/pdf" with="100" height="100">
-                        <iframe src="pdfFileURL" type="application/pdf" frameborder="0"></iframe>
-                        -->
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="nombreEscuela">
+                        <h4><b>{{'Escuela/Academia: '}}</b></h4>
+                    </label>
+                    <input type="text" name="nombreEscuela" formControlName="nombreEscuela" class="form-control"
+                        id="nombreEscuela" oninput="nombreEscuela.value = nombreEscuela.value.toUpperCase()"
+                        placeholder="Nombre Escuela/Academia" autocomplete="off"
+                        [ngClass]="{'is-valid': nombreEscuelaField?.dirty && !nombreEscuelaField?.invalid && !nombreEscuelaField?.errors, 'is-invalid': nombreEscuelaField?.dirty && nombreEscuelaField?.invalid && nombreEscuelaField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
                     </div>
                 </div>
             </div>
@@ -208,7 +218,7 @@
                         <h4><b>{{'Usuario WP: '}}</b></h4>
                     </label>
                     <input type="text" name="username" formControlName="username" class="form-control" id="username"
-                        placeholder="Usuario WP" 
+                        placeholder="Usuario WP"
                         [ngClass]="{'is-valid': usernameField?.dirty && !usernameField?.invalid && !usernameField?.errors, 'is-invalid': usernameField?.dirty && usernameField?.invalid && usernameField?.errors}">
                     <div class="valid-feedback">
                         <span>{{ "Exito"}}</span>

@@ -117,8 +117,8 @@
                                                         <th scope="col">#</th>
                                                         <th scope="col">Cliente</th>
                                                         <th scope="col">Servicio</th>
-                                                        <th scope="col">Cuenta</th>
-                                                        <th scope="col">Clave</th>
+                                                        <th scope="col">Cuenta/Clave</th>
+                                                        <th scope="col">...</th>
                                                         <!--<th scope="col">Descripción</th>-->
                                                         <th scope="col">Monto</th>
                                                         <th scope="col">Cantidad</th>
@@ -135,8 +135,13 @@
                                                         <td>{{index+1}}</td>
                                                         <td>{{transaccion?.nombreCliente}}</td>
                                                         <td>{{transaccion?.descripcionProducto}}</td>
-                                                        <td>{{transaccion?.claveCuenta}}</td>
-                                                        <td>{{transaccion?.clave}}</td>
+                                                        <td>{{transaccion?.claveCuenta + '  ' + transaccion?.clave}}</td>
+                                                        <td>
+                                                            <button type="button"
+                                                                matTooltip="Ver Cuenta/Clave" class="btn btn-primary"
+                                                                rippleEffect round><i class="fa fa-search"
+                                                                    (click)="verListaCuentaClave(transaccion?.codigo)"></i></button>
+                                                        </td>
                                                         <td>{{transaccion?.monto}}</td>
                                                         <td>{{transaccion?.numProducto}}</td>
                                                         <td>{{transaccion?.fechaFin}}</td>
@@ -246,5 +251,50 @@
     </div>
     <div class="modal-body">
         {{'Ha habido un problema al borrar el registro'}}
+    </div>
+</ng-template>
+
+<ng-template #modalCuentaClave let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Lista CuentaClave</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modal.close('Cerrado desde la ventana')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="table" *ngIf="listaCuentaClave?.length > 0" id="tablaCuentaClave">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">
+                            <div align="center">Usuario/Cuenta</div>
+                        </th>
+                        <th scope="col">
+                            <div align="center">Clave</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cuentaClave of listaCuentaClave ; let index=index">
+                        <td style="width:1%">{{index+1}}</td>
+                        <td>
+                            <input type="text" name="cuenta" style="width:135%" [(ngModel)]="cuentaClave.cuenta"
+                                id="cuenta" [disabled]="true">
+                        </td>
+                        <td>
+                            <input type="text" name="clave" style="width:120%" [(ngModel)]="cuentaClave.clave"
+                                id="clave" [disabled]="true">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <!--<button type="button" class="btn btn-primary" (click)="modal.close('Si')">Actualizar</button>-->
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                (click)="modal.close('No')">Cancelar</button>
+        </div>
     </div>
 </ng-template>

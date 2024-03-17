@@ -70,6 +70,7 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
+  public listaParticipantePDF: Participante[] = [];
   public listaParticipanteUsuario: Participante[] = [];
   public listaPersona: Persona[] = [];
   public listaCategoria: Categoria[] = [];
@@ -165,7 +166,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     } else {
       this.disabledEstado = false;
       this.displayNone1 = 'none';
-      this.listarParticipantePorEstado();
+      //this.listarParticipantePorEstado();
     }
     //this.listarIntegranteActivo();
   }
@@ -288,6 +289,7 @@ export class ParticipantePrincipalComponent implements OnInit {
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
+          this.listaParticipantePDF = this.listaParticipante;
           if (this.crearPDF) {
             this.generarPDF();
             this.crearPDF = false;
@@ -401,9 +403,9 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   listarParticipantePorEmailAux() {
     // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
-    let participanteParametroTemp = this.formParticipanteParametro.value;
-    this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
-    this.codInstancia = participanteParametroTemp?.codInstancia;
+    //let participanteParametroTemp = this.formParticipanteParametro.value;
+    //this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
+    //this.codInstancia = participanteParametroTemp?.codInstancia;
     //this.habilitarAgregarParticipante = true;
     this.habilitarAgregarParticipante = false;
     // Trabajar con el correo del Participante migrado
@@ -425,15 +427,6 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.displayNoneGrupo = "";
             }
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
-          }
-          if (this.crearPDF) {
-            this.generarPDF();
-            this.crearPDF = false;
-          } else {
-            if (this.crearPDFCancion) {
-              this.generarPDFCancion();
-              this.crearPDFCancion = false;
-            }
           }
         }
       }
@@ -479,7 +472,8 @@ export class ParticipantePrincipalComponent implements OnInit {
               if (this.currentUser?.cedula == "Suscriptor") {
                 this.listarParticipantePorEmail();
               } else {
-                this.listarParticipantePorEstado();
+                this.listarParticipantePorSubcategoriaInstanciaAux();
+                //this.listarParticipantePorEstado();
               }
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
             },
@@ -667,7 +661,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePDF() {
-    this.listaParticipante = [];
+    //this.listaParticipante = [];
     this.crearPDF = true;
     if (this.currentUser?.cedula == "Suscriptor") {
       this.listarParticipantePorEmail();
@@ -677,7 +671,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePDFCancion() {
-    this.listaParticipante = [];
+    //this.listaParticipante = [];
     this.crearPDFCancion = true;
     if (this.currentUser?.cedula == "Suscriptor") {
       this.listarParticipantePorEmail();
@@ -692,10 +686,10 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipanteUsuario = respuesta['listado'];
         if (this.listaParticipanteUsuario.length > 0) {
-          this.listaParticipante = this.listaParticipanteUsuario;
+          this.listaParticipantePDF = this.listaParticipanteUsuario;
           this.generarPDF();
           this.crearPDF = false;
-          this.listarParticipantePorEstado();
+          //this.listarParticipantePorEstado();
         }
       }
     );
@@ -712,11 +706,11 @@ export class ParticipantePrincipalComponent implements OnInit {
   listarParticipantePorEstado() {
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
-        this.listaParticipante = respuesta['listado'];
+        this.listaParticipantePDF = respuesta['listado'];
         // Ordenar lista por numParticipante
-        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
-        if (this.listaParticipante.length > 0) {
-          for (const ele of this.listaParticipante) {
+        this.listaParticipantePDF.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
+        if (this.listaParticipantePDF.length > 0) {
+          for (const ele of this.listaParticipantePDF) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
             //if (ele?.identificacion == this.currentUser.identificacion) {
             if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
@@ -744,7 +738,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   generarPDF() {
-    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.identificacion, participante?.numParticipante, participante?.postcode]);
+    const bodyData = this.listaParticipantePDF.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.identificacion, participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
         { text: 'Reporte Participante', style: 'datoTituloGeneral' },
@@ -786,7 +780,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   generarPDFCancion() {
-    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.nombreCancion == null ? '' : participante?.nombreCancion.substring(16, 50), participante?.numParticipante, participante?.postcode]);
+    const bodyData = this.listaParticipantePDF.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.nombreCancion == null ? '' : participante?.nombreCancion.substring(16, 50), participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
         { text: 'Reporte Participante-Canción', style: 'datoTituloGeneral' },
