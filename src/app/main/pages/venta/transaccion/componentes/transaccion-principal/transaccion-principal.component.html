@@ -119,10 +119,8 @@
                                                         <th scope="col">Servicio</th>
                                                         <th scope="col">Cuenta/Clave</th>
                                                         <th scope="col">...</th>
-                                                        <!--<th scope="col">Descripción</th>-->
                                                         <th scope="col">Monto</th>
                                                         <th scope="col">Cantidad</th>
-                                                        <!--<th scope="col">Inicio</th>-->
                                                         <th scope="col">Fin</th>
                                                         <th scope="col">Días Renovar</th>
                                                         <th scope="col">Cambiar</th>
@@ -137,7 +135,7 @@
                                                         <td>{{transaccion?.descripcionProducto}}</td>
                                                         <td>{{transaccion?.claveCuenta + '  ' + transaccion?.clave}}</td>
                                                         <td>
-                                                            <button type="button"
+                                                            <button type="button" [ngStyle]="{'display': transaccion?.displayNoneListaCuentaClave}"
                                                                 matTooltip="Ver Cuenta/Clave" class="btn btn-primary"
                                                                 rippleEffect round><i class="fa fa-search"
                                                                     (click)="verListaCuentaClave(transaccion?.codigo)"></i></button>

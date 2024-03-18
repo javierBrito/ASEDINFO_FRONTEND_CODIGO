@@ -87,6 +87,7 @@ export class FormTransaccionComponent implements OnInit {
   public transaccionEditarAux: Transaccion;
   public listaCuentaClave: CuentaClave[] = [];
   public listaCuentaClaveAux: CuentaClave[] = [];
+  public listaCuentaClaveTemp: CuentaClave[] = [];
   public cuentaClave: CuentaClave;
 
 
@@ -119,6 +120,7 @@ export class FormTransaccionComponent implements OnInit {
     this.nombreProceso = this.nombreProcesoChild;
     if (this.transaccionEditar) {
       this.codTransaccion = this.transaccionEditar?.codigo;
+      this.listarCuentaClavePorTransaccionActivo(this.codTransaccion);
       // Datos para envio de notificaciones
       this.prefijoTelefonico = this.transaccionEditar?.prefijoTelefonico,
         this.celular = this.transaccionEditar?.celular,
@@ -381,11 +383,26 @@ export class FormTransaccionComponent implements OnInit {
       }
       this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: async (response) => {
+          this.transaccion = response['objeto'];
+          // Tratar listaCuentaClave
+          if (this.listaCuentaClave.length > 0 && this.siActualizaCuentaClave) {
+            for (let ele of this.listaCuentaClave) {
+              ele.codTransaccion = this.transaccion?.codigo;
+            }
+            this.transaccionService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
+              next: async (response) => {
+                //this.mensajeService.mensajeCorrecto('Se ha agregado la lista correctamente...');
+              },
+              error: (error) => {
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+              }
+            });
+          };
           // Enviar notificaciones respectivas cuando es R o C
           if (this.nombreProceso == "RENOVAR" || this.nombreProceso == "CLONAR") {
-            this.enviarWhatsappApi(this.transaccion['data']);
+            // Enviar Notificaciones
+            this.enviarWhatsappApi(this.transaccion);
           }
-
           // Actualizamos registro existente con R de renovacion 
           if (this.transaccionEditar?.estado == "R") {
             this.transaccionEditarAux.fechaInicio = dayjs(this.transaccionEditarAux.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS")
@@ -408,28 +425,11 @@ export class FormTransaccionComponent implements OnInit {
               }
             });
           }
-          if (this.listaCuentaClave.length > 0 && this.siActualizaCuentaClave) {
-            for (let ele of this.listaCuentaClave) {
-              ele.codTransaccion = this.transaccion?.codigo;
-            }
-            this.transaccionService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
-              next: async (response) => {
-                this.listarTransaccionPorDescripcion();
-                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
-                this.parentDetail.closeDetail();
-              },
-              error: (error) => {
-                this.listarTransaccionPorDescripcion();
-                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
-                this.parentDetail.closeDetail();
-              }
-            });
-          } else {
-            // Recargamos la lista
-            this.listarTransaccionPorDescripcion();
-            this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
-            this.parentDetail.closeDetail();
-          }
+          // Recargamos la lista
+          this.listarTransaccionPorDescripcion();
+          this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+          this.parentDetail.closeDetail();
+          //}
         },
         error: (error) => {
           this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro...');
@@ -439,7 +439,24 @@ export class FormTransaccionComponent implements OnInit {
     } else {
       this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: async (response) => {
-          this.enviarWhatsappApi(this.transaccion['data']);
+          this.transaccion = response['objeto'];
+          // Tratar listaCuentaClave
+          if (this.listaCuentaClave.length > 0 && this.siActualizaCuentaClave) {
+            for (let ele of this.listaCuentaClave) {
+              ele.codTransaccion = this.transaccion?.codigo;
+            }
+            this.transaccionService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
+              next: async (response) => {
+                //this.mensajeService.mensajeCorrecto('Se ha agregado la lista correctamente...');
+              },
+              error: (error) => {
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+              }
+            });
+          };
+          // Enviar Notificaciones
+          this.enviarWhatsappApi(this.transaccion);
+
           this.listarTransaccionPorDescripcion();
           this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
           this.parentDetail.closeDetail();
@@ -555,6 +572,14 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   async enviarWhatsappApi(transaccion: Transaccion) {
+    // Obtener las n cuentas con su clave de la lista si los ahy
+    let cuentaClaveNotifica = "";
+    if (this.listaCuentaClave?.length > 0) {
+      for (let cuentaClave of this.listaCuentaClave) {
+        cuentaClaveNotifica += "%0a" + ((cuentaClave?.cuenta == null) || (cuentaClave?.cuenta == "") ? "" : "*" + cuentaClave?.cuenta + "*") + "  " + ((cuentaClave?.clave == null) || (cuentaClave?.clave == "") ? "" : "*" + cuentaClave?.clave + "*")
+      }
+    }
+
     let dia = moment(transaccion?.fechaFin).format("D");
     let mes = moment(transaccion?.fechaFin).format("MMMM");
     let año = moment(transaccion?.fechaFin).format("YYYY");
@@ -565,7 +590,7 @@ export class FormTransaccionComponent implements OnInit {
     } else {
       mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
       mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: "
-        + "%0a*" + transaccion?.claveCuenta + "  " + transaccion?.clave + "*";
+        + "%0a" + ((transaccion?.claveCuenta == null) || (transaccion?.claveCuenta == "") ? " " : "*" + transaccion?.claveCuenta + "*") + "  " + ((transaccion?.clave == null) || (transaccion?.clave == "")? " " : "*" + transaccion?.clave + "*") + cuentaClaveNotifica;
     }
     let mensajeNotificacion = "*Notificación Automática*%0aEstimado(a) " + transaccion?.nombreCliente
       + " el servicio de " + transaccion?.descripcion
@@ -578,7 +603,6 @@ export class FormTransaccionComponent implements OnInit {
     const codec = new HttpUrlEncodingCodec();
     //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
     const decodedValue = codec.decodeValue(mensajeNotificacion); // Decodes the value as 'Hello World!'
-
     // Validar prefijo telefonico
     if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
       transaccion.prefijoTelefonico = "593";
@@ -595,17 +619,37 @@ export class FormTransaccionComponent implements OnInit {
     });
   }
 
+  listarCuentaClavePorTransaccionActivo(codParticipante: number) {
+    return new Promise((resolve, rejects) => {
+      this.transaccionService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
+        next: (respuesta) => {
+          this.listaCuentaClave = respuesta['listado'];
+          resolve(respuesta);
+        }, error: (error) => {
+          rejects("Error");
+          console.log("Error =", error);
+        }
+      })
+    })
+  }
+
   procesarListaCuentaClave = async () => {
-    this.listaCuentaClave = [];
+    //this.listaCuentaClave = [];
     await this.listarCuentaClavePorTransaccion(this.codTransaccion);
     await this.verModalCuentaClave();
   }
 
   listarCuentaClavePorTransaccion(codTransaccion: number) {
     return new Promise((resolve, rejects) => {
+      if (this.listaCuentaClave.length > 0) {
+        this.listaCuentaClaveTemp = this.listaCuentaClave;
+      }
       this.transaccionService.listarCuentaClavePorTransaccion(codTransaccion).subscribe({
         next: (respuesta) => {
           this.listaCuentaClave = respuesta['listado'];
+          if (this.listaCuentaClaveTemp.length > this.listaCuentaClave.length) {
+            this.listaCuentaClave = this.listaCuentaClaveTemp;
+          }
           let index = 0;
           if (this.listaCuentaClave.length > 0) {
             index = this.listaCuentaClave.length;

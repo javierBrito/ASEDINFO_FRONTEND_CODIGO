@@ -166,20 +166,12 @@
                 <div class="col-2">
                     <label for="prefijoTelefonico"><b>{{'Prefijo: '}}</b></label>
                     <input type="text" name="prefijoTelefonico" formControlName="prefijoTelefonico" class="form-control"
-                        id="prefijoTelefonico" placeholder="Prefijo Telefónico" [attr.disabled]="true"
-                        [ngClass]="{'is-valid': prefijoTelefonicoField?.dirty && !prefijoTelefonicoField?.invalid && !prefijoTelefonicoField?.errors, 'is-invalid': prefijoTelefonicoField?.dirty && prefijoTelefonicoField?.invalid && prefijoTelefonicoField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
+                        id="prefijoTelefonico" placeholder="Prefijo Telefónico" [attr.disabled]="true">
                 </div>
                 <div class="col-3">
                     <label for="celular"><b>{{'Celular: '}}</b></label>
                     <input type="text" name="celular" formControlName="celular" class="form-control"
-                        id="celular" placeholder="Celular" [attr.disabled]="true"
-                        [ngClass]="{'is-valid': celularField?.dirty && !celularField?.invalid && !celularField?.errors, 'is-invalid': celularField?.dirty && celularField?.invalid && celularField?.errors}">
-                    <div class="valid-feedback">
-                        <span>{{ "Exito"}}</span>
-                    </div>
+                        id="celular" placeholder="Celular" [attr.disabled]="true">
                 </div>
             </div>
             <div class="row">

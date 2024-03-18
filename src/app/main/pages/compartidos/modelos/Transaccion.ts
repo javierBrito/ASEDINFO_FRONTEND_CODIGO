@@ -225,4 +225,11 @@ export class Transaccion implements Itransaccion {
         set(this, 'data.visibleBoton', value);
     }
 
+    get displayNoneListaCuentaClave(): string {
+        return get(this, 'data.displayNoneListaCuentaClave');
+    }
+    set displayNoneListaCuentaClave(value: string) {
+        set(this, 'data.displayNoneListaCuentaClave', value);
+    }
+
 }

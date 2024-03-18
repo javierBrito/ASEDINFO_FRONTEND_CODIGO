@@ -142,11 +142,11 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   verListaCuentaClave = async (codParticipante: number) => {
     //this.listaCuentaClave = [];
-    await this.listarCuentaClavePorParticipante(codParticipante);
+    await this.listarCuentaClavePorTransaccion(codParticipante);
     await this.verModalCuentaClave();
   }
 
-  listarCuentaClavePorParticipante(codParticipante: number) {
+  listarCuentaClavePorTransaccion(codParticipante: number) {
     return new Promise((resolve, rejects) => {
       this.transaccionService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
         next: (respuesta) => {

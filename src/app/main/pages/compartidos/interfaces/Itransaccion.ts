@@ -33,4 +33,5 @@ export interface Itransaccion {
     prefijoTelefonico?: string;
     celular?: string;
     numDiasRenovar: number;
+    displayNoneListaCuentaClave: string;
 }
