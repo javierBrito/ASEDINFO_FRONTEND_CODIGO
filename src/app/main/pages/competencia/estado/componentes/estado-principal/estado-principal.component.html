@@ -25,41 +25,38 @@
                                                 id="tablaParticipante">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">#</th>
-                                                        <!--<th scope="col">Identificación</th>-->
+                                                        <th scope="col" style="width:1%">#</th>
+                                                        <th scope="col">Academia/Escuela</th>
                                                         <th scope="col"><div align="center">Nombres</div></th>
-                                                        <th scope="col"><div align="center">Grupo</div></th>
                                                         <th scope="col"><div align="center">Categoría / Subcategoría</div></th>
                                                         <th scope="col"><div align="center">Fecha/hora Registro</div></th>
                                                         <th scope="col"><div align="center">Estado Competencia</div></th>
-                                                        <th scope="col"><div align="center">Número Participante</div></th>
+                                                        <th scope="col"><div align="center">Orden</div></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
-                                                        <td>{{index+1}}</td>
-                                                        <!--<td>{{participante?.identificacion}}</td>-->
+                                                        <td style="width:1%">{{index+1}}</td>
+                                                        <td>{{participante?.nombreEscuela}}</td>
                                                         <td>{{participante?.firstName + ' - ' + participante?.lastName}}
-                                                        </td>
-                                                        <td>
-                                                            <button type="button"
+                                                        <!--</td>
+                                                        <td>-->
+                                                            <button type="button" style="width: 1px"
                                                                 [ngStyle]="{'display': participante?.displayNoneGrupo}"
-                                                                matTooltip="Ver Integrantes" class="btn btn-primary"
-                                                                rippleEffect round><i class="fa fa-search"
+                                                                matTooltip="Ver Integrantes" class="btn btn-rounded"
+                                                                rippleEffect round><i class="fa fa-search" style="font-size:10px; color:blue"
                                                                     (click)="verListaIntegrante(participante?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{participante?.desCategoria + ' / ' +
                                                             participante?.desSubcategoria}}</td>
                                                         <td>{{participante?.dateLastActive}}</td>
-                                                        <!--<td>{{participante?.desEstado}}</td>-->
                                                         <td>
                                                             <!--style="{'background-color': participante?.dateLastActive}"-->
                                                             <!--[disabled]="formEstado.invalid"-->
-                                                            <button type="button" 
-                                                                [disabled]="disabledEstado"
+                                                            <button type="button" [disabled]="disabledEstado" style="width:1%"
                                                                 [ngStyle]="{'background-color': participante?.colorBoton}"
-                                                                style="color: black;" class="btn btn-rounded">
+                                                                style="color: black; font-size:11px" class="btn btn-rounded">
                                                                 <b>{{participante?.desEstadoCompetencia}}</b>
                                                                 <b>{{ " "}}</b>
                                                                 <i class="fa fa-pencil"></i>
@@ -182,7 +179,6 @@
             </button>
         </div>
         <div class="modal-body">
-            {{listaIntegrante}}
             <table class="table" *ngIf="listaIntegrante?.length > 0" id="tablaIntegrante">
                 <thead>
                     <tr>

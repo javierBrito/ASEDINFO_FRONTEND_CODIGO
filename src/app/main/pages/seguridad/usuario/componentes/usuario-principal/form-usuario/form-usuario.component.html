@@ -13,7 +13,7 @@
                 <div class="col-6">
                     <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        maxlength="60" id="identificacion" 
+                        maxlength="60" id="identificacion" (blur)="blurIdentificacion($event)"
                         placeholder="Por favor, ingrese la identificación."
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">

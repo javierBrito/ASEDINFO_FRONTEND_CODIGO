@@ -6,9 +6,8 @@
                 <div class="col-6">
                     <label for="identificacion"><b>{{'Identificación(*): '}}</b></label>
                     <input type="text" name="identificacion" formControlName="identificacion" class="form-control"
-                        maxlength="60" id="identificacion"
-                        (keyup)="onKey($event)"
-                        placeholder="Por favor, ingrese el número de cédula."
+                        maxlength="60" id="identificacion" (keyup)="onKey($event)"
+                        placeholder="Por favor, ingrese la identificación"
                         oninput="identificacion.value = identificacion.value.toUpperCase()"
                         [ngClass]="{'is-valid': identificacionField?.dirty && !identificacionField?.invalid && !identificacionField?.errors, 'is-invalid': identificacionField?.dirty && identificacionField?.invalid && identificacionField?.errors}">
                     <div class="valid-feedback">

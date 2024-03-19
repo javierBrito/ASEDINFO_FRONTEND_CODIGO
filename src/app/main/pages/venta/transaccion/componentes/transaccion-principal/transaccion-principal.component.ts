@@ -323,6 +323,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   mostrarListaTransaccion = async () => {
+    console.log("this.listaTransaccion = ", this.listaTransaccion)
     this.page = 1;
     for (const ele of this.listaTransaccion) {
       ele.colorFila = "green";

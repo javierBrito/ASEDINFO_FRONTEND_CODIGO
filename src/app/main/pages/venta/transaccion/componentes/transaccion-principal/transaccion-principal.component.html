@@ -118,11 +118,10 @@
                                                         <th scope="col">Cliente</th>
                                                         <th scope="col">Servicio</th>
                                                         <th scope="col">Cuenta/Clave</th>
-                                                        <th scope="col">...</th>
                                                         <th scope="col">Monto</th>
-                                                        <th scope="col">Cantidad</th>
+                                                        <th scope="col">Cant.</th>
                                                         <th scope="col">Fin</th>
-                                                        <th scope="col">Días Renovar</th>
+                                                        <th scope="col">Días Ren.</th>
                                                         <th scope="col">Cambiar</th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
@@ -133,11 +132,14 @@
                                                         <td>{{index+1}}</td>
                                                         <td>{{transaccion?.nombreCliente}}</td>
                                                         <td>{{transaccion?.descripcionProducto}}</td>
-                                                        <td>{{transaccion?.claveCuenta + '  ' + transaccion?.clave}}</td>
+                                                        <td>{{transaccion?.claveCuenta + '  ' + transaccion?.clave}}
+                                                        <!--    
+                                                        </td>
                                                         <td>
+                                                        -->
                                                             <button type="button" [ngStyle]="{'display': transaccion?.displayNoneListaCuentaClave}"
-                                                                matTooltip="Ver Cuenta/Clave" class="btn btn-primary"
-                                                                rippleEffect round><i class="fa fa-search"
+                                                                matTooltip="Ver Cuenta/Clave" class="btn btn-rounded" style="width: 1px"
+                                                                rippleEffect round><i class="fa fa-search" style="font-size:10px; color:blue"
                                                                     (click)="verListaCuentaClave(transaccion?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{transaccion?.monto}}</td>
@@ -172,7 +174,7 @@
                                                                 <button (click)="openNotificarDetail(transaccion)" [ngStyle]="{'display': transaccion?.visibleBoton}"
                                                                     matTooltip="Enviar Notificación" type="button"
                                                                     class="btn btn-success btn-submit waves-effect waves-float waves-light" rippleEffect><i
-                                                                        class="fa fa-envelope" style="font-size:14px;color:red"
+                                                                        class="fa fa-envelope" style="font-size:14px; color:red"
                                                                         (click)="openNotificarDetail(transaccion)"></i></button>
                                                             </div>
                                                         </td>

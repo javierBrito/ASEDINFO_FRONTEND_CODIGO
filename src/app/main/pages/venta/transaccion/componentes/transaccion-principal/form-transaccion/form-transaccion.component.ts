@@ -123,10 +123,9 @@ export class FormTransaccionComponent implements OnInit {
       this.listarCuentaClavePorTransaccionActivo(this.codTransaccion);
       // Datos para envio de notificaciones
       this.prefijoTelefonico = this.transaccionEditar?.prefijoTelefonico,
-        this.celular = this.transaccionEditar?.celular,
-        this.nombreCliente = this.transaccionEditar?.nombreCliente,
-
-        this.transaccionEditarAux = this.transaccionEditar;
+      this.celular = this.transaccionEditar?.celular,
+      this.nombreCliente = this.transaccionEditar?.nombreCliente,
+      this.transaccionEditarAux = this.transaccionEditar;
       this.codProducto = this.transaccionEditar?.codProducto;
       this.numMes = this.transaccionEditar?.numMes;
       this.numDiasExtra = this.transaccionEditar?.numDiasExtra;
@@ -387,6 +386,7 @@ export class FormTransaccionComponent implements OnInit {
           // Tratar listaCuentaClave
           if (this.listaCuentaClave.length > 0 && this.siActualizaCuentaClave) {
             for (let ele of this.listaCuentaClave) {
+              ele.codigo = 0;
               ele.codTransaccion = this.transaccion?.codigo;
             }
             this.transaccionService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
@@ -590,7 +590,7 @@ export class FormTransaccionComponent implements OnInit {
     } else {
       mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
       mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: "
-        + "%0a" + ((transaccion?.claveCuenta == null) || (transaccion?.claveCuenta == "") ? " " : "*" + transaccion?.claveCuenta + "*") + "  " + ((transaccion?.clave == null) || (transaccion?.clave == "")? " " : "*" + transaccion?.clave + "*") + cuentaClaveNotifica;
+        + "%0a" + ((transaccion?.claveCuenta == null) || (transaccion?.claveCuenta == "") ? " " : "*" + transaccion?.claveCuenta + "*") + "  " + ((transaccion?.clave == null) || (transaccion?.clave == "") ? " " : "*" + transaccion?.clave + "*") + cuentaClaveNotifica;
     }
     let mensajeNotificacion = "*Notificación Automática*%0aEstimado(a) " + transaccion?.nombreCliente
       + " el servicio de " + transaccion?.descripcion
@@ -624,6 +624,7 @@ export class FormTransaccionComponent implements OnInit {
       this.transaccionService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
         next: (respuesta) => {
           this.listaCuentaClave = respuesta['listado'];
+          this.siActualizaCuentaClave = true;
           resolve(respuesta);
         }, error: (error) => {
           rejects("Error");

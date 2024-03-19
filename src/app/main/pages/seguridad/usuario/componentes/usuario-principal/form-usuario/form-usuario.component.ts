@@ -132,9 +132,14 @@ export class FormUsuarioComponent implements OnInit {
         codigo: new FormControl('593'),
         cedula: new FormControl(''),
       })
+      this.verificarPersona();
     }
     this.listarPrefijoTelefonico();
     this.listarModeloPuntajeActivo();
+  }
+
+  blurIdentificacion(event) {
+    this.verificarPersona();
   }
 
   async listarPrefijoTelefonico() {
@@ -218,9 +223,9 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   verificarPersona() {
-    // Receptar la identificación de formInscripcionCedula.value
-    let usuarioIdentificacionTemp = this.formUsuario.value;
-    this.identificacionChild = usuarioIdentificacionTemp.identificacion;
+    // Receptar la identificación de formUsuario.value
+    let formUsuarioTemp = this.formUsuario.value;
+    this.identificacionChild = formUsuarioTemp.identificacion;
     this.personaService.listarPersonaPorIdentificacion(this.identificacionChild).subscribe({
       next: (response) => {
         this.listaPersonaAux = response['listado'];

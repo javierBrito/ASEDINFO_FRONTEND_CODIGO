@@ -140,12 +140,10 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
-                                                        <!--<th scope="col">Identificación</th>-->
                                                         <th scope="col">
                                                             <div align="center">Escuela / Academia</div>
                                                         </th>
                                                         <th scope="col">Nombres</th>
-                                                        <th scope="col">Grupo</th>
                                                         <th scope="col">
                                                             <div align="center">Categoría / Subcategoría</div>
                                                         </th>
@@ -167,13 +165,15 @@
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
                                                         <td>{{participante?.nombreEscuela}}</td>
-                                                        <td>{{participante?.firstName + ' - ' + participante?.lastName}}
+                                                        <td>{{participante?.nombrePersona}}
+                                                        <!--
                                                         </td>
                                                         <td>
+                                                        -->
                                                             <button type="button"
                                                                 [ngStyle]="{'display': participante?.displayNoneGrupo}"
-                                                                matTooltip="Ver Integrantes" class="btn btn-primary"
-                                                                rippleEffect round><i class="fa fa-search"
+                                                                matTooltip="Ver Integrantes" class="btn btn-rounded"
+                                                                rippleEffect round><i class="fa fa-search" style="font-size:10px; color:blue"
                                                                     (click)="verListaIntegrante(participante?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{participante?.desCategoria + ' / ' +
@@ -186,7 +186,7 @@
                                                             <button type="button" (click)="cambiarEstado(participante)"
                                                                 [disabled]="disabledEstado"
                                                                 [ngStyle]="{'background-color': participante?.colorBoton}"
-                                                                style="color: black;" class="btn btn-rounded">
+                                                                style="color: black; font-size:11px" class="btn btn-rounded">
                                                                 <b>{{participante?.desEstadoCompetencia}}</b>
                                                                 <b>{{ " "}}</b>
                                                                 <i class="fa fa-pencil"></i>

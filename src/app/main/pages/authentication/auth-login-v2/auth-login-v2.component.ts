@@ -263,6 +263,13 @@ export class AuthLoginV2Component implements OnInit {
     }
     // Fin - jbrito - para redireccionar a los usuarios Suscriptores - 20240212
 
+    // Inicio - jbrito - para redireccionar a los usuarios Suscriptores - 20240212
+    if (this._authenticationService.currentUserValue.cedula == 'Ventas') {
+      this.aplicacionVEN = true;
+      this._router.navigate(['/pages/venta/transaccion'])
+    }
+    // Fin - jbrito - para redireccionar a los usuarios Suscriptores - 20240212
+
     var menuItem: CoreMenu[] = [];
     //console.log("roles = ", roles['0']['aplicacion'].prefijo);
     roles.forEach(rol => {

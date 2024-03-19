@@ -275,6 +275,13 @@ export class ParticipantePrincipalComponent implements OnInit {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
+            // Tratar nombre de Pariicipante
+            if (ele?.lastName != "" && ele?.username == "") {
+              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+            } else {
+              ele.nombrePersona = ele?.firstName;
+            }
+
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
@@ -315,6 +322,12 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
+          // Tratar nombre de Pariicipante
+          if (ele?.lastName != "" && ele?.username == "") {
+            ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+          } else {
+            ele.nombrePersona = ele?.firstName;
+          }
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
@@ -388,6 +401,12 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
+          // Tratar nombre de Pariicipante
+          if (ele?.lastName != "" && ele?.username == "") {
+            ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+          } else {
+            ele.nombrePersona = ele?.firstName;
+          }
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
@@ -402,11 +421,6 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEmailAux() {
-    // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
-    //let participanteParametroTemp = this.formParticipanteParametro.value;
-    //this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
-    //this.codInstancia = participanteParametroTemp?.codInstancia;
-    //this.habilitarAgregarParticipante = true;
     this.habilitarAgregarParticipante = false;
     // Trabajar con el correo del Participante migrado
     this.participanteService.listarParticipantePorEmail(this.currentUser.correo).subscribe(
@@ -414,6 +428,13 @@ export class ParticipantePrincipalComponent implements OnInit {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
+            // Tratar nombre de Pariicipante
+            if (ele?.lastName != "" && ele?.username == "") {
+              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+            } else {
+              ele.nombrePersona = ele?.firstName;
+            }
+
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
@@ -711,6 +732,13 @@ export class ParticipantePrincipalComponent implements OnInit {
         this.listaParticipantePDF.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
         if (this.listaParticipantePDF.length > 0) {
           for (const ele of this.listaParticipantePDF) {
+            // Tratar nombre de Pariicipante
+            if (ele?.lastName != "" && ele?.username == "") {
+              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+            } else {
+              ele.nombrePersona = ele?.firstName;
+            }
+
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
             //if (ele?.identificacion == this.currentUser.identificacion) {
             if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {

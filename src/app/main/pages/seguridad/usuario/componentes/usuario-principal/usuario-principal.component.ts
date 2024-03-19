@@ -124,7 +124,7 @@ export class UsuarioPrincipalComponent implements OnInit {
     this.listaPersona = event;
   }
 
-  openDetail(codjornada) {
+  openDetail() {
     this.showDetail = true;
   }
 

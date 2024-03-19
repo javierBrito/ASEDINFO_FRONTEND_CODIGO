@@ -124,6 +124,12 @@ export class EstadoPrincipalComponent implements OnInit {
           // Listar usuarios registrados en Wordpress
           this.listarUsuarioWPDTO();
           for (const ele of this.listaParticipante) {
+            // Tratar nombre de Pariicipante
+            if (ele?.lastName != "" && ele?.username == "") {
+              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+            } else {
+              ele.nombrePersona = ele?.firstName;
+            }
             ele.displayNoneGrupo = "none";
             if (ele?.identificacion == this.currentUser.identificacion) {
               ele.desCategoria = "DIRECTOR";
