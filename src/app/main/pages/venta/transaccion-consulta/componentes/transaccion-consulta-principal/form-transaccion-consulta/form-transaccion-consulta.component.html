@@ -1,6 +1,6 @@
 <app-detail (close)="closeDetail($event)">
     <h1 detail-title><strong>{{transaccionEditar ? nombreProceso :'AGREGAR'}}{{ ' Transacción'}}</strong></h1>
-    <form detail-content [formGroup]="formTransaccion" (ngSubmit)="addRegistro()">
+    <form detail-content [formGroup]="formTransaccionConsulta" (ngSubmit)="addRegistro()">
         <div class="container" style="border: 0px solid blue; box-shadow: 0px 10px 10px black">
             <div class="row form-group">
                 <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
@@ -143,7 +143,8 @@
                     <input type="text" name="claveCuenta" formControlName="claveCuenta" class="form-control"
                         id="claveCuenta" placeholder="Usuario/Cuenta">
                     <button matTooltip="Adicionar Usuario/Cuenta + Clave" type="button" class="btn btn-primary"
-                        rippleEffect round><i class="fa fa-plus" (click)="procesarListaCuentaClave()"></i></button>
+                        [ngStyle]="{'display': 'none'}" rippleEffect round><i class="fa fa-plus"
+                            (click)="procesarListaCuentaClave()"></i></button>
                 </div>
                 <div class="col-6">
                     <label for="clave"><b>{{'Clave: '}}</b></label>
@@ -178,7 +179,8 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-block btn-primary" [disabled]="formTransaccion?.invalid">
+                    <button type="submit" class="btn btn-block btn-primary" [ngStyle]="{'display': 'none'}"
+                        [disabled]="formTransaccionConsulta?.invalid">
                         {{transaccionEditar?'GUARDAR':'GUARDAR'}}</button>
                 </div>
             </div>

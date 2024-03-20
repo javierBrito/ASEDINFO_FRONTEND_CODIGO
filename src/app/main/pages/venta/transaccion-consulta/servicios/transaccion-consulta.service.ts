@@ -11,7 +11,7 @@ import { CuentaClave } from 'app/main/pages/compartidos/modelos/CuentaClave';
 @Injectable({
   providedIn: 'root'
 })
-export class TransaccionService {
+export class TransaccionConsultaService {
 
   constructor(private http: HttpClient) { }
   /*SERVICIOS INTERNOS*/
@@ -128,14 +128,7 @@ export class TransaccionService {
 
   enviarMensajeWhatsappAI(celular: string, mensaje: string) {
     let objeto = { message: mensaje, mode: 'no-cors' };
-    console.log("objeto 1 = ", objeto)
     return this.http.post(`${environment.url_wspAI}/chat/sendmessage/${celular}`, objeto);
-  }
-
-  enviarImagenWhatsappAI(celular: string, tituloImagen: string, imagen: any) {
-    let objeto = { image: imagen, caption: tituloImagen, mode: 'no-cors' };
-    console.log("objeto 2 = ", objeto)
-    return this.http.post(`${environment.url_wspAI}/chat/sendimage/${celular}`, objeto);
   }
 
   enviarMensajeWhatsappND(celular: string, mensaje: string) {

@@ -4,7 +4,7 @@ import { Sede } from 'app/auth/models/sede';
 import { Transaccion } from 'app/main/pages/compartidos/modelos/Transaccion';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import { DetailComponent } from 'app/main/pages/venta/transaccion/componentes/detail/detail.component';
-import { TransaccionService } from '../../../servicios/transaccion.service';
+import { TransaccionConsultaService } from '../../../servicios/transaccion-consulta.service';
 import { SedeService } from 'app/main/pages/seguridad/sede/servicios/sede.service';
 import dayjs from "dayjs";
 import { ClienteService } from 'app/main/pages/venta/cliente/servicios/cliente.service';
@@ -21,11 +21,11 @@ import { CuentaClave } from 'app/main/pages/compartidos/modelos/CuentaClave';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-form-transaccion',
-  templateUrl: './form-transaccion.component.html',
-  styleUrls: ['./form-transaccion.component.scss']
+  selector: 'app-form-transaccion-consulta',
+  templateUrl: './form-transaccion-consulta.component.html',
+  styleUrls: ['./form-transaccion-consulta.component.scss']
 })
-export class FormTransaccionComponent implements OnInit {
+export class FormTransaccionConsultaComponent implements OnInit {
   /*SPINNER*/
   public load_btn: boolean;
 
@@ -68,7 +68,7 @@ export class FormTransaccionComponent implements OnInit {
   public codTransaccion: number = 0;
 
   /*FORMULARIOS*/
-  public formTransaccion: FormGroup;
+  public formTransaccionConsulta: FormGroup;
 
   /*OBJETOS*/
   public transaccion: Transaccion;
@@ -93,7 +93,7 @@ export class FormTransaccionComponent implements OnInit {
 
   /*CONSTRUCTOR*/
   constructor(
-    private transaccionService: TransaccionService,
+    private transaccionConsultaService: TransaccionConsultaService,
     private sedeService: SedeService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
@@ -132,7 +132,7 @@ export class FormTransaccionComponent implements OnInit {
       this.precio = this.transaccionEditar?.precio;
       this.numProducto = this.transaccionEditar?.numProducto;
       this.numExistenciaActual = this.transaccionEditar?.numExistenciaActual;
-      this.formTransaccion = this.formBuilder.group({
+      this.formTransaccionConsulta = this.formBuilder.group({
         codCliente: new FormControl(this.transaccionEditar?.codCliente, Validators.required),
         codProducto: new FormControl(this.transaccionEditar?.codProducto, Validators.required),
         descripcion: new FormControl(this.transaccionEditar?.descripcion, Validators.required),
@@ -153,7 +153,7 @@ export class FormTransaccionComponent implements OnInit {
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
-      this.formTransaccion = this.formBuilder.group({
+      this.formTransaccionConsulta = this.formBuilder.group({
         codCliente: new FormControl('', Validators.required),
         codProducto: new FormControl('', Validators.required),
         descripcion: new FormControl('', Validators.required),
@@ -176,7 +176,7 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   buscarModuloPorNemonico() {
-    this.transaccionService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
+    this.transaccionConsultaService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
       (respuesta) => {
         this.modulo = respuesta['objeto'];
       }
@@ -184,7 +184,7 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   buscarOperacionPorNemonico() {
-    this.transaccionService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
+    this.transaccionConsultaService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
       (respuesta) => {
         this.operacion = respuesta['objeto'];
       }
@@ -217,15 +217,15 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   buscarProductoPorCodigo() {
-    // Receptar el codProducto de formTransaccion.value
-    let formTransaccionTemp = this.formTransaccion.value;
-    this.codProducto = formTransaccionTemp?.codProducto;
+    // Receptar el codProducto de formTransaccionConsulta.value
+    let formTransaccionConsultaTemp = this.formTransaccionConsulta.value;
+    this.codProducto = formTransaccionConsultaTemp?.codProducto;
     this.productoService.buscarProductoPorCodigo(this.codProducto).subscribe(
       (respuesta) => {
         this.producto = respuesta['objeto'];
-        this.formTransaccion.controls.precio.setValue(this.producto?.precioCosto);
-        this.formTransaccion.controls.precioMayoreo.setValue(this.producto?.precioMayoreo);
-        this.formTransaccion.controls.numExistenciaActual.setValue(this.producto?.numExistenciaActual);
+        this.formTransaccionConsulta.controls.precio.setValue(this.producto?.precioCosto);
+        this.formTransaccionConsulta.controls.precioMayoreo.setValue(this.producto?.precioMayoreo);
+        this.formTransaccionConsulta.controls.numExistenciaActual.setValue(this.producto?.numExistenciaActual);
         this.numExistenciaActual = this.producto?.numExistenciaActual;
         this.precio = this.producto?.precioCosto;
       }
@@ -233,23 +233,23 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   buscarClientePorCodigo() {
-    // Receptar el codCliente de formTransaccion.value
-    let formTransaccionTemp = this.formTransaccion.value;
-    this.clienteService.buscarClientePorCodigo(formTransaccionTemp?.codCliente).subscribe(
+    // Receptar el codCliente de formTransaccionConsulta.value
+    let formTransaccionConsultaTemp = this.formTransaccionConsulta.value;
+    this.clienteService.buscarClientePorCodigo(formTransaccionConsultaTemp?.codCliente).subscribe(
       (respuesta) => {
         this.cliente = respuesta['objeto'];
         this.prefijoTelefonico = this.cliente?.prefijoTelefonico;
         this.celular = this.cliente?.celular;
         this.nombreCliente = this.cliente?.nombrePersona;
-        this.formTransaccion.controls.prefijoTelefonico.setValue(this.cliente?.prefijoTelefonico);
-        this.formTransaccion.controls.celular.setValue(this.cliente?.celular);
+        this.formTransaccionConsulta.controls.prefijoTelefonico.setValue(this.cliente?.prefijoTelefonico);
+        this.formTransaccionConsulta.controls.celular.setValue(this.cliente?.celular);
       }
     );
   }
 
   async listarTransaccionPorDescripcion() {
     if (this.descripcionChild?.length != 0) {
-      this.transaccionService.listarTransaccionPorDescripcion(this.descripcionChild).subscribe(
+      this.transaccionConsultaService.listarTransaccionPorDescripcion(this.descripcionChild).subscribe(
         (respuesta) => {
           this.listaTransaccionChild = respuesta['listado'];
           if (this.listaTransaccionChild?.length > 0) {
@@ -258,7 +258,7 @@ export class FormTransaccionComponent implements OnInit {
         }
       )
     } else {
-      this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
+      this.transaccionConsultaService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
         (respuesta) => {
           this.listaTransaccionChild = respuesta['listado'];
           if (this.listaTransaccionChild?.length > 0) {
@@ -329,8 +329,8 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   addRegistro() {
-    if (this.formTransaccion?.valid) {
-      let transaccionTemp = this.formTransaccion.value;
+    if (this.formTransaccionConsulta?.valid) {
+      let transaccionTemp = this.formTransaccionConsulta.value;
 
       let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       let fechaFinString = dayjs(transaccionTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS");
@@ -380,7 +380,7 @@ export class FormTransaccionComponent implements OnInit {
       if (this.transaccionEditar?.estado == "R" || this.transaccionEditar?.estado == "C") {
         this.transaccion['data'].codigo = 0;
       }
-      this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
+      this.transaccionConsultaService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: async (response) => {
           this.transaccion = response['objeto'];
           // Tratar listaCuentaClave
@@ -389,7 +389,7 @@ export class FormTransaccionComponent implements OnInit {
               ele.codigo = 0;
               ele.codTransaccion = this.transaccion?.codigo;
             }
-            this.transaccionService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
+            this.transaccionConsultaService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
               next: async (response) => {
                 //this.mensajeService.mensajeCorrecto('Se ha agregado la lista correctamente...');
               },
@@ -412,7 +412,7 @@ export class FormTransaccionComponent implements OnInit {
             } else {
               this.transaccionEditarAux.fechaCambia = "";
             }
-            this.transaccionService.guardarTransaccion(this.transaccionEditarAux).subscribe({
+            this.transaccionConsultaService.guardarTransaccion(this.transaccionEditarAux).subscribe({
               next: async (response) => {
                 this.transaccion = response['objeto'];
                 this.listarTransaccionPorDescripcion();
@@ -437,7 +437,7 @@ export class FormTransaccionComponent implements OnInit {
         }
       });
     } else {
-      this.transaccionService.guardarTransaccion(this.transaccion['data']).subscribe({
+      this.transaccionConsultaService.guardarTransaccion(this.transaccion['data']).subscribe({
         next: async (response) => {
           this.transaccion = response['objeto'];
           // Tratar listaCuentaClave
@@ -445,7 +445,7 @@ export class FormTransaccionComponent implements OnInit {
             for (let ele of this.listaCuentaClave) {
               ele.codTransaccion = this.transaccion?.codigo;
             }
-            this.transaccionService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
+            this.transaccionConsultaService.guardarListaCuentaClave(this.listaCuentaClave).subscribe({
               next: async (response) => {
                 //this.mensajeService.mensajeCorrecto('Se ha agregado la lista correctamente...');
               },
@@ -484,13 +484,13 @@ export class FormTransaccionComponent implements OnInit {
   // Tomar el valor de meses para obtener la fecha fin y el monto
   onKeyMes(event) {
     if (event.target.value.length != 0) {
-      let transaccionTemp = this.formTransaccion.value;
+      let transaccionTemp = this.formTransaccionConsulta.value;
       let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       var fechaFinString = "";
       this.numMes = Number(event.target.value);
       fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
       fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
-      this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+      this.formTransaccionConsulta.controls.fechaFin.setValue(fechaFinString);
 
       // Calcular monto de la transacción
       this.calcularMonto();
@@ -500,14 +500,14 @@ export class FormTransaccionComponent implements OnInit {
   // Tomar el valor de meses para obtener la fecha fin y el monto
   onKeyDiasExtra(event) {
     if (event.target.value.length != 0) {
-      let transaccionTemp = this.formTransaccion.value;
+      let transaccionTemp = this.formTransaccionConsulta.value;
       let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaFin).format("YYYY-MM-DD HH:mm:ss.SSS"));
       var fechaFinString = "";
       this.numDiasExtra = Number(event.target.value);
       // Sumar los días a la fecha final
       fechaFinDate.setDate(fechaFinDate.getDate() + this.numDiasExtra);
       fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
-      this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+      this.formTransaccionConsulta.controls.fechaFin.setValue(fechaFinString);
 
       // Calcular monto de la transacción
       this.calcularMonto();
@@ -516,13 +516,13 @@ export class FormTransaccionComponent implements OnInit {
   // Tomar el valor de meses para obtener la fecha fin y el monto
   onKeyFechaInicio(event) {
     if (event.target.value.length != 0) {
-      let transaccionTemp = this.formTransaccion.value;
+      let transaccionTemp = this.formTransaccionConsulta.value;
       let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
       var fechaFinString = "";
       this.numMes = transaccionTemp?.numMes;
       fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
       fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
-      this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+      this.formTransaccionConsulta.controls.fechaFin.setValue(fechaFinString);
 
       // Calcular monto de la transacción
       this.calcularMonto();
@@ -530,13 +530,13 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   changeFechaInicio(object) {
-    let transaccionTemp = this.formTransaccion.value;
+    let transaccionTemp = this.formTransaccionConsulta.value;
     let fechaFinDate = new Date(dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"));
     var fechaFinString = "";
     this.numMes = transaccionTemp?.numMes;
     fechaFinDate.setMonth(fechaFinDate.getMonth() + this.numMes);
     fechaFinString = dayjs(fechaFinDate.getFullYear() + "-" + (fechaFinDate.getMonth() + 1) + "-" + fechaFinDate.getDate()).format("YYYY-MM-DD");
-    this.formTransaccion.controls.fechaFin.setValue(fechaFinString);
+    this.formTransaccionConsulta.controls.fechaFin.setValue(fechaFinString);
 
     // Calcular monto de la transacción
     this.calcularMonto();
@@ -558,7 +558,7 @@ export class FormTransaccionComponent implements OnInit {
       this.numProducto = Number(event.target.value);
       if (this.numProducto > this.numExistenciaActual) {
         this.mensajeService.mensajeError('La cantidad excede la esxistencia del producto...');
-        this.formTransaccion.controls.numProducto.setValue(0);
+        this.formTransaccionConsulta.controls.numProducto.setValue(0);
       } else {
         // Calcular monto de la transacción
         this.calcularMonto();
@@ -568,33 +568,10 @@ export class FormTransaccionComponent implements OnInit {
 
   calcularMonto() {
     this.monto = this.numMes * this.precio * this.numProducto;
-    this.formTransaccion.controls.monto.setValue(this.monto);
+    this.formTransaccionConsulta.controls.monto.setValue(this.monto);
   }
 
-  toDataURL = async (url) => {
-    console.log("Downloading image...");
-    var res = await fetch(url);
-    var blob = await res.blob();
-
-    const result = await new Promise((resolve, reject) => {
-      var reader = new FileReader();
-      reader.addEventListener("load", function () {
-        resolve(reader.result);
-      }, false);
-
-      reader.onerror = () => {
-        return reject(this);
-      };
-      reader.readAsDataURL(blob);
-    })
-
-    return result
-  };
-
   async enviarWhatsappApi(transaccion: Transaccion) {
-    let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
-    console.log("imageSrcString = ", imageSrcString)
-
     // Obtener las n cuentas con su clave de la lista si los ahy
     let cuentaClaveNotifica = "";
     if (this.listaCuentaClave?.length > 0) {
@@ -632,28 +609,19 @@ export class FormTransaccionComponent implements OnInit {
     }
     let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
     // Enviar mensaje
-    this.transaccionService.enviarMensajeWhatsappAI(celularEnvioWhatsapp, decodedValue).subscribe({
+    this.transaccionConsultaService.enviarMensajeWhatsappAI(celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
-        this.mensajeService.mensajeCorrecto('La notificación se envió con éxito...');
+        this.mensajeService.mensajeCorrecto('Las notificación se envió con éxito...');
       },
       error: (error) => {
         this.mensajeService.mensajeError('Ha habido un problema al enviar la notificación ' + error);
-      }
-    });
-    // Enviar Imagen
-    this.transaccionService.enviarImagenWhatsappAI(celularEnvioWhatsapp, decodedValue, imageSrcString).subscribe({
-      next: async (response) => {
-        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
-      },
-      error: (error) => {
-        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
       }
     });
   }
 
   listarCuentaClavePorTransaccionActivo(codParticipante: number) {
     return new Promise((resolve, rejects) => {
-      this.transaccionService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
+      this.transaccionConsultaService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
         next: (respuesta) => {
           this.listaCuentaClave = respuesta['listado'];
           this.siActualizaCuentaClave = true;
@@ -677,7 +645,7 @@ export class FormTransaccionComponent implements OnInit {
       if (this.listaCuentaClave.length > 0) {
         this.listaCuentaClaveTemp = this.listaCuentaClave;
       }
-      this.transaccionService.listarCuentaClavePorTransaccion(codTransaccion).subscribe({
+      this.transaccionConsultaService.listarCuentaClavePorTransaccion(codTransaccion).subscribe({
         next: (respuesta) => {
           this.listaCuentaClave = respuesta['listado'];
           if (this.listaCuentaClaveTemp.length > this.listaCuentaClave.length) {
@@ -734,58 +702,58 @@ export class FormTransaccionComponent implements OnInit {
   }
 
   get descripcionField() {
-    return this.formTransaccion.get('descripcion');
+    return this.formTransaccionConsulta.get('descripcion');
   }
   get precioField() {
-    return this.formTransaccion.get('precio');
+    return this.formTransaccionConsulta.get('precio');
   }
   get precioMayoreoField() {
-    return this.formTransaccion.get('precioMayoreo');
+    return this.formTransaccionConsulta.get('precioMayoreo');
   }
   get numProductoField() {
-    return this.formTransaccion.get('numProducto');
+    return this.formTransaccionConsulta.get('numProducto');
   }
   get numExistenciaActualField() {
-    return this.formTransaccion.get('numExistenciaActual');
+    return this.formTransaccionConsulta.get('numExistenciaActual');
   }
   get fechaRegistraField() {
-    return this.formTransaccion.get('fechaRegistra');
+    return this.formTransaccionConsulta.get('fechaRegistra');
   }
   get fechaInicioField() {
-    return this.formTransaccion.get('fechaInicio');
+    return this.formTransaccionConsulta.get('fechaInicio');
   }
   get fechaFinField() {
-    return this.formTransaccion.get('fechaFin');
+    return this.formTransaccionConsulta.get('fechaFin');
   }
   get codClienteField() {
-    return this.formTransaccion.get('codCliente');
+    return this.formTransaccionConsulta.get('codCliente');
   }
   get codProductoField() {
-    return this.formTransaccion.get('codProducto');
+    return this.formTransaccionConsulta.get('codProducto');
   }
   get numMesField() {
-    return this.formTransaccion.get('numMes');
+    return this.formTransaccionConsulta.get('numMes');
   }
   get montoField() {
-    return this.formTransaccion.get('monto');
+    return this.formTransaccionConsulta.get('monto');
   }
   get fechaCambiaField() {
-    return this.formTransaccion.get('fechaCambia');
+    return this.formTransaccionConsulta.get('fechaCambia');
   }
   get claveCuentaField() {
-    return this.formTransaccion.get('claveCuenta');
+    return this.formTransaccionConsulta.get('claveCuenta');
   }
   get claveField() {
-    return this.formTransaccion.get('clave');
+    return this.formTransaccionConsulta.get('clave');
   }
   get numDiasExtraField() {
-    return this.formTransaccion.get('numDiasExtra');
+    return this.formTransaccionConsulta.get('numDiasExtra');
   }
   get prefijoTelefonicoField() {
-    return this.formTransaccion.get('prefijoTelefonico');
+    return this.formTransaccionConsulta.get('prefijoTelefonico');
   }
   get celularField() {
-    return this.formTransaccion.get('celular');
+    return this.formTransaccionConsulta.get('celular');
   }
 
 }

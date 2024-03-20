@@ -5,13 +5,11 @@ import { Sede } from 'app/auth/models/sede';
 import { Transaccion } from 'app/main/pages/compartidos/modelos/Transaccion';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import Swal from 'sweetalert2';
-import { TransaccionService } from '../../servicios/transaccion.service';
 import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
 import dayjs from "dayjs";
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { Cliente } from 'app/main/pages/compartidos/modelos/Cliente';
-import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
 import { ClienteService } from '../../../cliente/servicios/cliente.service';
 import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
@@ -22,13 +20,16 @@ import moment from 'moment';
 import { HttpParameterCodec, HttpUrlEncodingCodec } from "@angular/common/http";
 import { CuentaClave } from 'app/main/pages/compartidos/modelos/CuentaClave';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TransaccionConsultaService } from '../../servicios/transaccion-consulta.service';
+import { Usuario } from 'app/main/pages/compartidos/modelos/Usuario';
+import { UsuarioService } from 'app/main/pages/seguridad/usuario/servicios/usuario.service';
 
 @Component({
-  selector: 'app-transaccion-principal',
-  templateUrl: './transaccion-principal.component.html',
-  styleUrls: ['./transaccion-principal.component.scss']
+  selector: 'app-transaccion-consulta-principal',
+  templateUrl: './transaccion-consulta-principal.component.html',
+  styleUrls: ['./transaccion-consulta-principal.component.scss']
 })
-export class TransaccionPrincipalComponent implements OnInit {
+export class TransaccionConsultaPrincipalComponent implements OnInit {
   /*INPUT RECIBEN*/
   @Input() listaTransaccionChild: any;
 
@@ -85,6 +86,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public operacion: Operacion;
   public reporteDTO: ReporteDTO;
   public transaccion: Transaccion;
+  public usuario: Usuario;
 
   /*DETAIL*/
   public showDetail: boolean;
@@ -97,17 +99,18 @@ export class TransaccionPrincipalComponent implements OnInit {
   public transaccionSeleccionado: Transaccion;
 
   /*FORMULARIOS*/
-  public formTransaccion: FormGroup;
+  public formTransaccionConsulta: FormGroup;
 
   /*CONSTRUCTOR */
   constructor(
     /*Servicios*/
-    private readonly transaccionService: TransaccionService,
+    private readonly transaccionConsultaService: TransaccionConsultaService,
     private readonly clienteService: ClienteService,
     private readonly personaService: PersonaService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private usuarioService: UsuarioService
   ) {
     this.codigo = 0;
     this.itemsRegistros = 5;
@@ -115,6 +118,9 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (this.currentUser?.codigoUsuario != 0) {
+      this.buscarUsuarioPorCodigo();
+    }
     this.sede = this.currentUser.sede;
     /*LISTAS*/
     this.listarClienteActivoOrdenNombre();
@@ -127,7 +133,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     if (this.listaTransaccionChild != null) {
       this.listaTransaccion = this.listaTransaccionChild;
     }
-    this.formTransaccion = this.formBuilder.group({
+    this.formTransaccionConsulta = this.formBuilder.group({
       descripcion: new FormControl('', Validators.required),
       codCliente: new FormControl('', Validators.required),
       claveCuenta: new FormControl('', Validators.required),
@@ -140,6 +146,14 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.enviarNotificacionIndividual = false;
   }
 
+  buscarUsuarioPorCodigo() {
+    this.usuarioService.buscarUsuarioPorCodigo(this.currentUser?.codigoUsuario).subscribe(
+      (respuesta) => {
+        this.usuario = respuesta['objeto'];
+      }
+    )
+  }
+
   verListaCuentaClave = async (codParticipante: number) => {
     //this.listaCuentaClave = [];
     await this.listarCuentaClavePorTransaccion(codParticipante);
@@ -148,7 +162,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   listarCuentaClavePorTransaccion(codParticipante: number) {
     return new Promise((resolve, rejects) => {
-      this.transaccionService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
+      this.transaccionConsultaService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
         next: (respuesta) => {
           this.listaCuentaClave = respuesta['listado'];
           resolve(respuesta);
@@ -187,14 +201,14 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   obtenerParametros() {
     // Obtener el token para envio whatsapp
-    this.transaccionService.buscarParametroPorNemonico('token').subscribe(
+    this.transaccionConsultaService.buscarParametroPorNemonico('token').subscribe(
       (respuesta) => {
         this.parametro = respuesta['objeto'];
         this.token = this.parametro?.valorCadena;
       }
     )
     // Obtener el celular para envio whatsapp
-    this.transaccionService.buscarParametroPorNemonico('celular').subscribe(
+    this.transaccionConsultaService.buscarParametroPorNemonico('celular').subscribe(
       (respuesta) => {
         this.parametro = respuesta['objeto'];
         this.celular = this.parametro?.valorCadena;
@@ -203,7 +217,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   buscarModuloPorNemonico() {
-    this.transaccionService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
+    this.transaccionConsultaService.buscarModuloPorNemonico(this.nemonicoModulo).subscribe(
       (respuesta) => {
         this.modulo = respuesta['objeto'];
       }
@@ -211,7 +225,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   buscarOperacionPorNemonico() {
-    this.transaccionService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
+    this.transaccionConsultaService.buscarOperacionPorNemonico(this.nemonicoOperacion).subscribe(
       (respuesta) => {
         this.operacion = respuesta['objeto'];
       }
@@ -225,7 +239,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   listarTransaccionACaducarse() {
     return new Promise((resolve, rejects) => {
-      this.transaccionService.listarTransaccionACaducarse(5).subscribe({
+      this.transaccionConsultaService.listarTransaccionACaducarse(5).subscribe({
         next: (respuesta) => {
           this.listaTransaccion = respuesta['listado'];
           if (this.listaTransaccion?.length > 0) {
@@ -244,8 +258,8 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.codCliente = 0;
     this.enviarNotificacion = false;
     this.listaTransaccion = [];
-    // Receptar datos de formTransaccion.value
-    let transaccionDescripcionTemp = this.formTransaccion.value;
+    // Receptar datos de formTransaccionConsulta.value
+    let transaccionDescripcionTemp = this.formTransaccionConsulta.value;
     this.claveCuenta = transaccionDescripcionTemp?.claveCuenta;
     this.codCliente = transaccionDescripcionTemp?.codCliente;
     this.fechaInicio = transaccionDescripcionTemp?.fechaInicio;
@@ -268,7 +282,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       return;
     }
 
-    this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
+    this.transaccionConsultaService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
@@ -279,7 +293,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   listarTransaccionPorClaveCuenta() {
-    this.transaccionService.listarTransaccionPorClaveCuenta(this.claveCuenta).subscribe(
+    this.transaccionConsultaService.listarTransaccionPorClaveCuenta(this.claveCuenta).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
@@ -290,7 +304,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   listarTransaccionPorCliente() {
-    this.transaccionService.listarTransaccionPorCliente(this.codCliente).subscribe(
+    this.transaccionConsultaService.listarTransaccionPorCliente(this.codCliente).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
@@ -301,7 +315,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   listarTransaccionPorDescripcion() {
-    this.transaccionService.listarTransaccionPorDescripcion(this.descripcion).subscribe(
+    this.transaccionConsultaService.listarTransaccionPorDescripcion(this.descripcion).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
@@ -312,7 +326,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   listarTransaccionPorRangoFechas() {
-    this.transaccionService.listarTransaccionPorRangoFechas('2023-09-21', this.fechaFin).subscribe(
+    this.transaccionConsultaService.listarTransaccionPorRangoFechas('2023-09-21', this.fechaFin).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
@@ -323,46 +337,53 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   mostrarListaTransaccion = async () => {
+    let listaTransaccionAux = this.listaTransaccion;
+    this.listaTransaccion = [];
     this.page = 1;
-    for (const ele of this.listaTransaccion) {
-      ele.colorFila = "green";
-      ele.visibleBoton = "none";
-      ele.colorColumna = "white";
-      ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
-      ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
-      if (ele?.fechaCambia != null) {
-        ele.fechaCambia = dayjs(ele.fechaCambia).format("YYYY-MM-DD");
-        // Calcular la diferencia en días de la fecha actual y final de la transacción
-        var diff1 = new Date(ele.fechaCambia).getTime() - new Date(this.fechaHoy).getTime();
-        var numDias1 = diff1 / (1000 * 60 * 60 * 24);
+    for (const ele of listaTransaccionAux) {
+      if (ele?.codPersona == this.usuario?.codPersona) {
+        ele.colorFila = "green";
+        ele.visibleBoton = "none";
+        ele.colorColumna = "white";
+        ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
+        ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
+        if (ele?.fechaCambia != null) {
+          ele.fechaCambia = dayjs(ele.fechaCambia).format("YYYY-MM-DD");
+          // Calcular la diferencia en días de la fecha actual y final de la transacción
+          var diff1 = new Date(ele.fechaCambia).getTime() - new Date(this.fechaHoy).getTime();
+          var numDias1 = diff1 / (1000 * 60 * 60 * 24);
 
-        if (numDias1 <= 0) {
-          ele.colorColumna = "yellow";
+          if (numDias1 <= 0) {
+            ele.colorColumna = "yellow";
+          }
         }
-      }
-      this.fechaFinMensaje = dayjs(ele.fechaFin).format("YYYY-MM-DD");
+        this.fechaFinMensaje = dayjs(ele.fechaFin).format("YYYY-MM-DD");
 
-      // Calcular la diferencia en días de la fecha actual y final de la transacción
-      var diff = new Date(ele.fechaFin).getTime() - new Date(this.fechaHoy).getTime();
-      var numDias = diff / (1000 * 60 * 60 * 24);
+        // Calcular la diferencia en días de la fecha actual y final de la transacción
+        var diff = new Date(ele.fechaFin).getTime() - new Date(this.fechaHoy).getTime();
+        var numDias = diff / (1000 * 60 * 60 * 24);
 
-      // ele.fechaFin <= this.fechaHoy
-      ele.numDiasRenovar = numDias;
-      if (!(numDias > 0 && numDias > 5)) {
-        ele.colorFila = "red";
-        ele.visibleBoton = ""
-      }
+        // ele.fechaFin <= this.fechaHoy
+        ele.numDiasRenovar = numDias;
+        if (!(numDias > 0 && numDias > 5)) {
+          ele.colorFila = "red";
+          ele.visibleBoton = ""
+        }
 
-      if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
-        ele.prefijoTelefonico = '593';
-      }
+        if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
+          ele.prefijoTelefonico = '593';
+        }
 
-      // Confirmar si se envia o no las Notificaciones
-      if (this.enviarNotificacion) {
-        this.enviarWhatsappApi(ele);
+        // Confirmar si se envia o no las Notificaciones
+        /*
+        if (this.enviarNotificacion) {
+          this.enviarWhatsappApi(ele);
+        }
+        */
+        this.listaTransaccion.push(ele);
       }
     }
-
+    /*
     if (this.enviarNotificacion) {
       if (this.seEnvioWhatsapp) {
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
@@ -370,13 +391,14 @@ export class TransaccionPrincipalComponent implements OnInit {
         this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
       }
     }
+    */
   }
 
   listaTransaccionActualizada(event) {
     this.listaTransaccion = event;
   }
 
-  openDetail(codjornada) {
+  openDetail() {
     this.showDetail = true;
   }
 
@@ -416,7 +438,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, eliminar"
-          this.transaccionService.eliminarTransaccionPorId(transaccion.codigo).subscribe({
+          this.transaccionConsultaService.eliminarTransaccionPorId(transaccion.codigo).subscribe({
             next: (response) => {
               this.listarTransaccion();
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
@@ -500,7 +522,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       //to: "javier.brito@educacion.gob.ec"      
       to: "vjbritoa@hotmail.com",
     });
-    this.transaccionService.enviarCorreo(this.reporteDTO['data']).subscribe({
+    this.transaccionConsultaService.enviarCorreo(this.reporteDTO['data']).subscribe({
       next: (respuesta) => {
         if (respuesta['codigoRespuesta'] == "Ok") {
           this.mensajeService.mensajeCorrecto('Se a enviado el correo a ' + this.reporteDTO['data'].to);
@@ -514,46 +536,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     })
   }
 
-  async getBase64ImageFromUrl(imageUrl) {
-    var res = await fetch(imageUrl);
-    var blob = await res.blob();
-
-    return new Promise((resolve, reject) => {
-      var reader = new FileReader();
-      reader.addEventListener("load", function () {
-        resolve(reader.result);
-      }, false);
-
-      reader.onerror = () => {
-        return reject(this);
-      };
-      reader.readAsDataURL(blob);
-    })
-  }
-
-  toDataURL = async (url) => {
-    console.log("Downloading image...");
-    var res = await fetch(url);
-    var blob = await res.blob();
-
-    const result = await new Promise((resolve, reject) => {
-      var reader = new FileReader();
-      reader.addEventListener("load", function () {
-        resolve(reader.result);
-      }, false);
-
-      reader.onerror = () => {
-        return reject(this);
-      };
-      reader.readAsDataURL(blob);
-    })
-
-    return result
-  };
-  
   async enviarWhatsappApi(transaccion: Transaccion) {
-    let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
-    console.log("imageSrcString = ", imageSrcString)
     //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
     let dia = moment(transaccion?.fechaFin).format("D");
     let mes = moment(transaccion?.fechaFin).format("MMMM");
@@ -577,17 +560,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     }
     this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
     // Enviar mensaje
-    this.transaccionService.enviarMensajeWhatsappAI(this.celularEnvioWhatsapp, decodedValue).subscribe({
-      next: async (response) => {
-        this.seEnvioWhatsapp = true;
-        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
-      },
-      error: (error) => {
-        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
-      }
-    });
-    // Enviar imagen
-    this.transaccionService.enviarImagenWhatsappAI(this.celularEnvioWhatsapp, decodedValue, imageSrcString).subscribe({
+    this.transaccionConsultaService.enviarMensajeWhatsappAI(this.celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
         this.seEnvioWhatsapp = true;
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
@@ -603,19 +576,19 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
   /* Variables del html, para receptar datos y validaciones*/
   get descripcionField() {
-    return this.formTransaccion.get('descripcion');
+    return this.formTransaccionConsulta.get('descripcion');
   }
   get fechaInicioField() {
-    return this.formTransaccion.get('fechaInicio');
+    return this.formTransaccionConsulta.get('fechaInicio');
   }
   get fechaFinField() {
-    return this.formTransaccion.get('fechaFin');
+    return this.formTransaccionConsulta.get('fechaFin');
   }
   get claveCuentaField() {
-    return this.formTransaccion.get('claveCuenta');
+    return this.formTransaccionConsulta.get('claveCuenta');
   }
   get codClienteField() {
-    return this.formTransaccion.get('codCliente');
+    return this.formTransaccionConsulta.get('codCliente');
   }
 
 }

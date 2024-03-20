@@ -39,13 +39,13 @@
                                                         *ngFor="let participante of listaParticipante | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td style="width:1%">{{index+1}}</td>
                                                         <td>{{participante?.nombreEscuela}}</td>
-                                                        <td>{{participante?.firstName + ' - ' + participante?.lastName}}
+                                                        <td>{{participante?.nombrePersona}}
                                                         <!--</td>
                                                         <td>-->
                                                             <button type="button" style="width: 1px"
                                                                 [ngStyle]="{'display': participante?.displayNoneGrupo}"
                                                                 matTooltip="Ver Integrantes" class="btn btn-rounded"
-                                                                rippleEffect round><i class="fa fa-search" style="font-size:10px; color:blue"
+                                                                rippleEffect round><i class="fa fa-search" style="font-size:14px; color:chartreuse"
                                                                     (click)="verListaIntegrante(participante?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{participante?.desCategoria + ' / ' +

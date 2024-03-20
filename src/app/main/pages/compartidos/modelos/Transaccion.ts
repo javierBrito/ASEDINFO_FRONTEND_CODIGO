@@ -2,7 +2,6 @@
 import { get, set } from 'lodash-es';
 import { Itransaccion } from '../interfaces/Itransaccion';
 export class Transaccion implements Itransaccion {
-
     constructor(data) {
         set(this, 'data', data);
     }
@@ -230,6 +229,13 @@ export class Transaccion implements Itransaccion {
     }
     set displayNoneListaCuentaClave(value: string) {
         set(this, 'data.displayNoneListaCuentaClave', value);
+    }
+    
+    get codPersona(): number {
+        return get(this, 'data.codPersona');
+    }
+    set codPersona(value: number) {
+        set(this, 'data.codPersona', value);
     }
 
 }

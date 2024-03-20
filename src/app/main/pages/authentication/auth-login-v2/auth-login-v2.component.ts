@@ -266,7 +266,7 @@ export class AuthLoginV2Component implements OnInit {
     // Inicio - jbrito - para redireccionar a los usuarios Suscriptores - 20240212
     if (this._authenticationService.currentUserValue.cedula == 'Ventas') {
       this.aplicacionVEN = true;
-      this._router.navigate(['/pages/venta/transaccion'])
+      this._router.navigate(['/pages/venta/transaccion-consulta'])
     }
     // Fin - jbrito - para redireccionar a los usuarios Suscriptores - 20240212
 

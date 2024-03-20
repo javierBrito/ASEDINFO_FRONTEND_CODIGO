@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card box-shadow-sm">
             <div class="card-footer">
-                <form detail-content [formGroup]="formTransaccion" (ngSubmit)="listarTransaccion()">
+                <form detail-content [formGroup]="formTransaccionConsulta" (ngSubmit)="listarTransaccion()">
                     <div class="row form-group">
                         <div class="col-2">
                             <label for="fechaInicio"><b>{{'Fecha Inicio(*): '}}</b></label>
@@ -47,7 +47,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-2 col-3 form-group">
+                        <div class="col-md-2 col-3 form-group" [ngStyle]="{'display': 'none'}">
                             <div class="my-2 text-left">
                                 <button [disabled]=""
                                     class="btn btn-success btn-submit waves-effect waves-float waves-light"
@@ -80,11 +80,11 @@
                                 <span>{{ "Exito"}}</span>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" [ngStyle]="{'display': 'none'}">
                             <label for="codCliente"><b>{{'Cliente: '}}</b></label>
                             <select name="codCliente" formControlName="codCliente" required placeholder="Nombre Cliente"
                                 class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente">
-                                <option [value]="''" selected>Seleccionar cliente</option>
+                                <option [value]="" selected>Seleccionar Cliente</option>
                                 <option *ngFor="let cliente of listaCliente" [value]="cliente.codigo">
                                     <span>{{cliente?.persona?.nombres + " " + cliente?.persona?.apellidos + " - "
                                         +cliente?.persona?.celular}}</span>
@@ -104,7 +104,7 @@
                                     <section class="tab-container">
                                         <div>
                                             <b>{{'Lista Transacción'}}</b>
-                                            <button type="submit" (click)="openDetail(1)"
+                                            <button type="submit" (click)="openDetail()" [disabled]="true"
                                                 matTooltip="Agregar Nuevo Transaccion"
                                                 class="btn btn-block btn-primary form-control mt-2">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
@@ -115,7 +115,6 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
-                                                        <th scope="col">Cliente</th>
                                                         <th scope="col">Servicio</th>
                                                         <th scope="col">Cuenta/Clave</th>
                                                         <th scope="col">Monto</th>
@@ -130,7 +129,6 @@
                                                     <tr [ngStyle]="{'color': transaccion?.colorFila}"
                                                         *ngFor="let transaccion of listaTransaccion | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td>{{transaccion?.nombreCliente}}</td>
                                                         <td>{{transaccion?.descripcionProducto}}</td>
                                                         <td>{{transaccion?.claveCuenta + '  ' + transaccion?.clave}}
                                                         <!--    
@@ -151,12 +149,12 @@
                                                         <td>
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
-                                                                <button (click)="openClonarDetail(transaccion)"
+                                                                <button (click)="openClonarDetail(transaccion)" [ngStyle]="{'display': 'none'}"
                                                                     matTooltip="Clonar Transacción" type=" button"
                                                                     class="btn btn-success" rippleEffect round><i
                                                                         class="fas fa-copy"
                                                                         (click)="openClonarDetail(transaccion)"></i></button>
-                                                                <button (click)="openRenovarDetail(transaccion)"
+                                                                <button (click)="openRenovarDetail(transaccion)" [ngStyle]="{'display': 'none'}"
                                                                     matTooltip="Renovar Transacción" type=" button"
                                                                     class="btn btn-info" rippleEffect round><i
                                                                         class="fas fa-paste"
@@ -166,12 +164,12 @@
                                                                     class="btn btn-primary" rippleEffect round><i
                                                                         class="fa fa-pencil"
                                                                         (click)="openEditarDetail(transaccion)"></i></button>
-                                                                <button (click)="openRemoverDetail(transaccion)"
+                                                                <button (click)="openRemoverDetail(transaccion)" [ngStyle]="{'display': 'none'}"
                                                                     matTooltip="Eliminar Transacción" type="button"
                                                                     class="btn btn-danger" rippleEffect><i
                                                                         class="fa fa-trash"
                                                                         (click)="openRemoverDetail(transaccion)"></i></button>
-                                                                <button (click)="openNotificarDetail(transaccion)" [ngStyle]="{'display': transaccion?.visibleBoton}"
+                                                                <button (click)="openNotificarDetail(transaccion)" [ngStyle]="{'display': 'none'}"
                                                                     matTooltip="Enviar Notificación" type="button"
                                                                     class="btn btn-success btn-submit waves-effect waves-float waves-light" rippleEffect><i
                                                                         class="fa fa-envelope" style="font-size:14px; color:red"
@@ -209,11 +207,11 @@
     </div>
 </div>
 
-<app-form-transaccion [transaccionEditar]="transaccionSeleccionado" [codigoChild]="codigo"
+<app-form-transaccion-consulta [transaccionEditar]="transaccionSeleccionado" [codigoChild]="codigo"
     [descripcionChild]="descripcion" [listaTransaccionChild]="listaTransaccion"
     (listaTransaccion)="listaTransaccionActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail"
     [nombreProcesoChild]="nombreProceso">
-</app-form-transaccion>
+</app-form-transaccion-consulta>
 
 <ng-template #modal_confirm_delete let-modal>
     <div class="modal-header">

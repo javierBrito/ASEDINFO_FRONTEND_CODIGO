@@ -35,6 +35,7 @@ import { ParametroModule } from './catalogo/parametro/modulos/parametro.module';
 import { ResultadoModule } from './competencia/resultado/modulos/resultado.module';
 import { EstadoModule } from './competencia/estado/modulos/estado.module';
 import { SorteoModule } from './competencia/sorteo/modulos/sorteo.module';
+import { TransaccionConsultaModule } from './venta/transaccion-consulta/modulos/transaccion-consulta.module';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { SorteoModule } from './competencia/sorteo/modulos/sorteo.module';
     ParametroModule,
     ResultadoModule,
     EstadoModule,
-    SorteoModule
+    SorteoModule,
+    TransaccionConsultaModule
   ],
   providers: []
 })
