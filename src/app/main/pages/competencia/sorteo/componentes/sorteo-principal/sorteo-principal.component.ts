@@ -45,7 +45,7 @@ export class SorteoPrincipalComponent implements OnInit {
   public desCategoria: string;
   public desSubcategoria: string;
   public desInstancia: string;
-  public habilitarAgregarParticipante: boolean;
+  public habilitarSortearParticipante: boolean;
   public displayNone: string = '';
   public displayNone1: string = 'none';
   public displayBotonGuardar: string = 'none';
@@ -116,7 +116,7 @@ export class SorteoPrincipalComponent implements OnInit {
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
-    this.habilitarAgregarParticipante = true;
+    this.habilitarSortearParticipante = true;
     this.formSorteo = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
@@ -164,7 +164,7 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   listarSubcategoriaPorCategoria() {
-    this.habilitarAgregarParticipante = true;
+    this.habilitarSortearParticipante = true;
     this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codCategoria de formSorteo.value
@@ -187,7 +187,7 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   listarInstanciaActivo() {
-    this.habilitarAgregarParticipante = true;
+    this.habilitarSortearParticipante = true;
     this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codSubcategoria de formSorteo.value
@@ -313,19 +313,20 @@ export class SorteoPrincipalComponent implements OnInit {
 
   sortearParticipante() {
     this.displayBotonGuardar = "";
-    this.habilitarAgregarParticipante = true;
+    this.habilitarSortearParticipante = true;
 
     // Sortear aleatoriamente los participantes
     this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
 
     let formSorteoTemp = this.formSorteo.value;
     this.dateLastActive = formSorteoTemp?.dateLastActive;
-    let tiempo = "00:05";
+    // Tiempo a sumar en minutos
+    let tiempo = "00:03";
     let fechaASumar: any;
     // Actualizar la fecha de competencia de los participantes
     for (let participante of this.listaParticipante) {
       fechaASumar = moment(this.dateLastActive);
-      participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD h:mm');
+      participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm');
       this.dateLastActive = participante?.dateLastActive;
     }
 
@@ -333,7 +334,7 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstancia() {
-    this.habilitarAgregarParticipante = true;
+    this.habilitarSortearParticipante = true;
     this.displayBotonGuardar = "none";
     this.listaParticipante = [];
     // Receptar codSubcategoria de formSorteo.value
@@ -347,7 +348,35 @@ export class SorteoPrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante?.length > 0) {
-          this.habilitarAgregarParticipante = false;
+          //this.habilitarSortearParticipante = false;
+          for (const ele of this.listaParticipante) {
+            if (ele?.numParticipante != 0) {
+              this.mensajeService.mensajeAdvertencia('Ya se ha realizado el sorteo de la Subcategoria '+ele.desSubcategoria);
+            } else {
+              this.habilitarSortearParticipante = false;
+            }
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+            ele.displayNoneGrupo = "none";
+            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+              ele.desSubcategoria.includes("SHOW DANCE")) {
+              ele.displayNoneGrupo = "";
+            }
+          }
+          // Ordenar lista por numParticipante
+          this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
+        }
+      }
+    );
+  }
+
+  listarParticipantePorSubcategoriaInstanciaAux() {
+    this.habilitarSortearParticipante = true;
+    this.displayBotonGuardar = "none";
+    this.listaParticipante = [];
+    this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante?.length > 0) {
           for (const ele of this.listaParticipante) {
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
             ele.displayNoneGrupo = "none";
@@ -368,7 +397,7 @@ export class SorteoPrincipalComponent implements OnInit {
       this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
         next: (respuesta) => {
           this.displayBotonGuardar = "none";
-          this.habilitarAgregarParticipante = true;
+          this.habilitarSortearParticipante = true;
           this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
           resolve(respuesta);
         }, error: (error) => {
@@ -476,15 +505,15 @@ export class SorteoPrincipalComponent implements OnInit {
           // Hicieron click en "Sí, sortear"
           // Actualizar formato fecha lista participantes
           for (let participante of this.listaParticipante) {
-            participante.dateLastActive = dayjs(participante?.dateLastActive).format('YYYY-MM-DD h:mm:ss.SSS');
+            participante.dateLastActive = dayjs(participante?.dateLastActive).format('YYYY-MM-DD HH:mm:ss.SSS');
           }
           this.participanteService.actualizarListaParticipante(this.listaParticipante).subscribe({
             next: (response) => {
               this.listaParticipante = response['listado'];
               this.displayBotonGuardar = "none";
-              this.habilitarAgregarParticipante = true;
-              this.listarParticipantePorSubcategoriaInstancia();
-              this.mensajeService.mensajeCorrecto('Se ha sorteado los participantes...');
+              this.habilitarSortearParticipante = true;
+              this.listarParticipantePorSubcategoriaInstanciaAux();
+              this.mensajeService.mensajeCorrecto('Se ha sorteado los participantes de la Subcategoría '+this.desSubcategoria);
             },
             error: (error) => {
               this.listarParticipantePorSubcategoriaInstancia();
