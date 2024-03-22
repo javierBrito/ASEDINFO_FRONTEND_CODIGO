@@ -19,6 +19,8 @@ import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/htt
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { saveAs } from 'file-saver';
+import { ClienteService } from 'app/main/pages/venta/cliente/servicios/cliente.service';
+import { PrefijoTelefonico } from 'app/main/pages/compartidos/modelos/PrefijoTelefonico';
 
 @Component({
   selector: 'app-form-participante',
@@ -116,11 +118,13 @@ export class FormParticipanteComponent implements OnInit {
   public listaIntegranteAux: Integrante[] = [];
   public integrante: Integrante;
   public listaPersona: Persona[] = [];
+  public listaPrefijoTelefonico: PrefijoTelefonico[];
 
   /*CONSTRUCTOR*/
   constructor(
     private participanteService: ParticipanteService,
     private personaService: PersonaService,
+    private clienteService: ClienteService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
     private mensajeIzi: MensajesIziToastService,
@@ -137,6 +141,9 @@ export class FormParticipanteComponent implements OnInit {
     this.listarEstadoCompetenciaActivo();
     this.listarSubcategoriaActivo();
     if (this.participanteEditar) {
+      if (this.participanteEditar?.prefijoTelefonico == null || this.participanteEditar?.prefijoTelefonico == "") {
+        this.participanteEditar.prefijoTelefonico = '593';
+      }
       this.codParticipante = this.participanteEditar?.codigo;
       // S identificacion de usuario == identificacion de participante NO MODIFICA
       //if (this.currentUser?.identificacion == this.participanteEditar?.identificacion) {
@@ -156,7 +163,8 @@ export class FormParticipanteComponent implements OnInit {
         apellidos: new FormControl(this.participanteEditar?.apellidos),
         //fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
         fechaNacimiento: new FormControl(this.fechaNacimiento),
-        country: new FormControl(this.participanteEditar?.country),
+        //country: new FormControl(this.participanteEditar?.country),
+        codigo: new FormControl(this.participanteEditar?.prefijoTelefonico),
         celular: new FormControl(this.participanteEditar?.celular),
         correo: new FormControl(this.participanteEditar?.correo),
         dateLastActive: new FormControl(dayjs(this.participanteEditar?.dateLastActive).format("YYYY-MM-DD HH:mm")),
@@ -176,7 +184,8 @@ export class FormParticipanteComponent implements OnInit {
         nombres: new FormControl('', Validators.required),
         apellidos: new FormControl(''),
         fechaNacimiento: new FormControl(''),
-        country: new FormControl('ECUADOR'),
+        //country: new FormControl('ECUADOR'),
+        codigo: new FormControl('593', Validators.required),
         celular: new FormControl(''),
         correo: new FormControl(this.currentUser?.correo),
         dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD HH:mm")),
@@ -209,6 +218,15 @@ export class FormParticipanteComponent implements OnInit {
       //this.buscarSubcategoriaPorCodigo();
     }
     //this.verpdf();
+    this.listarPrefijoTelefonico();
+  }
+
+  async listarPrefijoTelefonico() {
+    this.clienteService.listarPrefijoTelefonico().subscribe(
+      (respuesta) => {
+        this.listaPrefijoTelefonico = respuesta['listado'];
+      }
+    );
   }
 
   adicionarIntegrante() {
@@ -500,6 +518,7 @@ export class FormParticipanteComponent implements OnInit {
         //fechaNacimiento: dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaNacimiento: participanteTemp?.fechaNacimiento,
         celular: participanteTemp?.celular,
+        prefijoTelefonico: participanteTemp?.codigo,
         correo: participanteTemp?.correo,
         cedula: 'Suscriptor',
         estado: 'A',
@@ -739,6 +758,15 @@ export class FormParticipanteComponent implements OnInit {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
 
+  compararPrefijoTelefonico(o1, o2) {
+    return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
+  }
+
+  buscarPrefijoTelefonico() {
+    // Receptar el codigo de formParticipante.value
+    let formParticipanteTemp = this.formParticipante.value;
+  }
+
   // Tratar Archivos
   selectFiles(event) {
     this.progressInfo = [];
@@ -968,6 +996,9 @@ export class FormParticipanteComponent implements OnInit {
   }
   get nombreEscuelaField() {
     return this.formParticipante.get('nombreEscuela');
+  }
+  get codigoField() {
+    return this.formParticipante.get('codigo');
   }
 
 }

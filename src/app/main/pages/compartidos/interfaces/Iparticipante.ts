@@ -36,6 +36,7 @@ export interface Iparticipante {
     apellidos: string;
     identificacion: string;
     fechaNacimiento: string;
+    prefijoTelefonico: string;
 
     estadoCompetencia: any;
 

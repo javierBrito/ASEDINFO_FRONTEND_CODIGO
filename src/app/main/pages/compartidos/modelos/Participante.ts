@@ -253,4 +253,11 @@ export class Participante implements Iparticipante {
     set displayNoneGrupo(value: string) {
         set(this, 'data.displayNoneGrupo', value);
     }   
+
+    get prefijoTelefonico(): string {
+        return get(this, 'data.prefijoTelefonico');
+    }
+    set prefijoTelefonico(value: string) {
+        set(this, 'data.prefijoTelefonico', value);
+    }   
 }

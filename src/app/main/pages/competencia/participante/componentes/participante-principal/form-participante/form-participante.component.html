@@ -141,6 +141,7 @@
                 </div>
             </div>
             <div class="row form-group">
+                <!--
                 <div class="col-3">
                     <label for="country">
                         <h4><b>{{'País: '}}</b></h4>
@@ -153,6 +154,21 @@
                         <span>{{ "Exito"}}</span>
                     </div>
                 </div>
+                -->
+                <div class="col-3">
+                    <label for="codigo"><b>{{"Prefijo(*): "}}</b></label>
+                    <select name="codigo" formControlName="codigo" required [compareWith]="compararPrefijoTelefonico"
+                        placeholder="Prefijo telefónico" class="form-control mr-sm-2" id="codigo"
+                        (change)="buscarPrefijoTelefonico()">
+                        <option [value]="" selected>Prefijo telefónico</option>
+                        <option *ngFor="let prefijoTelefonico of listaPrefijoTelefonico" [value]="prefijoTelefonico.codigo">
+                            <span>{{prefijoTelefonico?.nombrePais+" / "+prefijoTelefonico?.codigo}}</span>
+                        </option>
+                    </select>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                </div>
+
                 <div class="col-4">
                     <label for="celular">
                         <h4><b>{{'Celular(*): '}}</b></h4>

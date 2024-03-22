@@ -587,6 +587,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       }
     });
     // Enviar imagen
+    /*
     this.transaccionService.enviarImagenWhatsappAI(this.celularEnvioWhatsapp, decodedValue, imageSrcString).subscribe({
       next: async (response) => {
         this.seEnvioWhatsapp = true;
@@ -596,6 +597,7 @@ export class TransaccionPrincipalComponent implements OnInit {
         this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
       }
     });
+    */
   }
 
   compararCliente(o1, o2) {

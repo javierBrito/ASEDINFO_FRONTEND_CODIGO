@@ -407,12 +407,12 @@ export class AuthLoginV2Component implements OnInit {
     let dia = moment(new Date()).format("D");
     let mes = moment(new Date()).format("MMMM");
     let año = moment(new Date()).format("YYYY");
-    let mensajeNotificacion = "*New Dance Ec / 0998069137* Estimado(a) "
-      + "Con fecha " + dia + " de " + mes + " de " + año
+    let mensajeNotificacion = "**Notificación Automática*%0aEstimado(a) Con fecha "
+      + dia + " de " + mes + " de " + año
       + ", se ha modificado su contraseña con éxito ... (" + this.f.password1.value
       + "), link para el acceso al sistema www.sistema.asedinfo.com "
-      + "%0aCualquier cosa estamos atentos... Un excelente dia, tarde o noche...."
-      + "%0a*New Dance Ec / Congress Abril-2024*" + "%0a*Quito-Ecuador*";
+      + "%0aCualquier novedad estamos atentos... Un excelente dia, tarde o noche...."
+      + "%0a*Asedinfo | Servicios Técnologicos*" + "%0a*Quito-Ecuador*";
 
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();
@@ -426,7 +426,7 @@ export class AuthLoginV2Component implements OnInit {
     let celularEnvioWhatsapp = this.currentUser?.prefijoTelefonico + this.currentUser?.celular.substring(1, 15).trim();
     //let celularEnvioWhatsapp = "593" + "0992752367".substring(1, 15).trim();
     // Enviar mensaje
-    this.transaccionService.enviarMensajeWhatsappND(celularEnvioWhatsapp, decodedValue).subscribe({
+    this.transaccionService.enviarMensajeWhatsappAI(celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito, a su móvil ' + celularEnvioWhatsapp);
       },

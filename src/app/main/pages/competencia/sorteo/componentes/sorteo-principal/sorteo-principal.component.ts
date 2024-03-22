@@ -18,6 +18,8 @@ import { AuthenticationService } from 'app/auth/service';
 import moment from 'moment';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { HttpUrlEncodingCodec } from '@angular/common/http';
+import { TransaccionService } from 'app/main/pages/venta/transaccion/servicios/transaccion.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -96,6 +98,7 @@ export class SorteoPrincipalComponent implements OnInit {
   constructor(
     /*Servicios*/
     private readonly participanteService: ParticipanteService,
+    private readonly transaccionService: TransaccionService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
@@ -107,6 +110,7 @@ export class SorteoPrincipalComponent implements OnInit {
       this.iniciarSesion();
     };
     // Fin - Para acceder directamente a la página de inscripción
+    moment.locale("es");
   }
 
   ngOnInit() {
@@ -351,7 +355,7 @@ export class SorteoPrincipalComponent implements OnInit {
           //this.habilitarSortearParticipante = false;
           for (const ele of this.listaParticipante) {
             if (ele?.numParticipante != 0) {
-              this.mensajeService.mensajeAdvertencia('Ya se ha realizado el sorteo de la Subcategoria '+ele.desSubcategoria);
+              this.mensajeService.mensajeAdvertencia('Ya se ha realizado el sorteo de la Subcategoria ' + ele.desSubcategoria);
             } else {
               this.habilitarSortearParticipante = false;
             }
@@ -415,7 +419,7 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   generarPDF() {
-    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.identificacion, participante?.dateLastActive, ' ... '+participante?.numParticipante, participante?.postcode]);
+    const bodyData = this.listaParticipante.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.identificacion, participante?.dateLastActive, ' ... ' + participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
         { text: 'Sorteo Participantes: ' + this.desCategoria + '/' + this.desSubcategoria, style: 'datoTituloGeneral' },
@@ -513,7 +517,8 @@ export class SorteoPrincipalComponent implements OnInit {
               this.displayBotonGuardar = "none";
               this.habilitarSortearParticipante = true;
               this.listarParticipantePorSubcategoriaInstanciaAux();
-              this.mensajeService.mensajeCorrecto('Se ha sorteado los participantes de la Subcategoría '+this.desSubcategoria);
+              this.mensajeService.mensajeCorrecto('Se ha sorteado los participantes de la Subcategoría ' + this.desSubcategoria);
+              this.confirmarEnviarNotificacion();
             },
             error: (error) => {
               this.listarParticipantePorSubcategoriaInstancia();
@@ -548,6 +553,94 @@ export class SorteoPrincipalComponent implements OnInit {
       });
   }
 
+  confirmarEnviarNotificacion() {
+    Swal
+      .fire({
+        title: "Enviar Notificaciones a los Participantes",
+        text: "¿Quiere enviar Notificaciones a los participantes?'",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: "Sí, enviar",
+        cancelButtonText: "Cancelar",
+      })
+      .then(resultado => {
+        if (resultado.value) {
+          // Hicieron click en "Sí, sortear"
+          if (this.listaParticipante.length > 0) {
+            this.enviarNotificacion();
+          }
+        } else {
+          // Hicieron click en "Cancelar"
+          console.log("*Se cancela el proceso...*");
+        }
+      });
+  }
+
+  enviarNotificacion = async () => {
+    for (let ele of this.listaParticipante) {
+      // Tratar nombre de Pariicipante
+      if (ele?.lastName != "" && ele?.username == "") {
+        ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+      } else {
+        ele.nombrePersona = ele?.firstName;
+      }
+      await this.enviarWhatsappApi(ele);
+    }
+  }
+
+  async enviarWhatsappApi(participante: Participante) {
+    //let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
+    //console.log("imageSrcString = ", imageSrcString)
+
+    //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
+    let dia = moment(participante?.dateLastActive).format("D");
+    let mes = moment(participante?.dateLastActive).format("MMMM");
+    let año = moment(participante?.dateLastActive).format("YYYY");
+    let horaMinuto = moment(participante?.dateLastActive).format("HH:mm");
+    //transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
+    //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    let mensajeEnviar = "*Notificación Automática*%0aEstimado(a) Participante " 
+      + participante?.nombrePersona
+      + ", por comunicarle que su participación en la Competencia de NewDanceEC en la categoría " 
+      + participante?.desCategoria + "/" + participante?.desSubcategoria + " a salido sorteada para el día "
+      + dia + " de " + mes + " de " + año + " a las " + horaMinuto + " Horas aproximadamente "
+      + ", favor su ayuda asistiendo con mínimo una hora de antelación... Un excelente dia, tarde o noche...."
+      +"%0a*NewDanceEc Congress / Quito-Ecuador*";
+      console.log("", mensajeEnviar)
+
+    // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
+    const codec = new HttpUrlEncodingCodec();
+    //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
+    const decodedValue = codec.decodeValue(mensajeEnviar); // Decodes the value as 'Hello World!'
+
+    // Validar prefijo telefonico
+    if (participante?.prefijoTelefonico == "" || participante?.prefijoTelefonico == null) {
+      participante.prefijoTelefonico = "593";
+    }
+    let celularEnvioWhatsapp = participante?.prefijoTelefonico + participante?.celular.substring(1, 15).trim();
+    //let celularEnvioWhatsapp = participante?.prefijoTelefonico + "0992752367".substring(1, 15).trim();
+    // Enviar mensaje
+    this.transaccionService.enviarMensajeWhatsappND(celularEnvioWhatsapp, decodedValue).subscribe({
+      next: async (response) => {
+        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
+      },
+      error: (error) => {
+        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
+      }
+    });
+    // Enviar imagen
+    /*
+    this.transaccionService.enviarImagenWhatsappAI(this.celularEnvioWhatsapp, decodedValue, imageSrcString).subscribe({
+      next: async (response) => {
+        this.seEnvioWhatsapp = true;
+        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
+      },
+      error: (error) => {
+        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
+      }
+    });
+    */
+  }
   closeDetail($event) {
     this.showDetail = $event;
     this.participanteSeleccionado = null;
