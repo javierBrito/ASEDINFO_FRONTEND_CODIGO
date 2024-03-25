@@ -5,10 +5,6 @@ import { Sede } from 'app/auth/models/sede';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import dayjs from "dayjs";
-import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
-import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
-import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
-import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
@@ -90,11 +86,11 @@ export class EstadoPrincipalComponent implements OnInit {
       setTimeout(() => {
         this.listarParticipantePorEstado();
         //window.location.reload();
-      }, 24999);
+      }, 149999);
       setTimeout(() => {
         //this.listarParticipantePorEstado();
         window.location.reload();
-      }, 24999);
+      }, 149999);
     }
   }
 
@@ -106,7 +102,7 @@ export class EstadoPrincipalComponent implements OnInit {
         setTimeout(() => {
           this.listarParticipantePorEstado();
           //window.location.reload();
-        }, 24999);
+        }, 149999);
       }
     );
   }
@@ -143,7 +139,7 @@ export class EstadoPrincipalComponent implements OnInit {
           }
         }
         // Ordenar lista por numParticipante
-        this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
+        //this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
       }
     );
   }
@@ -167,7 +163,7 @@ export class EstadoPrincipalComponent implements OnInit {
         console.log("this.listaUsuarioWPDTO.length = ", this.listaUsuarioWPDTO.length)
         console.log("this.listaParticipanteUsuario.length - 1) = ", (this.listaParticipanteUsuario.length - 1))
         if (this.listaUsuarioWPDTO.length > (this.listaParticipanteUsuario.length - 1)) {
-          this.migrarUsuarioWP();
+          //this.migrarUsuarioWP();
         }
       }
     );
