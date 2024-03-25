@@ -243,7 +243,7 @@
                         <span *ngIf="usernameField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
-                <div class="col-7">
+                <div class="col-4">
                     <label for="numPuntajeJuez">
                         <h4><b>{{'Número Puntaje Juez: '}}</b></h4>
                     </label>
@@ -255,6 +255,20 @@
                     </div>
                     <div class="invalid-feedback">
                         <span *ngIf="numPuntajeJuezField?.errors?.['required']">{{"Requerido"}}</span>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <label for="numParticipante">
+                        <h4><b>{{'Número Participante: '}}</b></h4>
+                    </label>
+                    <input type="text" name="numParticipante" formControlName="numParticipante" class="form-control"
+                        id="numParticipante" [attr.disabled]="true" placeholder="9"
+                        [ngClass]="{'is-valid': numParticipanteField?.dirty && !numParticipanteField?.invalid && !numParticipanteField?.errors, 'is-invalid': numParticipanteField?.dirty && numParticipanteField?.invalid && numParticipanteField?.errors}">
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        <span *ngIf="numParticipanteField?.errors?.['required']">{{"Requerido"}}</span>
                     </div>
                 </div>
             </div>

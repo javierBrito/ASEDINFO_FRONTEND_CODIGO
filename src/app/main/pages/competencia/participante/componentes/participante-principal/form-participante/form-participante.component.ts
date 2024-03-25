@@ -171,6 +171,7 @@ export class FormParticipanteComponent implements OnInit {
         username: new FormControl(this.participanteEditar?.username),
         codEstadoCompetencia: new FormControl(this.participanteEditar?.codEstadoCompetencia),
         numPuntajeJuez: new FormControl(this.participanteEditar?.numPuntajeJuez),
+        numParticipante: new FormControl(this.participanteEditar?.numParticipante),
         codCategoria: new FormControl(this.participanteEditar?.codCategoria),
         codSubcategoria: new FormControl(this.participanteEditar?.codSubcategoria),
         codInstancia: new FormControl(this.participanteEditar?.codInstancia),
@@ -192,6 +193,7 @@ export class FormParticipanteComponent implements OnInit {
         username: new FormControl(''),
         codEstadoCompetencia: new FormControl(1),
         numPuntajeJuez: new FormControl(''),
+        numParticipante: new FormControl(''),
         codCategoria: new FormControl(''),
         codSubcategoria: new FormControl(''),
         codInstancia: new FormControl(''),
@@ -984,6 +986,9 @@ export class FormParticipanteComponent implements OnInit {
   }
   get numPuntajeJuezField() {
     return this.formParticipante.get('numPuntajeJuez');
+  }
+  get numParticipanteField() {
+    return this.formParticipante.get('numParticipante');
   }
   get codCategoriaField() {
     return this.formParticipante.get('codCategoria');

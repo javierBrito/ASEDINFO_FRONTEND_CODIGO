@@ -67,6 +67,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   public nombreArchivoDescarga: string;
   public crearPDF: boolean = false;
   public crearPDFCancion: boolean = false;
+  public listarPorInstancia: boolean= false;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -139,7 +140,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   ) {
     this.codigo = 0;
     this.codigoSede = 0;
-    this.itemsRegistros = 5;
+    this.itemsRegistros = 10;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
@@ -312,6 +313,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstancia() {
+    this.listarPorInstancia = true;
     // Receptar la descripción de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
@@ -724,6 +726,12 @@ export class ParticipantePrincipalComponent implements OnInit {
     });
   }
 
+  
+  listarParticipantePorEstadoBoton() {
+    this.listarPorInstancia = false;
+    this.listarParticipantePorEstado();
+  }
+
   listarParticipantePorEstado() {
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
@@ -760,6 +768,9 @@ export class ParticipantePrincipalComponent implements OnInit {
               this.crearPDFCancion = false;
             }
           }
+        }
+        if (!this.listarPorInstancia) {
+          this.listaParticipante = this.listaParticipantePDF;
         }
       }
     );

@@ -91,7 +91,17 @@
                                 (click)="listarParticipantePDFCancion()">
                                 <b>{{ "Participante Canción"}}</b>
                                 <b>{{ " "}}</b>
-                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                                <i class="fa-solid fa-music" style="font-size:14px;color:red"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-2 col-1 form-group">
+                            <br/>
+                            <br/>
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="listarParticipantePorEstadoBoton()">
+                                <b>{{ "Minuto a Minuto"}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fa-solid fa-copy" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                     </div>
@@ -177,7 +187,7 @@
                                                                     (click)="verListaIntegrante(participante?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{participante?.desCategoria + ' / ' +
-                                                            participante?.desSubcategoria}}</td>
+                                                            participante?.desSubcategoria + ' - ' + participante?.numParticipante}}</td>
                                                         <td>{{participante?.dateLastActive}}</td>
                                                         <!--<td>{{participante?.desEstadoCompetencia}}</td>-->
                                                         <td>

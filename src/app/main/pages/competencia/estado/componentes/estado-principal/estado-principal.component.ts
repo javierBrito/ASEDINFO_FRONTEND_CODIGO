@@ -86,11 +86,11 @@ export class EstadoPrincipalComponent implements OnInit {
       setTimeout(() => {
         this.listarParticipantePorEstado();
         //window.location.reload();
-      }, 149999);
+      }, 249999);
       setTimeout(() => {
         //this.listarParticipantePorEstado();
         window.location.reload();
-      }, 149999);
+      }, 249999);
     }
   }
 
@@ -102,7 +102,7 @@ export class EstadoPrincipalComponent implements OnInit {
         setTimeout(() => {
           this.listarParticipantePorEstado();
           //window.location.reload();
-        }, 149999);
+        }, 249999);
       }
     );
   }
