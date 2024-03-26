@@ -183,12 +183,12 @@
                                                             <button type="button"
                                                                 [ngStyle]="{'display': participante?.displayNoneGrupo}"
                                                                 matTooltip="Ver Integrantes" class="btn btn-rounded"
-                                                                rippleEffect round><i class="fa fa-search" style="font-size:10px; color:blue"
+                                                                rippleEffect round><i class="fa fa-search" style="font-size:14px; color:rgb(74, 157, 157)"
                                                                     (click)="verListaIntegrante(participante?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{participante?.desCategoria + ' / ' +
-                                                            participante?.desSubcategoria + ' - ' + participante?.numParticipante}}</td>
-                                                        <td>{{participante?.dateLastActive}}</td>
+                                                            participante?.desSubcategoria + ' - '}} <span style="font-size:14px; color:rgb(74, 157, 157)"><b>{{participante?.numParticipante}}</b></span></td>
+                                                        <td align="center" style="font-size:14px; color:rgb(74, 157, 157)"><b>{{participante?.dateLastActive}}</b></td>
                                                         <!--<td>{{participante?.desEstadoCompetencia}}</td>-->
                                                         <td>
                                                             <!--style="{'background-color': participante?.dateLastActive}"-->

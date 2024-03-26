@@ -747,7 +747,7 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.nombrePersona = ele?.firstName;
             }
 
-            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm:ss.SSS")
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
             //if (ele?.identificacion == this.currentUser.identificacion) {
             if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";

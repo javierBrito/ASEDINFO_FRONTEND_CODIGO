@@ -11,12 +11,10 @@ import dayjs from "dayjs";
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { Cliente } from 'app/main/pages/compartidos/modelos/Cliente';
-import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
 import { ClienteService } from '../../../cliente/servicios/cliente.service';
 import { Modulo } from 'app/main/pages/compartidos/modelos/Modulo';
 import { Operacion } from 'app/main/pages/compartidos/modelos/Operacion';
 import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model';
-import { ajax } from 'jquery';
 import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
 import moment from 'moment';
 import { HttpParameterCodec, HttpUrlEncodingCodec } from "@angular/common/http";
@@ -110,7 +108,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     private modalService: NgbModal
   ) {
     this.codigo = 0;
-    this.itemsRegistros = 5;
+    this.itemsRegistros = 10;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;

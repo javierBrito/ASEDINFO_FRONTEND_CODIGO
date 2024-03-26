@@ -115,13 +115,13 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
-                                                        <th scope="col">Cliente</th>
-                                                        <th scope="col">Servicio</th>
-                                                        <th scope="col">Cuenta/Clave</th>
-                                                        <th scope="col">Monto</th>
-                                                        <th scope="col">Cant.</th>
-                                                        <th scope="col">Fin</th>
-                                                        <th scope="col">Días Ren.</th>
+                                                        <th scope="col"><div align="center">Cliente</div></th>
+                                                        <th scope="col"><div align="center">Servicio</div></th>
+                                                        <th scope="col"><div align="center">Cuenta/Clave</div></th>
+                                                        <th scope="col"><div align="center">Monto</div></th>
+                                                        <th scope="col"><div align="center">Cant.</div></th>
+                                                        <th scope="col"><div align="center">Fecha Fin</div></th>
+                                                        <th scope="col"><div align="center">Días Renovar</div></th>
                                                         <th scope="col">Cambiar</th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
@@ -142,10 +142,10 @@
                                                                 rippleEffect round><i class="fa fa-search" style="font-size:10px; color:blue"
                                                                     (click)="verListaCuentaClave(transaccion?.codigo)"></i></button>
                                                         </td>
-                                                        <td>{{transaccion?.monto}}</td>
-                                                        <td>{{transaccion?.numProducto}}</td>
+                                                        <td align="center">{{transaccion?.monto}}</td>
+                                                        <td align="center">{{transaccion?.numProducto}}</td>
                                                         <td>{{transaccion?.fechaFin}}</td>
-                                                        <td>{{transaccion?.numDiasRenovar}}</td>
+                                                        <td align="center">{{transaccion?.numDiasRenovar}}</td>
                                                         <td [ngStyle]="{'background-color': transaccion?.colorColumna}">
                                                             {{transaccion?.fechaCambia}}</td>
                                                         <td>
@@ -154,12 +154,12 @@
                                                                 <button (click)="openClonarDetail(transaccion)"
                                                                     matTooltip="Clonar Transacción" type=" button"
                                                                     class="btn btn-success" rippleEffect round><i
-                                                                        class="fa-solid fa-gears"
+                                                                        class="fas fa-copy"
                                                                         (click)="openClonarDetail(transaccion)"></i></button>
                                                                 <button (click)="openRenovarDetail(transaccion)"
                                                                     matTooltip="Renovar Transacción" type=" button"
                                                                     class="btn btn-info" rippleEffect round><i
-                                                                        class="fas fa-copy"
+                                                                        class="fa-solid fa-rotate"
                                                                         (click)="openRenovarDetail(transaccion)"></i></button>
                                                                 <button (click)="openEditarDetail(transaccion)"
                                                                     matTooltip="Editar Transacción" type=" button"

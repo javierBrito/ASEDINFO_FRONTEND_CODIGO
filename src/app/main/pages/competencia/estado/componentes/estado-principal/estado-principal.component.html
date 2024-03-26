@@ -27,7 +27,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" style="width:1%">#</th>
-                                                        <th scope="col">Academia/Escuela</th>
+                                                        <th scope="col"><div align="center">Academia/Escuela</div></th>
                                                         <th scope="col"><div align="center">Nombres</div></th>
                                                         <th scope="col"><div align="center">Categoría / Subcategoría</div></th>
                                                         <th scope="col"><div align="center">Fecha/hora Competencia</div></th>
@@ -46,12 +46,12 @@
                                                             <button type="button" style="width: 1px"
                                                                 [ngStyle]="{'display': participante?.displayNoneGrupo}"
                                                                 matTooltip="Ver Integrantes" class="btn btn-rounded"
-                                                                rippleEffect round><i class="fa fa-search" style="font-size:14px; color:chartreuse"
+                                                                rippleEffect round><i class="fa fa-search" style="font-size:14px; color:rgb(74, 157, 157)"
                                                                     (click)="verListaIntegrante(participante?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{participante?.desCategoria + ' / ' +
                                                             participante?.desSubcategoria}}</td>
-                                                        <td>{{participante?.dateLastActive}}</td>
+                                                        <td align="center" style="font-size:14px; color:rgb(74, 157, 157)"><b>{{participante?.dateLastActive}}</b></td>
                                                         <td>
                                                             <!--style="{'background-color': participante?.dateLastActive}"-->
                                                             <!--[disabled]="formEstado.invalid"-->
@@ -63,7 +63,7 @@
                                                                 <i class="fa fa-pencil"></i>
                                                             </button>
                                                         </td>
-                                                        <td><div align="center">{{participante?.numParticipante}}</div></td>
+                                                        <td><div align="center" style="font-size:14px; color:rgb(74, 157, 157)"><b>{{participante?.numParticipante}}</b></div></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
