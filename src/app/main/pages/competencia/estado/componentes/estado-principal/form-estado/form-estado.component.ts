@@ -260,7 +260,7 @@ export class FormEstadoComponent implements OnInit {
       (respuesta) => {
         this.desSubcategoria = respuesta['objeto']?.denominacion;
         this.codCategoria = respuesta['objeto']?.codCategoria;
-        if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO")) {
+        if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUOS")) {
           this.displayNoneIntegrante2 = "";
         }
         if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW") ||

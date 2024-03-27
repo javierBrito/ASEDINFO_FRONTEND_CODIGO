@@ -326,11 +326,11 @@ export class FormParticipanteComponent implements OnInit {
         this.desCategoria = this.subcategoria?.desCategoria;
         this.desSubcategoria = this.subcategoria?.denominacion;
         this.codCategoria = this.subcategoria.codCategoria;
-        if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO")) {
+        if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUOS")) {
           this.disabledApellidos = false;
           this.displayIntegrante2 = "";
         }
-        if (this.desSubcategoria.includes("GRUPOS") || this.desSubcategoria.includes("CREW") ||
+        if (this.desSubcategoria.includes("GRUPO") || this.desSubcategoria.includes("CREW") ||
           this.desSubcategoria.includes("SHOW DANCE")) {
           this.displayIntegrante2 = "";
           this.displayIntegranteGrupo = "";
@@ -508,7 +508,7 @@ export class FormParticipanteComponent implements OnInit {
         }
       }
       let apellidos = "";
-      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO")) {
+      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUOS")) {
         apellidos = participanteTemp?.apellidos;
       }
       this.persona = new Persona({
@@ -564,7 +564,7 @@ export class FormParticipanteComponent implements OnInit {
     if (this.formParticipante?.valid) {
       let participanteTemp = this.formParticipante.value;
       let lastName = "";
-      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO")) {
+      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUOS")) {
         lastName = participanteTemp?.apellidos;
       }
       this.participanteAux = new Participante({
