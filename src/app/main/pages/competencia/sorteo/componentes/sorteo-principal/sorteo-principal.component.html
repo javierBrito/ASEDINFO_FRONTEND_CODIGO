@@ -72,7 +72,22 @@
                             <div class="invalid-feedback">
                                 <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
-                        </div>                        
+                        </div>
+                        <div class="col-1">
+                            <label for="numParticipante">
+                                <h4><b>{{'Inicio: '}}</b></h4>
+                            </label>
+                            <input type="text" name="numParticipante" formControlName="numParticipante" class="form-control"
+                                id="numParticipante" placeholder="Número Participante"
+                                [ngClass]="{'is-valid': numParticipanteField?.dirty && !numParticipanteField?.invalid && !numParticipanteField?.errors, 'is-invalid': numParticipanteField?.dirty && numParticipanteField?.invalid && numParticipanteField?.errors}">
+                            <div class="valid-feedback">
+                                <span>{{ "Exito"}}</span>
+                            </div>
+                            <div class="invalid-feedback">
+                                <span *ngIf="numParticipanteField?.errors?.['required']">{{"Requerido"}}</span>
+                            </div>
+                        </div>
+        
                         <div class="col-2" align="center" [ngStyle]="{'display': displayBotonGuardar}">
                             <br />
                             <br />
@@ -83,12 +98,24 @@
                                 <i class="fa fa-save" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
+                    </div>
+                    <div class="row form-group" [ngStyle]="{'display': displayNone}">
                         <div class="col-md-2 col-1 form-group">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="listarParticipantePDF()" *ngIf="listaParticipante?.length > 0">
                                 <b>{{ "Lista Participantes"}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-2 col-1 form-group">
+                            <br />
+                            <br />
+                            <button type="submit" class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="sinSortearParticipante" *ngIf="listaParticipante?.length > 0">
+                                <b>{{ "Sin Sorteo Participante"}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fas fa-copy" style="font-size:14px;color:red"></i>
                             </button>

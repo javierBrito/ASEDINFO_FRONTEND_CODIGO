@@ -585,6 +585,7 @@ export class FormParticipanteComponent implements OnInit {
         codEstadoCompetencia: participanteTemp?.codEstadoCompetencia,
         nombreCancion: this.nombreCancion,
         nombreEscuela: participanteTemp?.nombreEscuela,
+        numParticipante: participanteTemp?.numParticipante,
       });
     }
     if (this.participanteEditar) {
@@ -604,6 +605,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.codEstadoCompetencia = this.participanteAux['data'].codEstadoCompetencia;
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
       this.participante.nombreEscuela = this.participanteAux['data'].nombreEscuela;
+      this.participante.numParticipante = this.participanteAux['data'].numParticipante;
       this.participanteService.guardarParticipante(this.participante).subscribe({
         next: (response) => {
           this.participante = response['objeto'];
