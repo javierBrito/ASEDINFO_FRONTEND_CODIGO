@@ -59,9 +59,9 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3">
                             <label for="dateLastActive">
-                                <h4><b>{{'Fecha/Hora Competencia '}}</b></h4>
+                                <h4>{{'Fecha/Hora Competencia '}}</h4>
                             </label>
                             <input type="datetime-local" name="dateLastActive" formControlName="dateLastActive"
                                 class="form-control" id="dateLastActive"
@@ -73,11 +73,11 @@
                                 <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
                         </div>
-                        <div class="col-1">
+                        <div class="col-2">
                             <label for="numParticipante">
-                                <h4><b>{{'Inicio: '}}</b></h4>
+                                <h4>{{'Inicio: '}}</h4>
                             </label>
-                            <input type="text" name="numParticipante" formControlName="numParticipante" class="form-control"
+                            <input type="number" name="numParticipante" formControlName="numParticipante" class="form-control"
                                 id="numParticipante" placeholder="Número Participante"
                                 [ngClass]="{'is-valid': numParticipanteField?.dirty && !numParticipanteField?.invalid && !numParticipanteField?.errors, 'is-invalid': numParticipanteField?.dirty && numParticipanteField?.invalid && numParticipanteField?.errors}">
                             <div class="valid-feedback">
@@ -113,11 +113,11 @@
                         <div class="col-md-2 col-1 form-group">
                             <br />
                             <br />
-                            <button type="submit" class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                (click)="sinSortearParticipante" *ngIf="listaParticipante?.length > 0">
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="sinSortearParticipante()" *ngIf="listaParticipante?.length > 0">
                                 <b>{{ "Sin Sorteo Participante"}}</b>
                                 <b>{{ " "}}</b>
-                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                                <i (click)="sinSortearParticipante()" class="fas fa-copy" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                         <div class="col-2" align="center" [ngStyle]="{'display': 'none'}">

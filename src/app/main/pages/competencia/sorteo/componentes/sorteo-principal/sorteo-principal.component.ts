@@ -317,6 +317,7 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   sinSortearParticipante() {
+    console.log("sinSortearParticipante()")
     this.displayBotonGuardar = "";
     this.habilitarSortearParticipante = true;
 
@@ -324,9 +325,9 @@ export class SorteoPrincipalComponent implements OnInit {
     //this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
 
     let formSorteoTemp = this.formSorteo.value;
-    let numParticipante = 0;
+    let numParticipante: number = 0;
     console.log("formSorteoTemp?.numParticipante = ", formSorteoTemp?.numParticipante)
-    if (formSorteoTemp?.numParticipante != "" || formSorteoTemp?.numParticipante != undefined) {
+    if (formSorteoTemp?.numParticipante != "" && formSorteoTemp?.numParticipante != undefined) {
       numParticipante = formSorteoTemp?.numParticipante;
     }
     this.dateLastActive = formSorteoTemp?.dateLastActive;
@@ -335,7 +336,15 @@ export class SorteoPrincipalComponent implements OnInit {
     let fechaASumar: any;
     // Actualizar fecha competencia & numero participante
     for (let participante of this.listaParticipante) {
-      participante.numParticipante = numParticipante; 
+      console.log("numParticipante 1 = ", numParticipante)
+      if (numParticipante > 0) {
+        numParticipante += 1; 
+        console.log("numParticipante 2 = ", numParticipante)
+        participante.numParticipante = numParticipante; 
+      } else {
+        participante.numParticipante = 0; 
+      }
+      console.log("participante.numParticipante = ", participante?.numParticipante)
       fechaASumar = moment(this.dateLastActive);
       participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm');
       this.dateLastActive = participante?.dateLastActive;
@@ -352,7 +361,7 @@ export class SorteoPrincipalComponent implements OnInit {
     this.listaParticipante.sort((firstItem, secondItem) => Math.random() - 0.5);
 
     let formSorteoTemp = this.formSorteo.value;
-    let numParticipante = 0;
+    let numParticipante: number = 0;
     if (formSorteoTemp?.numParticipante != "" || formSorteoTemp?.numParticipante != undefined) {
       numParticipante = formSorteoTemp?.numParticipante;
     }
