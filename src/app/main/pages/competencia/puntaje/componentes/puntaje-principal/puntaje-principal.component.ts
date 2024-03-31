@@ -143,7 +143,7 @@ export class PuntajePrincipalComponent implements OnInit {
     //this.listarSeguimientoActivo(this.participante);
     if (this.currentUser.cedula == 'JUEZ') {
       this.displayNone = 'none';
-      //this.obtenerParametros();
+      this.obtenerParametros();
       this.listarPuntajePorParticipante();
       // Para habilitar el ingreso de puntajes directo
       this.editarPuntaje(this.participante, 'curso_0')
@@ -376,7 +376,7 @@ export class PuntajePrincipalComponent implements OnInit {
       // Estado de Competencia "En Escenario"
       this.codEstadoCompetencia = 4;
     }
-
+    /*
     if (this.activarInput) {
       this.editarPuntaje(this.participante, " ");
       return;
@@ -384,7 +384,7 @@ export class PuntajePrincipalComponent implements OnInit {
 
     this.idInput = '';
     this.activarInput = false;
-
+    */
     await new Promise((resolve, rejects) => {
       //this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, this.codEstadoCompetencia).subscribe({
       this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
@@ -566,6 +566,7 @@ export class PuntajePrincipalComponent implements OnInit {
       codInstancia: puntajeAux?.codInstancia,
       nombreParticipante: puntajeAux?.nombreParticipante,
       codUsuarioJuez: this.currentUser.codigoUsuario,
+      pathImagenTrofeo: "",
     }
 
     return puntaje;
@@ -575,6 +576,7 @@ export class PuntajePrincipalComponent implements OnInit {
     this.participante = participante;
     this.indexSelec = indexSelec;
     if (!this.datosEditar) { this.datosEditar = participante; }
+    this.idInput = indexSelec;
     if (this.activarInput && this.idInput != indexSelec) {
       await this.verificarGuardarPendiente();
       if (this.continuarGuardarPendiente) {

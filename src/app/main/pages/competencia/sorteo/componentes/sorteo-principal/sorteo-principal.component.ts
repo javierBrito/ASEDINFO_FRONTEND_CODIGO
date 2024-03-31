@@ -133,6 +133,24 @@ export class SorteoPrincipalComponent implements OnInit {
     this.disabledEstado = true;
     this.displayNone = '';
     this.displayNone1 = 'none';
+    // Sincronizar fecha/hora competencia vs numero participante
+    //this.listarParticipantePorEstado();
+  }
+
+  listarParticipantePorEstado() {
+    this.listaParticipante = [];
+    this.participanteService.listarParticipantePorEstado("A").subscribe(
+      (respuesta) => {
+        this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length > 0) {
+          for (const ele of this.listaParticipante) {
+            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+          }
+        }
+        // Ordenar lista por numParticipante
+        //this.listaParticipante.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
+      }
+    );
   }
 
   // Inicio - Acceder directamente a la página de inscripción
@@ -316,8 +334,7 @@ export class SorteoPrincipalComponent implements OnInit {
     }
   }
 
-  sinSortearParticipante() {
-    console.log("sinSortearParticipante()")
+  sincronizarOrden() {
     this.displayBotonGuardar = "";
     this.habilitarSortearParticipante = true;
 
@@ -326,7 +343,40 @@ export class SorteoPrincipalComponent implements OnInit {
 
     let formSorteoTemp = this.formSorteo.value;
     let numParticipante: number = 0;
-    console.log("formSorteoTemp?.numParticipante = ", formSorteoTemp?.numParticipante)
+    if (formSorteoTemp?.numParticipante != "" && formSorteoTemp?.numParticipante != undefined) {
+      numParticipante = formSorteoTemp?.numParticipante;
+    }
+    this.dateLastActive = formSorteoTemp?.dateLastActive;
+    // Tiempo a sumar en minutos
+    let tiempo = "00:03";
+    let fechaASumar: any;
+
+    this.listaParticipanteAux = [];
+    this.participanteService.listarParticipantePorEstado("A").subscribe(
+      (respuesta) => {
+        this.listaParticipanteAux = respuesta['listado'];
+        if (this.listaParticipanteAux.length > 0) {
+          // Actualizar fecha competencia & numero participante
+          for (const participante of this.listaParticipanteAux) {
+            if (moment(this.dateLastActive).format('yyyy-MM-DD') == moment(participante?.dateLastActive).format('yyyy-MM-DD') &&
+              participante?.numParticipante >= numParticipante) {
+              fechaASumar = moment(this.dateLastActive);
+              participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm');
+              this.dateLastActive = participante?.dateLastActive;
+            }
+          }
+        }
+      }
+    );
+  }
+
+  sinSortearParticipante() {
+    console.log("sinSortearParticipante()")
+    this.displayBotonGuardar = "";
+    this.habilitarSortearParticipante = true;
+
+    let formSorteoTemp = this.formSorteo.value;
+    let numParticipante: number = 0;
     if (formSorteoTemp?.numParticipante != "" && formSorteoTemp?.numParticipante != undefined) {
       numParticipante = formSorteoTemp?.numParticipante;
     }
@@ -336,15 +386,12 @@ export class SorteoPrincipalComponent implements OnInit {
     let fechaASumar: any;
     // Actualizar fecha competencia & numero participante
     for (let participante of this.listaParticipante) {
-      console.log("numParticipante 1 = ", numParticipante)
       if (numParticipante > 0) {
-        numParticipante += 1; 
-        console.log("numParticipante 2 = ", numParticipante)
-        participante.numParticipante = numParticipante; 
+        numParticipante += 1;
+        participante.numParticipante = numParticipante;
       } else {
-        participante.numParticipante = 0; 
+        participante.numParticipante = 0;
       }
-      console.log("participante.numParticipante = ", participante?.numParticipante)
       fechaASumar = moment(this.dateLastActive);
       participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm');
       this.dateLastActive = participante?.dateLastActive;
@@ -372,10 +419,10 @@ export class SorteoPrincipalComponent implements OnInit {
     // Actualizar la fecha de competencia de los participantes
     for (let participante of this.listaParticipante) {
       if (numParticipante > 0) {
-        numParticipante = numParticipante + 1; 
-        participante.numParticipante = numParticipante; 
+        numParticipante += 1;
+        participante.numParticipante = numParticipante;
       } else {
-        participante.numParticipante = 0; 
+        participante.numParticipante = 0;
       }
       fechaASumar = moment(this.dateLastActive);
       participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm');
@@ -546,15 +593,19 @@ export class SorteoPrincipalComponent implements OnInit {
     Swal
       .fire({
         title: "Sortear Participantes",
-        text: "¿Quieres sortear los participantes?'",
+        text: "¿Quieres guardar el sorteo?'",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: "Sí, sortear",
+        confirmButtonText: "Sí, guardar",
         cancelButtonText: "Cancelar",
       })
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, sortear"
+          // Si proceso es sincronizarOrden lista-aux mover a lista
+          if (this.listaParticipanteAux.length > 0) {
+            this.listaParticipante = this.listaParticipanteAux;
+          }
           // Actualizar formato fecha lista participantes
           for (let participante of this.listaParticipante) {
             participante.dateLastActive = dayjs(participante?.dateLastActive).format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -647,14 +698,13 @@ export class SorteoPrincipalComponent implements OnInit {
     let horaMinuto = moment(participante?.dateLastActive).format("HH:mm");
     //transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
     //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
-    let mensajeEnviar = "*Notificación Automática*%0aEstimado(a) Participante " 
+    let mensajeEnviar = "*Notificación Automática*%0aEstimado(a) Participante "
       + participante?.nombrePersona
-      + ", por comunicarle que su participación en la Competencia de NewDanceEC en la categoría " 
+      + ", por comunicarle que su participación en la Competencia de NewDanceEC en la categoría "
       + participante?.desCategoria + "/" + participante?.desSubcategoria + " a salido sorteada para el día "
       + dia + " de " + mes + " de " + año + " a las " + horaMinuto + " Horas aproximadamente "
       + ", favor su ayuda asistiendo con mínimo una hora de antelación... Un excelente dia, tarde o noche...."
-      +"%0a*NewDanceEc Congress / Quito-Ecuador*";
-      console.log("", mensajeEnviar)
+      + "%0a*NewDanceEc Congress / Quito-Ecuador*";
 
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();

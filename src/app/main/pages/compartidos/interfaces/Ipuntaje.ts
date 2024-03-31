@@ -9,4 +9,5 @@ export interface Ipuntaje {
     estado: string,
 
     nombreParticipante: string;
+    pathImagenTrofeo: string;
 }

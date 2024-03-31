@@ -73,21 +73,21 @@ export class Participante implements Iparticipante {
     set desCategoria(value: string) {
         set(this, 'data.desCategoria', value);
     }
-    
+
     get codSubcategoria(): number {
         return get(this, 'data.codSubcategoria');
     }
     set codSubcategoria(value: number) {
         set(this, 'data.codSubcategoria', value);
     }
-    
+
     get codCategoria(): number {
         return get(this, 'data.codCategoria');
     }
     set codCategoria(value: number) {
         set(this, 'data.codCategoria', value);
     }
-    
+
     get customerId(): number {
         return get(this, 'data.customerId');
     }
@@ -210,54 +210,54 @@ export class Participante implements Iparticipante {
     }
     set correo(value: string) {
         set(this, 'data.correo', value);
-    }    
+    }
 
     get nombres(): string {
         return get(this, 'data.nombres');
     }
     set nombres(value: string) {
         set(this, 'data.nombres', value);
-    }    
+    }
 
     get apellidos(): string {
         return get(this, 'data.apellidos');
     }
     set apellidos(value: string) {
         set(this, 'data.apellidos', value);
-    }    
+    }
 
     get identificacion(): string {
         return get(this, 'data.identificacion');
     }
     set identificacion(value: string) {
         set(this, 'data.identificacion', value);
-    }    
+    }
 
     get fechaNacimiento(): string {
         return get(this, 'data.fechaNacimiento');
     }
     set fechaNacimiento(value: string) {
         set(this, 'data.fechaNacimiento', value);
-    }    
+    }
 
     get nombreCancion(): string {
         return get(this, 'data.nombreCancion');
     }
     set nombreCancion(value: string) {
         set(this, 'data.nombreCancion', value);
-    }   
+    }
 
     get displayNoneGrupo(): string {
         return get(this, 'data.displayNoneGrupo');
     }
     set displayNoneGrupo(value: string) {
         set(this, 'data.displayNoneGrupo', value);
-    }   
+    }
 
     get prefijoTelefonico(): string {
         return get(this, 'data.prefijoTelefonico');
     }
     set prefijoTelefonico(value: string) {
         set(this, 'data.prefijoTelefonico', value);
-    }   
+    }
 }

@@ -410,7 +410,7 @@ export class AuthLoginV2Component implements OnInit {
     let mensajeNotificacion = "**Notificación Automática*%0aEstimado(a) Con fecha "
       + dia + " de " + mes + " de " + año
       + ", se ha modificado su contraseña con éxito ... (" + this.f.password1.value
-      + "), link para el acceso al sistema www.sistema.asedinfo.com "
+      + "), link para el acceso al sistema: sistema.asedinfo.com "
       + "%0aCualquier novedad estamos atentos... Un excelente dia, tarde o noche...."
       + "%0a*Asedinfo | Servicios Técnologicos*" + "%0a*Quito-Ecuador*";
 

@@ -10,6 +10,9 @@ import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
+import dayjs from 'dayjs';
+import moment from 'moment';
+
 
 @Component({
   selector: 'app-resultado-principal',
@@ -33,10 +36,14 @@ export class ResultadoPrincipalComponent implements OnInit {
   public desCategoria: string;
   public desSubcategoria: string;
   public desInstancia: string;
+  public pathImagenTrofeo: string;
+  public dateLastActive: string;
 
   /*LISTAS*/
   public listaPuntajeTotal: Puntaje[] = [];
+  public listaPuntajeTotalAux: Puntaje[] = [];
   public listaParticipante: Participante[] = [];
+  public listaParticipanteAux: Participante[] = [];
   public listaCategoria: any[];
   public listaSubcategoria: any[];
   public listaInstancia: any[];
@@ -65,7 +72,6 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   /*FORMULARIOS*/
   public formResultado: FormGroup;
-  public formResultadoParametro: FormGroup;
 
   /*CONSTRUCTOR */
   constructor(
@@ -80,13 +86,16 @@ export class ResultadoPrincipalComponent implements OnInit {
     this.showDetail = false;
     this.selectedTab = 0;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    this.pathImagenTrofeo = "./assets/images/trofeo/trofeo";
   }
 
   ngOnInit() {
-    this.formResultadoParametro = this.formBuilder.group({
+    this.formResultado = this.formBuilder.group({
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
       codInstancia: new FormControl('', Validators.required),
+      dateLastActive: new FormControl(dayjs(new Date()).format("YYYY-MM-DD HH:mm")),
+      numParticipante: new FormControl(''),
     });
     this.listarCategoriaActivo();
   }
@@ -99,7 +108,7 @@ export class ResultadoPrincipalComponent implements OnInit {
     Swal
       .fire({
         title: "Cargar Instancia",
-        text: "¿Quieres cargar la siguiente Instancia de la Competencia?'",
+        text: "¿Quieres cargar siguiente Instancia?'",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: "Sí, cargar",
@@ -119,20 +128,46 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   crearParticipantes() {
     if (this.listaParticipante.length > 0) {
+      let formSorteoTemp = this.formResultado.value;
+      let numParticipante: number = 0;
+      if (formSorteoTemp?.numParticipante != "" || formSorteoTemp?.numParticipante != undefined) {
+        numParticipante = formSorteoTemp?.numParticipante;
+      }
+      this.dateLastActive = formSorteoTemp?.dateLastActive;
+      // Tiempo a sumar en minutos
+      let tiempo = "00:03";
+      let fechaASumar: any;
+  
+      let indice = 0;
       for (let participante of this.listaParticipante) {
+        indice += 1;
         participante.codigo = 0;
         participante.codInstancia = participante?.codInstancia + 1;
         participante.codEstadoCompetencia = 3;
-        participante.numParticipante = 0;
+        participante.numParticipante = indice;
         participante.numPuntajeJuez = 0;
+        // Cuando ingresan fecha/hora competencia y numero participante
+        if (numParticipante > 0) {
+          numParticipante += 1;
+          participante.numParticipante = numParticipante;
+        }
+        fechaASumar = moment(this.dateLastActive);
+        participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm:ss.SSS');
+        this.dateLastActive = participante?.dateLastActive;
+  
         this.participanteService.guardarParticipante(participante).subscribe({
           next: (response) => {
-            this.mensajeService.mensajeCorrecto('Se ha creado el registro correctamente...');
+            //this.mensajeService.mensajeCorrecto('Se ha creado el registro correctamente...');
           },
           error: (error) => {
             this.mensajeService.mensajeError('Ha habido un problema al crear el registro...');
+            return;
           }
         });
+        if (indice >= 5) {
+          this.mensajeService.mensajeCorrecto('Se han creado los 5 registro correctamente...');
+          break;
+        }
       }
     }
 
@@ -148,8 +183,8 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   listarSubcategoriaPorCategoria() {
     this.listaParticipante = [];
-    // Receptar codCategoria, codSubcategoria y codInstancia de formResultadoParametro.value
-    let resultadoParametroTemp = this.formResultadoParametro.value;
+    // Receptar codCategoria, codSubcategoria y codInstancia de formResultado.value
+    let resultadoParametroTemp = this.formResultado.value;
     this.codCategoria = resultadoParametroTemp?.codCategoria;
     this.buscarCategoriaPorCodigo();
     this.resultadoService.listarSubcategoriaPorCategoria(this.codCategoria).subscribe(
@@ -185,8 +220,8 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   listarInstanciaActivo() {
     this.listaParticipante = [];
-    // Receptar codCategoria de formResultadoParametro.value
-    let puntajeParametroTemp = this.formResultadoParametro.value;
+    // Receptar codCategoria de formResultado.value
+    let puntajeParametroTemp = this.formResultado.value;
     this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
     this.buscarSubcategoriaPorCodigo();
     this.resultadoService.listarInstanciaActivo().subscribe(
@@ -198,8 +233,10 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   async listarPuntajeTotalPorParticipante() {
     this.listaParticipante = [];
-    // Receptar la descripción de formResultadoParametro.value
-    let resultadoParametroTemp = this.formResultadoParametro.value;
+    this.listaParticipanteAux = [];
+    this.listaPuntajeTotalAux = [];
+    // Receptar la descripción de formResultado.value
+    let resultadoParametroTemp = this.formResultado.value;
     this.codSubcategoria = resultadoParametroTemp?.codSubcategoria;
     this.codInstancia = resultadoParametroTemp?.codInstancia;
     this.buscarInstanciaPorCodigo();
@@ -208,12 +245,43 @@ export class ResultadoPrincipalComponent implements OnInit {
       this.resultadoService.listarPuntajePorSubcategoriaInstanciaRegSUMA(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
           this.listaPuntajeTotal = respuesta['listado'];
+          console.log("this.listaPuntajeTotal I = ", this.listaPuntajeTotal)
           // Ordenar lista por puntaje
           this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
+          // Asignar trofeo por posición
+          let indice = 0;
+          for (let ele of this.listaPuntajeTotal) {
+            indice += 1;
+            if (indice >= 1 && indice <= 3) {
+              ele.pathImagenTrofeo = this.pathImagenTrofeo + indice + ".png";
+            }
+            if (indice >= 1 && indice <= 20) {
+              ele.estado = this.numeroOrden(indice);
+            }
+            if (indice >= 1 && indice <= 5) {
+              this.listaPuntajeTotalAux.push(ele);
+            }
+          }
+          console.log("this.listaPuntajeTotal = ", this.listaPuntajeTotal)
           // Obtener los participantes para luego clonar
           this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 5).subscribe(
             (respuesta) => {
               this.listaParticipante = respuesta['listado'];
+              if (this.listaParticipante?.length > 0) {
+                for (let ele of this.listaParticipante) {
+                  for (let ele1 of this.listaPuntajeTotalAux) {
+                    if (ele1.codParticipante == ele.codigo) {
+                      ele.numParticipante = ele1.puntaje;
+                      this.listaParticipanteAux.push(ele);
+                    } else {
+                      ele.numParticipante = 0;
+                    }
+                  }
+                }
+              }
+              this.listaParticipante = this.listaParticipanteAux;
+              this.listaParticipante.sort((firstItem, secondItem) => secondItem.numParticipante - firstItem.numParticipante);
+              console.log("this.listaParticipante JB = ", this.listaParticipante)
             }
           )
           resolve("OK");
@@ -223,6 +291,54 @@ export class ResultadoPrincipalComponent implements OnInit {
         }
       });
     });
+  }
+
+  numeroOrden(indice: number): string {
+    switch (indice) {
+      case 1:
+        return "Primero";
+      case 2:
+        return "Segundo";
+      case 3:
+        return "Tercero";
+      case 4:
+        return "Cuarto";
+      case 5:
+        return "Quinto";
+      case 6:
+        return "Sexto";
+      case 7:
+        return "Septimo";
+      case 8:
+        return "Octavo";
+      case 9:
+        return "Noveno";
+      case 10:
+        return "Décimo";
+      case 11:
+        return "Un Décimo";
+      case 12:
+        return "Duo Décimo";
+      case 13:
+        return "Décimo Tercero";
+      case 14:
+        return "Décimo Cuarto";
+      case 15:
+        return "Décimo Quinto";
+      case 16:
+        return "Décimo Sexto";
+      case 17:
+        return "Décimo Séptimo";
+      case 18:
+        return "Décimo Octavo";
+      case 19:
+        return "Décimo Noveno";
+      case 20:
+        return "Vigésimo";
+      default:
+        //console.log(httpEvent);
+        break;
+    }
   }
 
   compararCategoria(o1, o2) {
@@ -236,7 +352,7 @@ export class ResultadoPrincipalComponent implements OnInit {
   compararInstancia(o1, o2) {
     return o1 === undefined || o2 === undefined ? false : o1.codigo === o2.codigo;
   }
-  
+
   closeDetail($event) {
     this.showDetail = $event;
     this.puntajeSeleccionado = null;
@@ -244,13 +360,19 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   /* Variables del html, para receptar datos y validaciones*/
   get codCategoriaField() {
-    return this.formResultadoParametro.get('codCategoria');
+    return this.formResultado.get('codCategoria');
   }
   get codSubcategoriaField() {
-    return this.formResultadoParametro.get('codSubcategoria');
+    return this.formResultado.get('codSubcategoria');
   }
   get codInstanciaField() {
-    return this.formResultadoParametro.get('codInstancia');
+    return this.formResultado.get('codInstancia');
+  }
+  get dateLastActiveField() {
+    return this.formResultado.get('dateLastActive');
+  }
+  get numParticipanteField() {
+    return this.formResultado.get('numParticipante');
   }
 
 }

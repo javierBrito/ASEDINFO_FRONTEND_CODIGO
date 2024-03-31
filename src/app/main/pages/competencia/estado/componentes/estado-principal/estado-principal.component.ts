@@ -11,6 +11,8 @@ import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
 import { AuthenticationService } from 'app/auth/service';
 import { UsuarioWPDTO } from 'app/main/pages/compartidos/modelos/UsuarioWPDTO';
+import { ParametroService } from 'app/main/pages/catalogo/parametro/servicios/parametro.service';
+import { Parametro } from 'app/main/pages/compartidos/modelos/Parametro';
 
 @Component({
   selector: 'app-estado-principal',
@@ -30,9 +32,11 @@ export class EstadoPrincipalComponent implements OnInit {
 
   /*VARIABLES*/
   public disabledEstado: boolean;
+  public codInstancia: number = 0;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
+  public listaParticipanteAux: Participante[] = [];
   public listaParticipanteUsuario: Participante[] = [];
   public listaUsuarioWPDTO: UsuarioWPDTO[] = [];
   public listaEstadoCompetencia: EstadoCompetencia[] = [];
@@ -54,6 +58,7 @@ export class EstadoPrincipalComponent implements OnInit {
   /*OBJETOS*/
   public participanteSeleccionado: Participante;
   public participante: Participante;
+  public parametro: Parametro;
 
   /*FORMULARIOS*/
   public formEstado: FormGroup;
@@ -62,6 +67,8 @@ export class EstadoPrincipalComponent implements OnInit {
   constructor(
     /*Servicios*/
     private readonly participanteService: ParticipanteService,
+    private readonly parametroService: ParametroService,
+    private readonly mensajeService: MensajeService,
     private modalService: NgbModal,
     private autenticacion: AuthenticationService,
   ) {
@@ -74,6 +81,7 @@ export class EstadoPrincipalComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.obtenerParametros();
     this.itemsRegistros = 20;
     this.page = 1;
     this.showDetail = false;
@@ -94,6 +102,18 @@ export class EstadoPrincipalComponent implements OnInit {
     }
   }
 
+  obtenerParametros() {
+    this.parametroService.buscarParametroPorNemonico('INSTANCIA').subscribe(
+      (respuesta) => {
+        this.parametro = respuesta['objeto'];
+        this.codInstancia = this.parametro?.valor;
+        if (this.codInstancia == undefined || this.codInstancia == 0) {
+          this.mensajeService.mensajeError('Ingrese parámetros de SUBCATEGORÍA E INSTANCIA, para ingreso de puntaje..');
+        }
+      }
+    )
+  }
+
   // Inicio - Acceder directamente a la página de inscripción
   iniciarSesion() {
     this.autenticacion.login('minutoAminuto', '1512').subscribe(
@@ -110,32 +130,38 @@ export class EstadoPrincipalComponent implements OnInit {
 
   listarParticipantePorEstado() {
     this.listaParticipante = [];
+    this.listaParticipanteAux = [];
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
-        this.listaParticipante = respuesta['listado'];
-        if (this.listaParticipante.length < this.itemsRegistros) {
+        this.listaParticipanteAux = respuesta['listado'];
+        if (this.listaParticipanteAux.length < this.itemsRegistros) {
           this.page = 1;
         }
-        if (this.listaParticipante.length > 0) {
+        if (this.listaParticipanteAux.length > 0) {
           // Listar usuarios registrados en Wordpress
           this.listarUsuarioWPDTO();
-          for (const ele of this.listaParticipante) {
-            // Tratar nombre de Pariicipante
-            if (ele?.lastName != "" && ele?.username == "") {
-              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
-            } else {
-              ele.nombrePersona = ele?.firstName;
+          for (let ele of this.listaParticipanteAux) {
+            // Verificar si existe el parametro de codInstancia
+            console.log("this.codInstancia = ", this.codInstancia)
+            if (this.codInstancia == ele?.codInstancia) {
+              // Tratar nombre de Pariicipante
+              if (ele?.lastName != "" && ele?.username == "") {
+                ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
+              } else {
+                ele.nombrePersona = ele?.firstName;
+              }
+              ele.displayNoneGrupo = "none";
+              if (ele?.identificacion == this.currentUser.identificacion) {
+                ele.desCategoria = "DIRECTOR";
+                ele.desSubcategoria = "ACADEMIA";
+              }
+              if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
+                ele.desSubcategoria.includes("SHOW DANCE")) {
+                ele.displayNoneGrupo = "";
+              }
+              ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
+              this.listaParticipante.push(ele);
             }
-            ele.displayNoneGrupo = "none";
-            if (ele?.identificacion == this.currentUser.identificacion) {
-              ele.desCategoria = "DIRECTOR";
-              ele.desSubcategoria = "ACADEMIA";
-            }
-            if (ele.desSubcategoria.includes("GRUPOS") || ele.desSubcategoria.includes("CREW") ||
-              ele.desSubcategoria.includes("SHOW DANCE")) {
-              ele.displayNoneGrupo = "";
-            }
-            ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
           }
         }
         // Ordenar lista por numParticipante

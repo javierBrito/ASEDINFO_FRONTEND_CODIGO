@@ -7,11 +7,11 @@
                         <h4><b>Parámetros busqueda :</b></h4>
                     </div>
                 </div>
-                <form detail-content [formGroup]="formResultadoParametro"
+                <form detail-content [formGroup]="formResultado"
                     (ngSubmit)="listarPuntajeTotalPorParticipante()">
                     <div class="row form-group">
                         <div class="col-2">
-                            <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
+                            <label for="codCategoria"><h4><b>{{'Categoría(*): '}}</b></h4></label>
                             <select name="codCategoria" formControlName="codCategoria" required
                                 [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
                                 class="form-control mr-sm-2" id="codCategoria"
@@ -25,7 +25,7 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-2">
-                            <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
+                            <label for="codSubcategoria"><h4><b>{{'Subcategoría(*): '}}</b></h4></label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                                 class="form-control mr-sm-2 custom-select" id="codSubcategoria"
@@ -39,7 +39,7 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-2">
-                            <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
+                            <label for="codInstancia"><h4><b>{{'Instancia(*): '}}</b></h4></label>
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
                                 class="form-control mr-sm-2 custom-select" id="codInstancia"
@@ -52,7 +52,31 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-2" *ngIf="listaParticipante.length > 0">
+                            <label for="dateLastActive">
+                                <h4>{{'Fecha/Hora Competencia '}}</h4>
+                            </label>
+                            <input type="datetime-local" name="dateLastActive" formControlName="dateLastActive"
+                                class="form-control" id="dateLastActive"
+                                [ngClass]="{'is-valid': dateLastActiveField?.dirty && !dateLastActiveField?.invalid && !dateLastActiveField?.errors,'is-invalid': dateLastActiveField?.dirty && dateLastActiveField?.invalid && dateLastActiveField?.errors}">
+                            <div class="valid-feedback">
+                                <span>{{ "Exito"}}</span>
+                            </div>
+                            <div class="invalid-feedback">
+                                <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
+                            </div>
+                        </div>
+                        <div class="col-1" *ngIf="listaParticipante.length > 0">
+                            <label for="numParticipante">
+                                <h4>{{'Inicio: '}}</h4>
+                            </label>
+                            <input type="number" name="numParticipante" formControlName="numParticipante" class="form-control"
+                                id="numParticipante" placeholder="Número Participante">
+                        </div>
                         <div class="col-md-3 col-1 form-group" *ngIf="listaParticipante.length > 0">
+                            <br/>
                             <br/>
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="cargarInstancia()">
@@ -85,8 +109,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
-                                                        <th scope="col">Podio</th>
-                                                        <th scope="col">Participante</th>
+                                                        <th scope="col"><div align="center">Orden</div></th>
+                                                        <th scope="col"><div align="center">Podio</div></th>
+                                                        <th scope="col"><div align="center">Participante</div></th>
                                                         <th scope="col"><div align="center">Puntaje Total</div></th>
                                                     </tr>
                                                 </thead>
@@ -94,9 +119,11 @@
                                                     <tr [ngStyle]="{'color': puntaje?.colorFila}"
                                                         *ngFor="let puntaje of listaPuntajeTotal | paginate: {id:'paginacion', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
-                                                        <td><img src="./assets/images/trofeo/trofeo{{index+1}}.png"></td>
-                                                        <td><b>{{puntaje?.nombreParticipante}}</b></td>
-                                                        <td><div class="text-center"><b>{{puntaje?.puntaje}}</b></div></td>
+                                                        <td align="center"><b>{{puntaje?.estado}}</b></td>
+                                                        <!--<td><img src="./assets/images/trofeo/trofeo{{index+1}}.png"></td>-->
+                                                        <td align="center"><img src="{{puntaje?.pathImagenTrofeo}}"></td>
+                                                        <td align="center"><b>{{puntaje?.nombreParticipante}}</b></td>
+                                                        <td align="center"><b>{{puntaje?.puntaje}}</b></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

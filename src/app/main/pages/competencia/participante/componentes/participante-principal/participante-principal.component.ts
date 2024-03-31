@@ -777,14 +777,14 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   generarPDF() {
-    const bodyData = this.listaParticipantePDF.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.identificacion, participante?.numParticipante, participante?.postcode]);
+    const bodyData = this.listaParticipantePDF.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.dateLastActive, ' ... ' + participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
         { text: 'Reporte Participante', style: 'datoTituloGeneral' },
         {
           table: {
             body: [
-              ['#', 'Nombre', 'Categoría/Subcategoría', 'Identificación', '# Participante', 'CheckList'],
+              ['#', 'Nombre', 'Categoría/Subcategoría', 'fecha/hora Competencia', '# Orden', 'Chequeo'],
               ...bodyData
             ],
           },

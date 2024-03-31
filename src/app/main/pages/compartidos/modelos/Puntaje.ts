@@ -57,4 +57,11 @@ export class Puntaje implements Ipuntaje {
         set(this, 'data.codUsuarioJuez', value);
     }
 
+    get pathImagenTrofeo(): string {
+        return get(this, 'data.pathImagenTrofeo');
+    }
+    set pathImagenTrofeo(value: string) {
+        set(this, 'data.pathImagenTrofeo', value);
+    }   
+
 }

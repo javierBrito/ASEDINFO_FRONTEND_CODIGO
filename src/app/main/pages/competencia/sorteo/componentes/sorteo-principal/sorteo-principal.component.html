@@ -12,6 +12,27 @@
                 <form detail-content [formGroup]="formSorteo">
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
                         <div class="col-2">
+                            <label for="dateLastActive">
+                                <h4>{{'Fecha/Hora Competencia '}}</h4>
+                            </label>
+                            <input type="datetime-local" name="dateLastActive" formControlName="dateLastActive"
+                                class="form-control" id="dateLastActive"
+                                [ngClass]="{'is-valid': dateLastActiveField?.dirty && !dateLastActiveField?.invalid && !dateLastActiveField?.errors,'is-invalid': dateLastActiveField?.dirty && dateLastActiveField?.invalid && dateLastActiveField?.errors}">
+                            <div class="valid-feedback">
+                                <span>{{ "Exito"}}</span>
+                            </div>
+                            <div class="invalid-feedback">
+                                <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <label for="numParticipante">
+                                <h4>{{'Inicio: '}}</h4>
+                            </label>
+                            <input type="number" name="numParticipante" formControlName="numParticipante" class="form-control"
+                                id="numParticipante" placeholder="Número Participante">
+                        </div>
+                        <div class="col-2">
                             <label for="codCategoria">
                                 <h4><b>{{'Categoría '}}</b></h4>
                             </label>
@@ -59,35 +80,6 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
-                            <label for="dateLastActive">
-                                <h4>{{'Fecha/Hora Competencia '}}</h4>
-                            </label>
-                            <input type="datetime-local" name="dateLastActive" formControlName="dateLastActive"
-                                class="form-control" id="dateLastActive"
-                                [ngClass]="{'is-valid': dateLastActiveField?.dirty && !dateLastActiveField?.invalid && !dateLastActiveField?.errors,'is-invalid': dateLastActiveField?.dirty && dateLastActiveField?.invalid && dateLastActiveField?.errors}">
-                            <div class="valid-feedback">
-                                <span>{{ "Exito"}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="dateLastActiveField?.errors?.['required']">{{"Requerido"}}</span>
-                            </div>
-                        </div>
-                        <div class="col-2">
-                            <label for="numParticipante">
-                                <h4>{{'Inicio: '}}</h4>
-                            </label>
-                            <input type="number" name="numParticipante" formControlName="numParticipante" class="form-control"
-                                id="numParticipante" placeholder="Número Participante"
-                                [ngClass]="{'is-valid': numParticipanteField?.dirty && !numParticipanteField?.invalid && !numParticipanteField?.errors, 'is-invalid': numParticipanteField?.dirty && numParticipanteField?.invalid && numParticipanteField?.errors}">
-                            <div class="valid-feedback">
-                                <span>{{ "Exito"}}</span>
-                            </div>
-                            <div class="invalid-feedback">
-                                <span *ngIf="numParticipanteField?.errors?.['required']">{{"Requerido"}}</span>
-                            </div>
-                        </div>
-        
                         <div class="col-2" align="center" [ngStyle]="{'display': displayBotonGuardar}">
                             <br />
                             <br />
@@ -107,7 +99,7 @@
                                 (click)="listarParticipantePDF()" *ngIf="listaParticipante?.length > 0">
                                 <b>{{ "Lista Participantes"}}</b>
                                 <b>{{ " "}}</b>
-                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                                <i class="fa-solid fa-file" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group">
@@ -115,9 +107,19 @@
                             <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="sinSortearParticipante()" *ngIf="listaParticipante?.length > 0">
-                                <b>{{ "Sin Sorteo Participante"}}</b>
+                                <b>{{ "Sin Sorteo"}}</b>
                                 <b>{{ " "}}</b>
-                                <i (click)="sinSortearParticipante()" class="fas fa-copy" style="font-size:14px;color:red"></i>
+                                <i (click)="sinSortearParticipante()" class="fa-solid fa-list" style="font-size:14px;color:red"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-2 col-1 form-group">
+                            <br />
+                            <br />
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="sincronizarOrden()">
+                                <b>{{ "Sinconizar Orden"}}</b>
+                                <b>{{ " "}}</b>
+                                <i (click)="sincronizarOrden()" class="fa-solid fa-list-check" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                         <div class="col-2" align="center" [ngStyle]="{'display': 'none'}">
@@ -146,7 +148,7 @@
                                             <button type="submit" (click)="sortearParticipante()"
                                                 [disabled]="habilitarSortearParticipante" matTooltip="Procesar Sorteo"
                                                 class="btn btn-block btn-primary form-control mt-2">
-                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
                                                 <b>{{'Procesar Sorteo por Subcategoría'}}</b>
                                             </button>
                                             <table class="table" *ngIf="listaParticipante?.length > 0"
