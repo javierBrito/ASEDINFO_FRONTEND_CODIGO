@@ -70,12 +70,14 @@ export class FormSubcategoriaComponent implements OnInit {
       this.formSubcategoria = this.formBuilder.group({
         denominacion: new FormControl(this.subcategoriaEditar?.denominacion, Validators.required),
         categoria: new FormControl(this.subcategoriaEditar?.categoria),
+        numJueces: new FormControl(this.subcategoriaEditar?.numJueces, Validators.required),
       })
       //AQUI TERMINA ACTUALIZAR
     } else {
       this.formSubcategoria = this.formBuilder.group({
         denominacion: new FormControl('', Validators.required),
         categoria: new FormControl(''),
+        numJueces: new FormControl('', Validators.required),
       })
     }
   }
@@ -122,6 +124,7 @@ export class FormSubcategoriaComponent implements OnInit {
         denominacion: subcategoriaTemp?.denominacion,
         estado: 'A',
         codCategoria: this.codCategoriaChild,
+        numJueces: subcategoriaTemp?.numJueces,
       });
     }
     if (this.subcategoriaEditar) {
@@ -165,5 +168,8 @@ export class FormSubcategoriaComponent implements OnInit {
   }
   get categoriaField() {
     return this.formSubcategoria.get('categoria');
+  }
+  get numJuecesField() {
+    return this.formSubcategoria.get('numJueces');
   }
 }

@@ -46,6 +46,20 @@ export class AuthGuard implements CanActivate {
           return true;
         }
       }
+      // Inicio - Para acceder directamente a la página de resultados
+      if (currentUser?.identificacion == "resultado") {
+        if (state.url.localeCompare("pages/competencia/resultado") != 0) {
+          let acceso = this.permitirAcceso(state.url);
+          // check if route is restricted by role
+          //if (route.data.roles && route.data.roles.indexOf(currentUser.role) === -1) {
+          if (acceso == false) {
+            // role not authorised so redirect to not-authorized page
+            this._router.navigate(['/pages/miscellaneous/not-authorized']);
+            return false;
+          }
+          return true;
+        }
+      }
       // authorised so return true
       return true;
     }

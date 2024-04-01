@@ -40,18 +40,6 @@
                     <span *ngIf="edadMaximaField?.errors?.['required']">{{"Requerido"}}</span>
                 </div>
             </div>
-            <div class="col-3">
-                <label for="numJueces"><b>{{'Numero Jueces(*):'}}</b></label>
-                <input type="number" name="numJueces" formControlName="numJueces" class="form-control" id="numJueces"
-                    placeholder="99" step="0.01" min="0.01"
-                    [ngClass]="{'is-valid': numJuecesField?.dirty && !numJuecesField?.invalid && !numJuecesField?.errors && (numJuecesField?.value > numJuecesField?.value), 'is-invalid': numJuecesField?.dirty && numJuecesField?.invalid && numJuecesField?.errors  && !(numJuecesField?.value > numJuecesField?.value)}">
-                <div class="valid-feedback">
-                    <span>{{ "Exito"}}</span>
-                </div>
-                <div class="invalid-feedback">
-                    <span *ngIf="numJuecesField?.errors?.['required']">{{"Requerido"}}</span>
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="col-12">

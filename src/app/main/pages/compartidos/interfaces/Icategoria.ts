@@ -4,5 +4,4 @@ export interface Icategoria {
     estado?: string;
     edadMinima: number;
     edadMaxima: number;
-    numJueces: number;
 }

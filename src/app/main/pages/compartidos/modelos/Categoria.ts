@@ -37,11 +37,4 @@ export class Categoria implements Icategoria {
     set edadMaxima(value: number) {
         set(this, 'data.edadMaxima', value);
     }
-    get numJueces(): number {
-        return get(this, 'data.numJueces');
-    }
-    set numJueces(value: number) {
-        set(this, 'data.numJueces', value);
-    }
-
 }

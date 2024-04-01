@@ -38,6 +38,7 @@ export class ResultadoPrincipalComponent implements OnInit {
   public desInstancia: string;
   public pathImagenTrofeo: string;
   public dateLastActive: string;
+  public displayNone: string = "";
 
   /*LISTAS*/
   public listaPuntajeTotal: Puntaje[] = [];
@@ -98,6 +99,11 @@ export class ResultadoPrincipalComponent implements OnInit {
       numParticipante: new FormControl(''),
     });
     this.listarCategoriaActivo();
+    if (this.currentUser.cedula == "Resultado") {
+      this.displayNone = 'none';
+    } else {
+      this.displayNone = '';
+    }
   }
 
   cargarInstancia() {

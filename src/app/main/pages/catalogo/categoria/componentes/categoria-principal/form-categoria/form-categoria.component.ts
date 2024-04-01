@@ -54,14 +54,12 @@ export class FormCategoriaComponent implements OnInit {
         denominacion: new FormControl(this.categoriaEditar?.denominacion, Validators.required),
         edadMinima: new FormControl(this.categoriaEditar?.edadMinima),
         edadMaxima: new FormControl(this.categoriaEditar?.edadMaxima),
-        numJueces: new FormControl(this.categoriaEditar?.numJueces, Validators.required),
       })
     } else {
       this.formCategoria = this.formBuilder.group({
         denominacion: new FormControl('', Validators.required),
         edadMinima: new FormControl(''),
         edadMaxima: new FormControl(''),
-        numJueces: new FormControl('', Validators.required),
       })
     }
   }
@@ -84,7 +82,6 @@ export class FormCategoriaComponent implements OnInit {
         denominacion: categoriaTemp?.denominacion,
         edadMinima: categoriaTemp?.edadMinima,
         edadMaxima: categoriaTemp?.edadMaxima,
-        numJueces: categoriaTemp?.numJueces,
         estado: 'A',
       });
     }
@@ -133,8 +130,5 @@ export class FormCategoriaComponent implements OnInit {
   }
   get edadMaximaField() {
     return this.formCategoria.get('edadMaxima');
-  }
-  get numJuecesField() {
-    return this.formCategoria.get('numJueces');
   }
 }
