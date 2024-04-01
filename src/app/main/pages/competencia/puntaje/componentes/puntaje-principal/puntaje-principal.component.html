@@ -9,7 +9,7 @@
                 </div>
                 <form detail-content [formGroup]="formPuntajeParametro" (ngSubmit)="listarPuntajePorParticipante()">
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
                             <select name="codCategoria" formControlName="codCategoria" required
                                 [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
@@ -23,7 +23,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
@@ -37,7 +37,7 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
@@ -52,6 +52,9 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                     </div>
+                    <button [ngStyle]="{'display': ''}" (click)="siguienteParticipante()" type=" button"
+                        class="btn btn-primary" rippleEffect round><b>{{ "Siguiente Participante..."}}</b><i
+                            class="fa-solid fa-rotate"></i></button>
                 </form>
                 <div class="row">
                     <div class="col-12">
@@ -61,7 +64,7 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <h3><b>{{'Lista Puntaje del juez '}} {{nombreUsuario}}
+                                            <h3><b>{{'Lista Puntaje de: '}} {{nombreUsuario}}
                                                 </b></h3>
                                             <table class="table" *ngIf="listaParticipantePresentacion?.length > 0"
                                                 id="tablaPuntaje">
@@ -80,14 +83,15 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr [ngStyle]="{'color': puntaje?.colorFila}"
-                                                        *ngFor="let participante of listaParticipantePresentacion | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        *ngFor="let participante of listaParticipantePresentacion | paginate: {id:'paginacion', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
                                                         <td>{{index+1}}</td>
                                                         <td><b>{{participante?.nombrePersona}}</b></td>
-                                                        <td *ngFor="let puntaje of participante?.listaPuntajes" scope="col">
+                                                        <td *ngFor="let puntaje of participante?.listaPuntajes"
+                                                            scope="col">
                                                             <div align="center">
                                                                 <input style="width: 50px; text-align:center"
-                                                                    [(ngModel)]="puntaje.puntaje" (blur)="outFocus($event)"
-                                                                    placeholder="99" 
+                                                                    [(ngModel)]="puntaje.puntaje"
+                                                                    (blur)="outFocus($event)" placeholder="99"
                                                                     (change)="capturarInputs(participante)"
                                                                     [ngModelOptions]="{standalone: true}"
                                                                     [disabled]="idInput!='curso_'+index" type="text"
@@ -99,8 +103,9 @@
                                                                 aria-label="Basic example">
                                                                 <button [disabled]="idInput!='curso_'+index"
                                                                     (click)="verificarGuardarPuntajes(participante, 'curso_'+index)"
-                                                                    type="button" class="btn btn-success" matTooltip="Guardar Puntaje"
-                                                                    rippleEffect><i class="fa fa-floppy-o"></i></button>
+                                                                    type="button" class="btn btn-success"
+                                                                    matTooltip="Guardar Puntaje" rippleEffect><i
+                                                                        class="fa fa-floppy-o"></i></button>
                                                                 <button [ngStyle]="{'display': 'none'}"
                                                                     (click)="editarPuntaje(participante, 'curso_'+index)"
                                                                     type=" button" class="btn btn-primary" rippleEffect
@@ -110,9 +115,10 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <div class="row mt-5" *ngIf="listaParticipantePresentacion?.length > itemsRegistros">
+                                            <div class="row mt-5"
+                                                *ngIf="listaParticipantePresentacion?.length > itemsRegistros">
                                                 <div class="col-12 text-center">
-                                                    <pagination-controls id="paginacionMatutino" class="paginacion"
+                                                    <pagination-controls id="paginacion" class="paginacion"
                                                         [responsive]="true" [autoHide]="true" previousLabel="Anterior"
                                                         nextLabel="Siguiente" (pageChange)="page = $event"
                                                         screenReaderCurrentLabel="Tú estas en la página:">
@@ -126,14 +132,23 @@
                                                     </div>
                                                 </div>
                                             </ng-container>
-                                            <br/>
-                                            <div class="row form-group" *ngIf="listaParticipantePresentacion?.length > 0" [ngStyle]="{'display': 'none'}">
+                                            <br />
+                                            <div class="row form-group"
+                                                *ngIf="listaParticipantePresentacion?.length > 0"
+                                                [ngStyle]="{'display': 'none'}">
                                                 <div class="col-12">
-                                                    <label for="seguimiento"><h3><b>{{'Seguimiento del Participante:'}}</b></h3></label>
-                                                    <div class="form-group form-check" *ngFor="let seguimiento of listaSeguimiento; let indice=index">
-                                                        <input type="checkbox" [value]="seguimiento" (click)="guardarParticipanteSeguimiento(seguimiento, $event, indice)"
-                                                            class="form-check-input" id="exampleCheck{{indice}}" [checked]="seguimiento.asignado">
-                                                        <label class="form-check-label" for="exampleCheck1"><h4><b>{{seguimiento?.descripcion}}</b></h4></label>
+                                                    <label for="seguimiento">
+                                                        <h3><b>{{'Seguimiento del Participante:'}}</b></h3>
+                                                    </label>
+                                                    <div class="form-group form-check"
+                                                        *ngFor="let seguimiento of listaSeguimiento; let indice=index">
+                                                        <input type="checkbox" [value]="seguimiento"
+                                                            (click)="guardarParticipanteSeguimiento(seguimiento, $event, indice)"
+                                                            class="form-check-input" id="exampleCheck{{indice}}"
+                                                            [checked]="seguimiento.asignado">
+                                                        <label class="form-check-label" for="exampleCheck1">
+                                                            <h4><b>{{seguimiento?.descripcion}}</b></h4>
+                                                        </label>
                                                     </div>
                                                     <br>
                                                     <div class="valid-feedback">
@@ -141,7 +156,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                
+
                                         </div>
                                     </section>
                                 </mat-tab>
@@ -155,8 +170,7 @@
 </div>
 
 <app-form-puntaje [puntajeEditar]="puntajeSeleccionado" [codigoChild]="codigo" [descripcionChild]="descripcion"
-    [listaPuntajeChild]="listaPuntaje" (close)="closeDetail($event)"
-    *ngIf="showDetail">
+    [listaPuntajeChild]="listaPuntaje" (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-puntaje>
 
 <ng-template #modal_confirm_delete let-modal>

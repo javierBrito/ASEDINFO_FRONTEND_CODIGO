@@ -17,7 +17,7 @@ import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
 import { userInfo } from 'os';
 import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
-import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpEventType, HttpUrlEncodingCodec } from '@angular/common/http';
 import { saveAs } from 'file-saver';
 import { AudioService } from 'app/main/pages/compartidos/servicios/audio.service';
 import { DataService } from 'app/main/pages/compartidos/servicios/data.service';
@@ -26,6 +26,8 @@ import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { UsuarioWPDTO } from 'app/main/pages/compartidos/modelos/UsuarioWPDTO';
+import { TransaccionService } from 'app/main/pages/venta/transaccion/servicios/transaccion.service';
+import moment from 'moment';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -67,7 +69,10 @@ export class ParticipantePrincipalComponent implements OnInit {
   public nombreArchivoDescarga: string;
   public crearPDF: boolean = false;
   public crearPDFCancion: boolean = false;
-  public listarPorInstancia: boolean= false;
+  public listarPorInstancia: boolean = false;
+  public enviarNotificacion: boolean = false;
+  public respuestaEnvioNotificacion: string = "";
+  public numeroEnvioNotificacion: number = 0;
 
   /*LISTAS*/
   public listaParticipante: Participante[] = [];
@@ -132,6 +137,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     /*Servicios*/
     private readonly participanteService: ParticipanteService,
     private readonly personaService: PersonaService,
+    private readonly transaccionService: TransaccionService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
     private audioService: AudioService,
@@ -148,6 +154,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     //this.sede = this.currentUser.sede;
     this.habilitarAgregarParticipante = true;
     this.habilitarSeleccionarArchivo = false;
+    // Fechas en español
+    moment.locale("es");
   }
 
   ngOnInit() {
@@ -726,7 +734,11 @@ export class ParticipantePrincipalComponent implements OnInit {
     });
   }
 
-  
+  enviarNotificacionBoton() {
+    this.enviarNotificacion = true;
+    this.listarParticipantePorEstado();
+  }
+
   listarParticipantePorEstadoBoton() {
     this.listarPorInstancia = false;
     this.listarParticipantePorEstado();
@@ -739,6 +751,7 @@ export class ParticipantePrincipalComponent implements OnInit {
         // Ordenar lista por numParticipante
         this.listaParticipantePDF.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
         if (this.listaParticipantePDF.length > 0) {
+          this.numeroEnvioNotificacion = 0;
           for (const ele of this.listaParticipantePDF) {
             // Tratar nombre de Pariicipante
             if (ele?.lastName != "" && ele?.username == "") {
@@ -758,7 +771,20 @@ export class ParticipantePrincipalComponent implements OnInit {
               ele.desSubcategoria.includes("SHOW DANCE")) {
               ele.displayNoneGrupo = "";
             }
+            if (this.enviarNotificacion && ele?.celular != "") {
+              this.enviarWhatsappApi(ele);
+            }
           }
+          setTimeout(() => {
+            if (this.enviarNotificacion) {
+              if (this.respuestaEnvioNotificacion != "") {
+                this.mensajeService.mensajeAdvertencia(this.respuestaEnvioNotificacion);
+              }
+              if (this.numeroEnvioNotificacion > 0) {
+                this.mensajeService.mensajeCorrecto(this.numeroEnvioNotificacion + ' notificaciones se enviaron con éxito...');
+              }
+            }
+          }, 20000);
           if (this.crearPDF) {
             this.generarPDF();
             this.crearPDF = false;
@@ -774,6 +800,61 @@ export class ParticipantePrincipalComponent implements OnInit {
         }
       }
     );
+  }
+
+  async enviarWhatsappApi(participante: Participante) {
+    //let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
+    //console.log("imageSrcString = ", imageSrcString)
+
+    //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
+    let dia = moment(participante?.dateLastActive).format("D");
+    let mes = moment(participante?.dateLastActive).format("MMMM");
+    let año = moment(participante?.dateLastActive).format("YYYY");
+    let horaMinuto = moment(participante?.dateLastActive).format("HH:mm");
+    //transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
+    //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
+    let mensajeEnviar = "*Notificación Automática*%0aEstimado(a) Participante "
+      + participante?.nombrePersona
+      + ", por comunicarle que su participación en la Competencia de NewDanceEC en la categoría "
+      + participante?.desCategoria + "/" + participante?.desSubcategoria + " está programada para el día "
+      + dia + " de " + mes + " de " + año + " a las " + horaMinuto + " Horas aproximadamente "
+      + ", favor su ayuda asistiendo con mínimo una hora de antelación... Un excelente dia, tarde o noche...."
+      + "%0a*NewDanceEc Congress / Quito-Ecuador*";
+
+    // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
+    const codec = new HttpUrlEncodingCodec();
+    //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
+    const decodedValue = codec.decodeValue(mensajeEnviar); // Decodes the value as 'Hello World!'
+
+    // Validar prefijo telefonico
+    if (participante?.prefijoTelefonico == "" || participante?.prefijoTelefonico == null) {
+      participante.prefijoTelefonico = "593";
+    }
+    let celularEnvioWhatsapp = participante?.prefijoTelefonico + participante?.celular.substring(1, 15).trim();
+    //let celularEnvioWhatsapp = participante?.prefijoTelefonico + "0992752367".substring(1, 15).trim();
+    // Enviar mensaje
+    this.transaccionService.enviarMensajeWhatsappND(celularEnvioWhatsapp, decodedValue).subscribe({
+      next: async (response) => {
+        this.numeroEnvioNotificacion += 1;
+        //this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
+      },
+      error: (error) => {
+        this.respuestaEnvioNotificacion = 'Ha habido un problema al enviar las notificaciones ' + error;
+        //this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
+      }
+    });
+    // Enviar imagen
+    /*
+    this.transaccionService.enviarImagenWhatsappAI(this.celularEnvioWhatsapp, decodedValue, imageSrcString).subscribe({
+      next: async (response) => {
+        this.seEnvioWhatsapp = true;
+        this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
+      },
+      error: (error) => {
+        this.mensajeService.mensajeError('Ha habido un problema al enviar las notificaciones ' + error);
+      }
+    });
+    */
   }
 
   generarPDF() {

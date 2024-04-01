@@ -536,6 +536,10 @@ export class PuntajePrincipalComponent implements OnInit {
     this.listarPuntajePorParticipante();
   }
 
+  siguienteParticipante() {
+    window.location.reload();
+  }
+
   async verificarExistenciaRegistroTotal() {
     this.codPuntaje = 0;
     return new Promise((resolve, rejects) => {

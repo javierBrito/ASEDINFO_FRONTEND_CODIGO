@@ -552,6 +552,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   async enviarWhatsappApi(transaccion: Transaccion) {
     let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
     console.log("imageSrcString = ", imageSrcString)
+    
     //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
     let dia = moment(transaccion?.fechaFin).format("D");
     let mes = moment(transaccion?.fechaFin).format("MMMM");

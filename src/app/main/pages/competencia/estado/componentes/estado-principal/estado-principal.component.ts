@@ -142,7 +142,6 @@ export class EstadoPrincipalComponent implements OnInit {
           this.listarUsuarioWPDTO();
           for (let ele of this.listaParticipanteAux) {
             // Verificar si existe el parametro de codInstancia
-            console.log("this.codInstancia = ", this.codInstancia)
             if (this.codInstancia == ele?.codInstancia) {
               // Tratar nombre de Pariicipante
               if (ele?.lastName != "" && ele?.username == "") {
@@ -186,8 +185,8 @@ export class EstadoPrincipalComponent implements OnInit {
     this.participanteService.listarParticipanteUsuario().subscribe(
       (respuesta) => {
         this.listaParticipanteUsuario = respuesta['listado'];
-        console.log("this.listaUsuarioWPDTO.length = ", this.listaUsuarioWPDTO.length)
-        console.log("this.listaParticipanteUsuario.length - 1) = ", (this.listaParticipanteUsuario.length - 1))
+        //console.log("this.listaUsuarioWPDTO.length = ", this.listaUsuarioWPDTO.length)
+        //console.log("this.listaParticipanteUsuario.length - 1) = ", (this.listaParticipanteUsuario.length - 1))
         if (this.listaUsuarioWPDTO.length > (this.listaParticipanteUsuario.length - 1)) {
           //this.migrarUsuarioWP();
         }

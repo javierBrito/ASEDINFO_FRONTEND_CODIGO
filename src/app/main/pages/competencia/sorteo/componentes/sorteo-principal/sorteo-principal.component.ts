@@ -110,6 +110,7 @@ export class SorteoPrincipalComponent implements OnInit {
       this.iniciarSesion();
     };
     // Fin - Para acceder directamente a la página de inscripción
+    // Fechas en español
     moment.locale("es");
   }
 
@@ -739,6 +740,7 @@ export class SorteoPrincipalComponent implements OnInit {
     });
     */
   }
+
   closeDetail($event) {
     this.showDetail = $event;
     this.participanteSeleccionado = null;

@@ -245,7 +245,6 @@ export class ResultadoPrincipalComponent implements OnInit {
       this.resultadoService.listarPuntajePorSubcategoriaInstanciaRegSUMA(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
           this.listaPuntajeTotal = respuesta['listado'];
-          console.log("this.listaPuntajeTotal I = ", this.listaPuntajeTotal)
           // Ordenar lista por puntaje
           this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
           // Asignar trofeo por posición
@@ -262,7 +261,6 @@ export class ResultadoPrincipalComponent implements OnInit {
               this.listaPuntajeTotalAux.push(ele);
             }
           }
-          console.log("this.listaPuntajeTotal = ", this.listaPuntajeTotal)
           // Obtener los participantes para luego clonar
           this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 5).subscribe(
             (respuesta) => {
@@ -281,7 +279,6 @@ export class ResultadoPrincipalComponent implements OnInit {
               }
               this.listaParticipante = this.listaParticipanteAux;
               this.listaParticipante.sort((firstItem, secondItem) => secondItem.numParticipante - firstItem.numParticipante);
-              console.log("this.listaParticipante JB = ", this.listaParticipante)
             }
           )
           resolve("OK");

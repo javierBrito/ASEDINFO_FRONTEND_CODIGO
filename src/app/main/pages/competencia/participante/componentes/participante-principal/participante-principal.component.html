@@ -94,7 +94,7 @@
                                 <i class="fa-solid fa-music" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
-                        <div class="col-md-2 col-1 form-group">
+                        <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
                             <br/>
                             <br/>
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
@@ -102,6 +102,16 @@
                                 <b>{{ "Minuto a Minuto"}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fa-solid fa-copy" style="font-size:14px;color:red"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
+                            <br/>
+                            <br/>
+                            <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                (click)="enviarNotificacionBoton()">
+                                <b>{{ "Enviar Notificación"}}</b>
+                                <b>{{ " "}}</b>
+                                <i class="fab fa-whatsapp" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                     </div>
