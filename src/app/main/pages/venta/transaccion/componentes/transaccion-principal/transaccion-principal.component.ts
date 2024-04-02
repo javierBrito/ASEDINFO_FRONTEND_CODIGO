@@ -108,7 +108,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     private modalService: NgbModal
   ) {
     this.codigo = 0;
-    this.itemsRegistros = 10;
+    this.itemsRegistros = 5;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
@@ -131,6 +131,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       claveCuenta: new FormControl('', Validators.required),
       fechaInicio: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
       fechaFin: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
+      itemsRegistrosNF: new FormControl(this.itemsRegistros),
     });
     this.obtenerParametros();
     //this.obtenerTransaccionACaducarse();
@@ -485,6 +486,14 @@ export class TransaccionPrincipalComponent implements OnInit {
       });
   }
 
+  // Tomar el valor de numero de filas y reiniciar proceso
+  blurNumeroFilas(event) {
+    if (event.target.value.length != 0) {
+      console.log("event.target.value = ", event.target.value)
+      this.itemsRegistros = event.target.value;
+    }
+  }
+
   enviarCorreo() {
     this.reporteDTO = new ReporteDTO({
       cedula: "",
@@ -548,11 +557,11 @@ export class TransaccionPrincipalComponent implements OnInit {
 
     return result
   };
-  
+
   async enviarWhatsappApi(transaccion: Transaccion) {
     let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
     console.log("imageSrcString = ", imageSrcString)
-    
+
     //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
     let dia = moment(transaccion?.fechaFin).format("D");
     let mes = moment(transaccion?.fechaFin).format("MMMM");
@@ -618,5 +627,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   get codClienteField() {
     return this.formTransaccion.get('codCliente');
   }
-
+  get itemsRegistrosNFField() {
+    return this.formTransaccion.get('itemsRegistrosNF');
+  }
 }

@@ -114,14 +114,28 @@
                                                 id="tablaTransaccion">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">#</th>
-                                                        <th scope="col"><div align="center">Cliente</div></th>
-                                                        <th scope="col"><div align="center">Servicio</div></th>
-                                                        <th scope="col"><div align="center">Cuenta/Clave</div></th>
-                                                        <th scope="col"><div align="center">Monto</div></th>
-                                                        <th scope="col"><div align="center">Cant.</div></th>
-                                                        <th scope="col"><div align="center">Fecha Fin</div></th>
-                                                        <th scope="col"><div align="center">Días Renovar</div></th>
+                                                        <!--<th scope="col">#</th>-->
+                                                        <th scope="col">
+                                                            <div align="center">Cliente</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Servicio</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Cuenta/Clave</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Monto</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Cant.</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Fecha Fin</div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div align="center">Días Renovar</div>
+                                                        </th>
                                                         <th scope="col">Cambiar</th>
                                                         <th scope="col">Acciones</th>
                                                     </tr>
@@ -129,17 +143,20 @@
                                                 <tbody>
                                                     <tr [ngStyle]="{'color': transaccion?.colorFila}"
                                                         *ngFor="let transaccion of listaTransaccion | paginate: {id:'paginar', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
-                                                        <td>{{index+1}}</td>
+                                                        <!--<td>{{index+1}}</td>-->
                                                         <td>{{transaccion?.nombreCliente}}</td>
                                                         <td>{{transaccion?.descripcionProducto}}</td>
-                                                        <td>{{transaccion?.claveCuenta + '  ' + transaccion?.clave}}
-                                                        <!--    
+                                                        <td>{{transaccion?.claveCuenta + ' ' + transaccion?.clave}}
+                                                            <!--    
                                                         </td>
                                                         <td>
                                                         -->
-                                                            <button type="button" [ngStyle]="{'display': transaccion?.displayNoneListaCuentaClave}"
-                                                                matTooltip="Ver Cuenta/Clave" class="btn btn-rounded" style="width: 1px"
-                                                                rippleEffect round><i class="fa fa-search" style="font-size:10px; color:blue"
+                                                            <button type="button"
+                                                                [ngStyle]="{'display': transaccion?.displayNoneListaCuentaClave}"
+                                                                matTooltip="Ver Cuenta/Clave" class="btn btn-rounded"
+                                                                style="width: 1px" rippleEffect round><i
+                                                                    class="fa fa-search"
+                                                                    style="font-size:10px; color:blue"
                                                                     (click)="verListaCuentaClave(transaccion?.codigo)"></i></button>
                                                         </td>
                                                         <td align="center">{{transaccion?.monto}}</td>
@@ -171,10 +188,12 @@
                                                                     class="btn btn-danger" rippleEffect><i
                                                                         class="fa fa-trash"
                                                                         (click)="openRemoverDetail(transaccion)"></i></button>
-                                                                <button (click)="openNotificarDetail(transaccion)" [ngStyle]="{'display': transaccion?.visibleBoton}"
+                                                                <button (click)="openNotificarDetail(transaccion)"
+                                                                    [ngStyle]="{'display': transaccion?.visibleBoton}"
                                                                     matTooltip="Enviar Notificación" type="button"
-                                                                    class="btn btn-success btn-submit waves-effect waves-float waves-light" rippleEffect><i
-                                                                        class="fab fa-whatsapp" style="font-size:14px; color:red"
+                                                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                                                    rippleEffect><i class="fab fa-whatsapp"
+                                                                        style="font-size:14px; color:red"
                                                                         (click)="openNotificarDetail(transaccion)"></i></button>
                                                             </div>
                                                         </td>
@@ -182,7 +201,18 @@
                                                 </tbody>
                                             </table>
                                             <div class="row mt-5" *ngIf="listaTransaccion?.length > itemsRegistros">
-                                                <div class="col-12 text-center">
+                                                <div class="col-2 text-right">
+                                                    <label>
+                                                        <h4><b>{{'Número de filas:'}}</b></h4>
+                                                    </label>
+                                                </div>
+                                                <div class="col-2 text-left">
+                                                    <input type="number" name="itemsRegistrosNF" value="Número de filas"
+                                                        formControlName="itemsRegistrosNF" class="form-control"
+                                                        id="itemsRegistrosNF" placeholder="Número de filas"
+                                                        (blur)="blurNumeroFilas($event)">
+                                                </div>
+                                                <div class="col-8 text-left">
                                                     <pagination-controls id="paginar" class="paginacion"
                                                         [responsive]="true" [autoHide]="true" previousLabel="Anterior"
                                                         nextLabel="Siguiente" (pageChange)="page = $event"
