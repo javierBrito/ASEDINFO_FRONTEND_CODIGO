@@ -75,9 +75,12 @@ export class PuntajePrincipalComponent implements OnInit {
   public listaInstancia: any[];
   public listaModeloPuntaje: any[];
   public listaModeloPuntajeAux: any[];
+  public listaModeloPuntajeOp: any[];
+  public listaModeloPuntajeOpAux: any[];
   public listaParticipante: any[];
   public listaParticipantePresentacion: any[] = [];
   public listaUsuarioModeloPuntaje: any[];
+  public listaUsuarioModeloPuntajeOp: any[];
   public listaSeguimiento: Seguimiento[] = [];
   public listaParticipanteSeguimiento: any[];
 
@@ -138,10 +141,15 @@ export class PuntajePrincipalComponent implements OnInit {
       codSubcategoria: new FormControl('', Validators.required),
       codInstancia: new FormControl('', Validators.required),
     });
-    this.listarModeloPuntajeActivo();
+    if (this.currentUser.cedula == 'JUEZ') {
+      this.listarModeloPuntajeActivo();
+    }
+    if (this.currentUser.cedula == 'JUEZOP') {
+      this.listarModeloPuntajeOpActivo();
+    }
     this.listarCategoriaActivo();
     //this.listarSeguimientoActivo(this.participante);
-    if (this.currentUser.cedula == 'JUEZ') {
+    if (this.currentUser.cedula == 'JUEZ' || this.currentUser.cedula == 'JUEZOP') {
       this.displayNone = 'none';
       this.obtenerParametros();
       this.listarPuntajePorParticipante();
@@ -260,6 +268,31 @@ export class PuntajePrincipalComponent implements OnInit {
     )
   }
 
+  listarModeloPuntajeOpActivo() {
+    this.listaModeloPuntaje = [];
+    this.puntajeService.listarModeloPuntajeOpActivo().subscribe(
+      (respuesta) => {
+        this.listaModeloPuntajeOpAux = respuesta['listado'];
+        this.puntajeService.listarUsuarioModeloPuntajeOpPorUsuario(this.currentUser?.codigoUsuario).subscribe(
+          (respuesta) => {
+            this.listaUsuarioModeloPuntajeOp = respuesta['listado'];
+            if (this.listaUsuarioModeloPuntajeOp.length > 0) {
+              for (const ele of this.listaModeloPuntajeOpAux) {
+                ele.asignado = false;
+                for (const ele1 of this.listaUsuarioModeloPuntajeOp) {
+                  if (ele?.codigo == ele1?.codModeloPuntaje) {
+                    ele.asignado = true;
+                    this.listaModeloPuntaje.push(ele);
+                  }
+                }
+              }
+            }
+          }
+        )
+      }
+    )
+  }
+
   listarCategoriaActivo() {
     this.puntajeService.listarCategoriaActivo().subscribe(
       (respuesta) => {
@@ -365,7 +398,7 @@ export class PuntajePrincipalComponent implements OnInit {
   async listarPuntajePorParticipante() {
     this.listaParticipantePresentacion = [];
 
-    if (this.currentUser.cedula != 'JUEZ') {
+    if (this.currentUser.cedula != 'JUEZ' && this.currentUser.cedula != 'JUEZOP') {
       // Receptar codCategoria, codSubcategoria y codInstancia de formPuntajeParametro.value
       let puntajeParametroTemp = this.formPuntajeParametro.value;
       this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;

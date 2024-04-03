@@ -192,12 +192,24 @@
                 </div>
             </div>
             <div class="row form-group">
-                <div class="col-12">
-                    <label for="cambioClave"><b>{{'Crietrios del JUEZ para ingresar PUNTAJE(*):'}}</b></label>
+                <div class="col-6">
+                    <label><b>{{'Criterios JUEZ-PUNTAJE(*):'}}</b></label>
                     <div class="form-group form-check" *ngFor="let modeloPuntaje of listaModeloPuntaje; let indice=index">
                         <input type="checkbox" [value]="modeloPuntaje" (click)="guardarUsuarioModeloPuntaje(modeloPuntaje, $event, indice)"
                             class="form-check-input" id="exampleCheck{{indice}}" [checked]="modeloPuntaje.asignado">
                         <label class="form-check-label" for="exampleCheck1">{{modeloPuntaje?.denominacion}}</label>
+                    </div>
+                    <br>
+                    <div class="valid-feedback">
+                        <span>{{ "Exito"}}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label><b>{{'Criterios JUEZ-PUNTAJE Orden/Paso(*):'}}</b></label>
+                    <div class="form-group form-check" *ngFor="let modeloPuntajeOp of listaModeloPuntajeOp; let indice=index">
+                        <input type="checkbox" [value]="modeloPuntajeOp" (click)="guardarUsuarioModeloPuntajeOp(modeloPuntajeOp, $event, indice)"
+                            class="form-check-input" id="exampleCheck{{indice}}" [checked]="modeloPuntajeOp.asignado">
+                        <label class="form-check-label" for="exampleCheck1">{{modeloPuntajeOp?.denominacion}}</label>
                     </div>
                     <br>
                     <div class="valid-feedback">

@@ -15,6 +15,8 @@ import { PrefijoTelefonico } from 'app/main/pages/compartidos/modelos/PrefijoTel
 import { ModeloPuntaje } from 'app/main/pages/compartidos/modelos/ModeloPuntaje';
 import { PuntajeService } from 'app/main/pages/competencia/puntaje/servicios/puntaje.service';
 import { UsuarioModeloPuntaje } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntaje';
+import { UsuarioModeloPuntajeOp } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntajeOp';
+import { ModeloPuntajeOp } from 'app/main/pages/compartidos/modelos/ModeloPuntajeOp';
 
 @Component({
   selector: 'app-form-usuario',
@@ -53,6 +55,8 @@ export class FormUsuarioComponent implements OnInit {
   public persona: Persona;
   public usuarioModeloPuntaje: UsuarioModeloPuntaje;
   public listaUsuarioModeloPuntaje: UsuarioModeloPuntaje[] = [];
+  public usuarioModeloPuntajeOp: UsuarioModeloPuntaje;
+  public listaUsuarioModeloPuntajeOp: UsuarioModeloPuntaje[] = [];
   public listaSede: Sede[];
   public listaPersonaAux: Persona[];
   public listaUsuario: Usuario[];
@@ -62,6 +66,7 @@ export class FormUsuarioComponent implements OnInit {
   ];
   public listaPrefijoTelefonico: PrefijoTelefonico[];
   public listaModeloPuntaje: ModeloPuntaje[];
+  public listaModeloPuntajeOp: ModeloPuntajeOp[];
 
   /*CONSTRUCTOR*/
   constructor(
@@ -136,6 +141,7 @@ export class FormUsuarioComponent implements OnInit {
     }
     this.listarPrefijoTelefonico();
     this.listarModeloPuntajeActivo();
+    this.listarModeloPuntajeOpActivo();
   }
 
   blurIdentificacion(event) {
@@ -165,6 +171,34 @@ export class FormUsuarioComponent implements OnInit {
                 for (const ele of this.listaModeloPuntaje) {
                   ele.asignado = false;
                   for (const ele1 of this.listaUsuarioModeloPuntaje) {
+                    if (ele?.codigo == ele1?.codModeloPuntaje) {
+                      ele.asignado = true;
+                    }
+                  }
+                }
+              }
+            }
+          );
+        }
+      }
+    );
+  }
+
+  async listarModeloPuntajeOpActivo() {
+    this.puntajeService.listarModeloPuntajeOpActivo().subscribe(
+      (respuesta) => {
+        this.listaModeloPuntajeOp = respuesta['listado'];
+        if (this.codigoChild != null && this.codigoChild != 0) {
+          this.puntajeService.listarUsuarioModeloPuntajeOpPorUsuario(this.codigoChild).subscribe(
+            (respuesta) => {
+              this.listaUsuarioModeloPuntajeOp = respuesta['listado'];
+              if (this.listaUsuarioModeloPuntajeOp == null) {
+                this.listaUsuarioModeloPuntajeOp = [];
+              }
+              if (this.listaUsuarioModeloPuntajeOp.length > 0) {
+                for (const ele of this.listaModeloPuntajeOp) {
+                  ele.asignado = false;
+                  for (const ele1 of this.listaUsuarioModeloPuntajeOp) {
                     if (ele?.codigo == ele1?.codModeloPuntaje) {
                       ele.asignado = true;
                     }
@@ -289,6 +323,30 @@ export class FormUsuarioComponent implements OnInit {
     }
   }
 
+  guardarUsuarioModeloPuntajeOp(modeloPuntajeOp: ModeloPuntajeOp, event: any, indice: number) {
+    if (event.target.checked) {
+      this.usuarioModeloPuntajeOp = new UsuarioModeloPuntajeOp();
+      this.usuarioModeloPuntajeOp = {
+        codigo: 0,
+        codUsuario: 0,
+        codModeloPuntaje: modeloPuntajeOp?.codigo,
+        estado: 'A',
+      };
+      this.listaUsuarioModeloPuntajeOp.push(this.usuarioModeloPuntajeOp);
+    } else {
+      let indice1 = 0;
+      if (this.listaUsuarioModeloPuntajeOp.length > 0) {
+        for (const ele1 of this.listaUsuarioModeloPuntajeOp) {
+          if (modeloPuntajeOp?.codigo == ele1?.codModeloPuntaje) {
+            break;
+          }
+          indice1 = indice1 + 1;
+        }
+      }
+      this.listaUsuarioModeloPuntaje.splice(indice1, 1);
+    }
+  }
+
   addRegistroPersona() {
     let fechaNacimiento = "";
     if (this.formUsuario?.valid) {
@@ -363,11 +421,32 @@ export class FormUsuarioComponent implements OnInit {
       this.usuarioService.guardarUsuario(this.usuario['data']).subscribe({
         next: (response) => {
           this.usuario = response['objeto'];
-          for (const ele of this.listaUsuarioModeloPuntaje) {
+          for (let ele of this.listaUsuarioModeloPuntaje) {
             ele.codUsuario = this.usuario.codigo;
           }
           if (this.listaUsuarioModeloPuntaje.length > 0) {
             this.puntajeService.guardarListaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
+              next: async (response) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          } else {
+            this.listarUsuarioPorIdentificacion();
+            this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+            this.parentDetail.closeDetail();
+          }
+          for (let ele of this.listaUsuarioModeloPuntajeOp) {
+            ele.codUsuario = this.usuario.codigo;
+          }
+          if (this.listaUsuarioModeloPuntajeOp.length > 0) {
+            this.puntajeService.guardarListaUsuarioModeloPuntajeOp(this.listaUsuarioModeloPuntajeOp).subscribe({
               next: async (response) => {
                 this.listarUsuarioPorIdentificacion();
                 this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
@@ -399,6 +478,27 @@ export class FormUsuarioComponent implements OnInit {
               ele.codUsuario = this.usuario.codigo;
             }
             this.puntajeService.guardarListaUsuarioModeloPuntaje(this.listaUsuarioModeloPuntaje).subscribe({
+              next: async (response) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                this.parentDetail.closeDetail();
+              },
+              error: (error) => {
+                this.listarUsuarioPorIdentificacion();
+                this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
+                this.parentDetail.closeDetail();
+              }
+            });
+          } else {
+            this.listarUsuarioPorIdentificacion();
+            this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+            this.parentDetail.closeDetail();
+          }
+          if (this.listaUsuarioModeloPuntajeOp.length > 0) {
+            for (let ele of this.listaUsuarioModeloPuntajeOp) {
+              ele.codUsuario = this.usuario.codigo;
+            }
+            this.puntajeService.guardarListaUsuarioModeloPuntajeOp(this.listaUsuarioModeloPuntajeOp).subscribe({
               next: async (response) => {
                 this.listarUsuarioPorIdentificacion();
                 this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');

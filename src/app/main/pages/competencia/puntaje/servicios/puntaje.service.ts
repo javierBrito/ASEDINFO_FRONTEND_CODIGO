@@ -9,6 +9,7 @@ import axios from 'axios';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { UsuarioModeloPuntaje } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntaje';
 import { ParticipanteSeguimiento } from 'app/main/pages/compartidos/modelos/ParticipanteSeguimiento';
+import { UsuarioModeloPuntajeOp } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntajeOp';
 
 @Injectable({
   providedIn: 'root'
@@ -121,6 +122,13 @@ export class PuntajeService {
   listarModeloPuntajeActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarModeloPuntajeActivo`);
   }
+  // Servicios de Modelo Puntaje
+  buscarModeloPuntajeOpPorCodigo(codigo: number) {
+    return this.http.get<any>(`${environment.url_seguridad}/catalogo/buscarModeloPuntajeOpPorCodigo/${codigo}`);
+  }
+  listarModeloPuntajeOpActivo(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarModeloPuntajeOpActivo`);
+  }
   listarSeguimientoActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSeguimientoActivo`);
   }
@@ -143,11 +151,17 @@ export class PuntajeService {
   listarUsuarioModeloPuntajePorUsuario(codUsuario: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarUsuarioModeloPuntajePorUsuario/${codUsuario}`);
   }
+  listarUsuarioModeloPuntajeOpPorUsuario(codUsuario: number) {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarUsuarioModeloPuntajeOpPorUsuario/${codUsuario}`);
+  }
   listarParticipanteSeguimientoPorParticipante(codParticipante: number) {
     return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipanteSeguimientoPorParticipante/${codParticipante}`);
   }
   guardarListaUsuarioModeloPuntaje(listaUsuarioModeloPuntaje: UsuarioModeloPuntaje[]) {
     return this.http.post<UsuarioModeloPuntaje[]>(`${environment.url_seguridad}/competencia/guardarListaUsuarioModeloPuntaje`, listaUsuarioModeloPuntaje);
+  }
+  guardarListaUsuarioModeloPuntajeOp(listaUsuarioModeloPuntajeOp: UsuarioModeloPuntajeOp[]) {
+    return this.http.post<UsuarioModeloPuntaje[]>(`${environment.url_seguridad}/competencia/guardarListaUsuarioModeloPuntajeOp`, listaUsuarioModeloPuntajeOp);
   }
   guardarListaParticipanteSeguimiento(listaParticipanteSeguimiento: ParticipanteSeguimiento[]) {
     return this.http.post<ParticipanteSeguimiento[]>(`${environment.url_seguridad}/competencia/guardarListaParticipanteSeguimiento`, listaParticipanteSeguimiento);

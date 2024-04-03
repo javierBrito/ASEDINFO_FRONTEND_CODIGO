@@ -858,6 +858,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   generarPDF() {
+    this.listaParticipantePDF = this.listaParticipantePDF.filter(item => item.codInstancia === 1);
     const bodyData = this.listaParticipantePDF.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.dateLastActive, ' ... ' + participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
@@ -900,6 +901,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   generarPDFCancion() {
+    this.listaParticipantePDF = this.listaParticipantePDF.filter(item => item.codInstancia === 1);
     const bodyData = this.listaParticipantePDF.map((participante, index) => [index + 1, participante?.nombrePersona, participante?.desCategoria + "/" + participante?.desSubcategoria, participante?.nombreCancion == null ? '' : participante?.nombreCancion.substring(16, 50), participante?.numParticipante, participante?.postcode]);
     const pdfDefinition: any = {
       content: [
@@ -907,7 +909,7 @@ export class ParticipantePrincipalComponent implements OnInit {
         {
           table: {
             body: [
-              ['#', 'Nombre', 'Categoría/Subcategoría', 'Canción', '# Participante', 'CheckList'],
+              ['#', 'Nombre', 'Categoría/Subcategoría', 'Canción', '# Orden', 'CheckList'],
               ...bodyData
             ],
           },
