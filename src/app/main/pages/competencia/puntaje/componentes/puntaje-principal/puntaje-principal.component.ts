@@ -68,6 +68,7 @@ export class PuntajePrincipalComponent implements OnInit {
   /*LISTAS*/
   public listaPuntaje: Puntaje[] = [];
   public listaPuntajeAux: Puntaje[] = [];
+  public listaPuntajeTemp: Puntaje[] = [];
   public listaAplicacion: Aplicacion[] = [];
   public listaPeriodoRegAniLec: any[];
   public listaCategoria: any[];
@@ -99,6 +100,8 @@ export class PuntajePrincipalComponent implements OnInit {
   public participante: Participante;
   public participanteAux: Participante;
   public participanteSeguimiento: ParticipanteSeguimiento;
+  public codJuez: number = 89;
+  public codModeloPuntaje: number = 5;
 
   /*DETAIL*/
   public showDetail: boolean;
@@ -123,7 +126,7 @@ export class PuntajePrincipalComponent implements OnInit {
     private formBuilder: FormBuilder
   ) {
     this.codigo = 0;
-    this.itemsRegistros = 5;
+    this.itemsRegistros = 10;
     this.page = 1;
     this.showDetail = false;
     this.selectedTab = 0;
@@ -154,7 +157,7 @@ export class PuntajePrincipalComponent implements OnInit {
       this.obtenerParametros();
       this.listarPuntajePorParticipante();
       // Para habilitar el ingreso de puntajes directo
-      this.editarPuntaje(this.participante, 'curso_0')
+      //this.editarPuntaje(this.participante, 'curso_0')
     }
   }
 
@@ -425,7 +428,9 @@ export class PuntajePrincipalComponent implements OnInit {
           this.listaParticipantePresentacion = respuesta['listado'];
           for (const est of this.listaParticipantePresentacion) {
             await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
+              //this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(est.codigo, est.codSubcategoria, est.codInstancia).subscribe({
+                //this.puntajeService.listarPuntajePorSubcategoria(est.codSubcategoria, est.codInstancia).subscribe({
                 next: (respuesta) => {
                   let listaPuntajes: PuntajeAux[] = [];
                   let listaPuntajesConsulta: PuntajeAux[] = respuesta['listado'];

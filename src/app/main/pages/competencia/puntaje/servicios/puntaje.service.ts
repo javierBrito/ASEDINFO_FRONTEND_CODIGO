@@ -33,6 +33,9 @@ export class PuntajeService {
   listarPuntajePorParticipanteSubcategoriaInstancia(codParticipante: number, codSubcategoria: number, codInstancia: number, codUsuarioJuez: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstancia/${codParticipante}/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}`);
   }
+  listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(codParticipante: number, codSubcategoria: number, codInstancia: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstanciaCriterios/${codParticipante}/${codSubcategoria}/${codInstancia}`);
+  }
   listarPuntajePorParticipanteRegTotal(codParticipante: number, codSubcategoria: number, codInstancia: number, codUsuarioJuez: number, codModeloPuntaje: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteRegTotal/${codParticipante}/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}/${codModeloPuntaje}`);
   }
