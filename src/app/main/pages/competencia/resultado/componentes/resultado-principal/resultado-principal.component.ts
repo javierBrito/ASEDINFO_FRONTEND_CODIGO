@@ -12,6 +12,8 @@ import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
 import dayjs from 'dayjs';
 import moment from 'moment';
+import { PuntajeService } from '../../../puntaje/servicios/puntaje.service';
+import { PuntajeAux } from 'app/main/pages/compartidos/modelos/PuntajeAux';
 
 
 @Component({
@@ -41,13 +43,16 @@ export class ResultadoPrincipalComponent implements OnInit {
   public displayNone: string = "";
 
   /*LISTAS*/
-  public listaPuntajeTotal: Puntaje[] = [];
-  public listaPuntajeTotalAux: Puntaje[] = [];
-  public listaParticipante: Participante[] = [];
-  public listaParticipanteAux: Participante[] = [];
+  public listaPuntajeTotal: any[] = [];
+  public listaPuntajeTotalAux: any[] = [];
+  public listaParticipante: any[] = [];
+  public listaParticipanteAux: any[] = [];
   public listaCategoria: any[];
   public listaSubcategoria: any[];
   public listaInstancia: any[];
+  public listaModeloPuntaje = [];
+  public listaPuntaje: Puntaje[] = [];
+  public listaPuntajeAux: Puntaje[] = [];
 
   /*TABS*/
   public selectedTab: number;
@@ -79,6 +84,7 @@ export class ResultadoPrincipalComponent implements OnInit {
     /*Servicios*/
     private readonly resultadoService: ResultadoService,
     private readonly participanteService: ParticipanteService,
+    private readonly puntajeService: PuntajeService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder
   ) {
@@ -104,6 +110,16 @@ export class ResultadoPrincipalComponent implements OnInit {
     } else {
       this.displayNone = '';
     }
+    this.listarModeloPuntajeActivo();
+  }
+
+  listarModeloPuntajeActivo() {
+    this.listaModeloPuntaje = [];
+    this.puntajeService.listarModeloPuntajeActivo().subscribe(
+      (respuesta) => {
+        this.listaModeloPuntaje = respuesta['listado'];
+      }
+    )
   }
 
   cargarInstancia() {
@@ -143,7 +159,7 @@ export class ResultadoPrincipalComponent implements OnInit {
       // Tiempo a sumar en minutos
       let tiempo = "00:03";
       let fechaASumar: any;
-  
+
       let indice = 0;
       for (let participante of this.listaParticipante) {
         indice += 1;
@@ -160,7 +176,7 @@ export class ResultadoPrincipalComponent implements OnInit {
         fechaASumar = moment(this.dateLastActive);
         participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm:ss.SSS');
         this.dateLastActive = participante?.dateLastActive;
-  
+
         this.participanteService.guardarParticipante(participante).subscribe({
           next: (response) => {
             //this.mensajeService.mensajeCorrecto('Se ha creado el registro correctamente...');
@@ -266,27 +282,37 @@ export class ResultadoPrincipalComponent implements OnInit {
             if (indice >= 1 && indice <= 5) {
               this.listaPuntajeTotalAux.push(ele);
             }
-          }
-          // Obtener los participantes para luego clonar
-          this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 5).subscribe(
-            (respuesta) => {
-              this.listaParticipante = respuesta['listado'];
-              if (this.listaParticipante?.length > 0) {
-                for (let ele of this.listaParticipante) {
-                  for (let ele1 of this.listaPuntajeTotalAux) {
-                    if (ele1.codParticipante == ele.codigo) {
-                      ele.numParticipante = ele1.puntaje;
-                      this.listaParticipanteAux.push(ele);
-                    } else {
-                      ele.numParticipante = 0;
+
+            this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(ele.codParticipante, ele.codSubcategoria, ele.codInstancia).subscribe(
+              (respuesta) => {
+                let listaPuntajes: PuntajeAux[] = [];
+                let listaPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
+                for (const modelo of this.listaModeloPuntaje) {
+                  let auxBusqueda = listaPuntajesConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
+                  if (auxBusqueda) {
+                    auxBusqueda.porcentaje = modelo.porcentaje;
+                    listaPuntajes.push(auxBusqueda)
+                  } else {
+                    let nuevoPuntajeAux = new PuntajeAux();
+                    nuevoPuntajeAux = {
+                      codigo: 0,
+                      estado: 'A',
+                      puntaje: 0,
+                      codParticipante: ele?.codParticipante,
+                      codInstancia: this.codInstancia,
+                      codSubcategoria: this.codSubcategoria,
+                      codModeloPuntaje: modelo?.codigo,
+                      porcentaje: modelo?.porcentaje,
+                      nombreParticipante: ele.nombreParticipante,
+                      codUsuarioJuez: 0,
                     }
+                    listaPuntajes.push(nuevoPuntajeAux)
                   }
                 }
+                ele.listaPuntajes = listaPuntajes;
               }
-              this.listaParticipante = this.listaParticipanteAux;
-              this.listaParticipante.sort((firstItem, secondItem) => secondItem.numParticipante - firstItem.numParticipante);
-            }
-          )
+            )
+          }
           resolve("OK");
         }, error: (error) => {
           console.log(error);

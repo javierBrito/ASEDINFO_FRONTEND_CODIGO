@@ -36,6 +36,9 @@ export class ResultadoService {
   listarPuntajePorSubcategoriaInstanciaRegSUMA(codSubcategoria: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaInstanciaRegSUMA/${codSubcategoria}/${codInstancia}`);
   }
+  listarPuntajePorParticipanteSubcategoriaInstanciaRegSUMA(codSubcategoria: number, codInstancia: number, codParticipante: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaInstanciaRegSUMA/${codSubcategoria}/${codInstancia}/${codParticipante}`);
+  }
   listarPuntajePorParticipante(codParticipante: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorSubcategoriaRegTotal/${codParticipante}/${codInstancia}`);
   }

@@ -2,15 +2,10 @@
     <div class="col-12">
         <div class="card box-shadow-sm">
             <div class="card-footer">
-                <div class="row form-group" [ngStyle]="{'display': displayNone}">
-                    <div class="col-12">
-                        <h4><b>Parámetros busqueda :</b></h4>
-                    </div>
-                </div>
                 <form detail-content [formGroup]="formPuntajeParametro" (ngSubmit)="listarPuntajePorParticipante()">
                     <div class="row form-group" [ngStyle]="{'display': displayNone}">
                         <div class="col-2">
-                            <label for="codCategoria"><b>{{'Categoría(*): '}}</b></label>
+                            <label for="codCategoria"><h4><b>{{'Categoría(*): '}}</b></h4></label>
                             <select name="codCategoria" formControlName="codCategoria" required
                                 [compareWith]="compararCategoria" placeholder="Seleccione categoría..."
                                 class="form-control mr-sm-2" id="codCategoria"
@@ -24,7 +19,7 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-2">
-                            <label for="codSubcategoria"><b>{{'Subcategoría(*): '}}</b></label>
+                            <label for="codSubcategoria"><h4><b>{{'Subcategoría(*): '}}</b></h4></label>
                             <select name="codSubcategoria" formControlName="codSubcategoria" required required
                                 [compareWith]="compararSubcategoria" placeholder="Seleccione subcategoría..."
                                 class="form-control mr-sm-2 custom-select" id="codSubcategoria"
@@ -38,11 +33,11 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-2">
-                            <label for="codInstancia"><b>{{'Instancia(*): '}}</b></label>
+                            <label for="codInstancia"><h4><b>{{'Instancia(*): '}}</b></h4></label>
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
                                 class="form-control mr-sm-2 custom-select" id="codInstancia"
-                                (change)="listarPuntajePorParticipante()">
+                                (change)="listarPuntajePorParticipanteJuezAdmin()">
                                 <option [value]="''" selected>Seleccionar subcategoría</option>
                                 <option *ngFor="let instancia  of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>
@@ -52,7 +47,7 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                     </div>
-                    <button [ngStyle]="{'display': ''}" (click)="siguienteParticipante()" type=" button"
+                    <button [ngStyle]="{'display': displayNone1}" (click)="siguienteParticipante()" type=" button"
                         class="btn btn-primary" rippleEffect round><b>{{ "Siguiente Participante..."}}</b><i
                             class="fa-solid fa-rotate"></i></button>
                 </form>
@@ -64,9 +59,9 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <h3><b>{{'Lista Puntaje de: '}} {{nombreUsuario}}</b></h3>
                                             <div>
-                                                <h3><b>{{desCategoria + "/" + desSubcategoria + "/" + desInstancia}}</b></h3>
+                                                <h3><b>{{desCategoria + "/" + desSubcategoria + "/" + desInstancia}}</b>
+                                                </h3>
                                             </div>
                                             <table class="table" *ngIf="listaParticipantePresentacion?.length > 0"
                                                 id="tablaPuntaje">
@@ -80,8 +75,9 @@
                                                             <div align="center">{{modeloPuntaje?.porcentaje}} {{' %'}}
                                                             </div>
                                                         </th>
+                                                        <th scope="col" align="center">Puntaje Total</th>
                                                         <th scope="col" align="center">Guardar</th>
-                                                    </tr>
+                                                    </tr> 
                                                 </thead>
                                                 <tbody>
                                                     <tr [ngStyle]="{'color': puntaje?.colorFila}"
@@ -90,21 +86,42 @@
                                                         <td><b>{{participante?.nombrePersona}}</b></td>
                                                         <td *ngFor="let puntaje of participante?.listaPuntajes"
                                                             scope="col">
-                                                            <div align="center">
-                                                                <!--[disabled]="idInput!='curso_'+index" type="text"-->
+                                                            <div align="center" [ngStyle]="{'display': displayNone1}">
                                                                 <input style="width: 50px; text-align:center"
-                                                                    [(ngModel)]="puntaje.puntaje" type="text"
+                                                                    [(ngModel)]="puntaje.puntaje"
                                                                     (blur)="outFocus($event)" placeholder="99"
                                                                     (change)="capturarInputs(participante)"
                                                                     [ngModelOptions]="{standalone: true}"
+                                                                    [disabled]="idInput!='curso_'+index" type="text"
+                                                                    id="curso_{{index}}">
+                                                            </div>
+                                                            <div align="center" [ngStyle]="{'display': displayNone}">
+                                                                <input style="width: 50px; text-align:center"
+                                                                    [(ngModel)]="puntaje.puntaje"
+                                                                    (blur)="outFocus($event)" placeholder="99"
+                                                                    (change)="capturarInputs(participante)"
+                                                                    [ngModelOptions]="{standalone: true}"
+                                                                    type="text"
                                                                     id="curso_{{index}}">
                                                             </div>
                                                         </td>
+                                                        <td align="center"><b>{{participante?.puntajeTotal}}</b></td>
                                                         <td>
-                                                            <div class="btn-group" role="group"
+                                                            <div class="btn-group" role="group" [ngStyle]="{'display': displayNone1}"
                                                                 aria-label="Basic example">
-                                                                <!--<button [disabled]="idInput!='curso_'+index"-->
-                                                                <button
+                                                                <button [disabled]="idInput!='curso_'+index"
+                                                                    (click)="verificarGuardarPuntajes(participante, 'curso_'+index)"
+                                                                    type="button" class="btn btn-success"
+                                                                    matTooltip="Guardar Puntaje" rippleEffect><i
+                                                                        class="fa fa-floppy-o"></i></button>
+                                                                <button [ngStyle]="{'display': 'none'}"
+                                                                    (click)="editarPuntaje(participante, 'curso_'+index)"
+                                                                    type=" button" class="btn btn-primary" rippleEffect
+                                                                    round><i class="fa fa-pencil"></i></button>
+                                                            </div>
+                                                            <div class="btn-group" role="group" [ngStyle]="{'display': displayNone}"
+                                                                aria-label="Basic example">
+                                                                <button 
                                                                     (click)="verificarGuardarPuntajes(participante, 'curso_'+index)"
                                                                     type="button" class="btn btn-success"
                                                                     matTooltip="Guardar Puntaje" rippleEffect><i

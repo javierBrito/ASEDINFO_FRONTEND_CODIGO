@@ -5,7 +5,6 @@ import { ReporteDTO } from 'app/main/pages/compartidos/modelos/ReporteDTO.model'
 import { Puntaje } from 'app/main/pages/compartidos/modelos/Puntaje';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
-import axios from 'axios';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { UsuarioModeloPuntaje } from 'app/main/pages/compartidos/modelos/UsuarioModeloPuntaje';
 import { ParticipanteSeguimiento } from 'app/main/pages/compartidos/modelos/ParticipanteSeguimiento';
@@ -32,6 +31,9 @@ export class PuntajeService {
   }
   listarPuntajePorParticipanteSubcategoriaInstancia(codParticipante: number, codSubcategoria: number, codInstancia: number, codUsuarioJuez: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstancia/${codParticipante}/${codSubcategoria}/${codInstancia}/${codUsuarioJuez}`);
+  }
+  listarPuntajePorParticipanteSubcategoriaInstanciaRegSUMA(codSubcategoria: number, codInstancia: number, codParticipante: number) {
+    return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstanciaRegSUMA/${codSubcategoria}/${codInstancia}/${codParticipante}`);
   }
   listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(codParticipante: number, codSubcategoria: number, codInstancia: number) {
     return this.http.get<Puntaje[]>(`${environment.url_seguridad}/competencia/listarPuntajePorParticipanteSubcategoriaInstanciaCriterios/${codParticipante}/${codSubcategoria}/${codInstancia}`);
@@ -168,6 +170,9 @@ export class PuntajeService {
   }
   guardarListaParticipanteSeguimiento(listaParticipanteSeguimiento: ParticipanteSeguimiento[]) {
     return this.http.post<ParticipanteSeguimiento[]>(`${environment.url_seguridad}/competencia/guardarListaParticipanteSeguimiento`, listaParticipanteSeguimiento);
+  }
+  guardarListaPuntaje(listaPuntaje: Puntaje[]) {
+    return this.http.post<Puntaje[]>(`${environment.url_seguridad}/competencia/guardarListaPuntaje`, listaPuntaje);
   }
 
   /*SERVICIOS EXTERNOS*/

@@ -36,7 +36,6 @@ export class PuntajePrincipalComponent implements OnInit {
   public institucion: any;
   public colorFila: string;
   public celularEnvioWhatsapp: string;
-  public codigoPostal: string = '593';
   public descripcionProducto: string;
   public mensaje: string;
   public fechaFinMensaje: string;
@@ -56,19 +55,21 @@ export class PuntajePrincipalComponent implements OnInit {
   public continuarGuardarPendiente: boolean;
   public codPuntaje: number = 0;
   public displayNone: string = '';
-  public desCategoria: string;
-  public desSubcategoria: string;
-  public desInstancia: string;
+  public displayNone1: string = '';
+  public desCategoria: string = "";
+  public desSubcategoria: string = "";
+  public desInstancia: string = "";
   public codEstadoCompetencia: number;
   public nombreUsuario: string;
   public siActualizaNumJuez: boolean = false;
   public numJueces: number = 0;
   public codParticipante: number = 0;
+  public esUsuarioJuezAdmin: boolean = false;
 
   /*LISTAS*/
   public listaPuntaje: Puntaje[] = [];
   public listaPuntajeAux: Puntaje[] = [];
-  public listaPuntajeTemp: Puntaje[] = [];
+  public listaPuntajeGuardar: Puntaje[] = [];
   public listaAplicacion: Aplicacion[] = [];
   public listaPeriodoRegAniLec: any[];
   public listaCategoria: any[];
@@ -100,8 +101,6 @@ export class PuntajePrincipalComponent implements OnInit {
   public participante: Participante;
   public participanteAux: Participante;
   public participanteSeguimiento: ParticipanteSeguimiento;
-  public codJuez: number = 89;
-  public codModeloPuntaje: number = 5;
 
   /*DETAIL*/
   public showDetail: boolean;
@@ -154,8 +153,19 @@ export class PuntajePrincipalComponent implements OnInit {
     //this.listarSeguimientoActivo(this.participante);
     if (this.currentUser.cedula == 'JUEZ' || this.currentUser.cedula == 'JUEZOP') {
       this.displayNone = 'none';
-      this.obtenerParametros();
+      this.displayNone1 = '';
+      //this.obtenerParametros();
       this.listarPuntajePorParticipante();
+      // Para habilitar el ingreso de puntajes directo
+      this.editarPuntaje(this.participante, 'curso_0')
+    }
+    // Procesos de Juez Administrador
+    if (this.currentUser.cedula == 'JUEZADMIN') {
+      this.displayNone = '';
+      this.displayNone1 = 'none';
+      this.listarModeloPuntajeActivo();
+      //this.obtenerParametros();
+      //this.listarPuntajePorParticipante();
       // Para habilitar el ingreso de puntajes directo
       //this.editarPuntaje(this.participante, 'curso_0')
     }
@@ -335,7 +345,7 @@ export class PuntajePrincipalComponent implements OnInit {
                 this.puntajeService.guardarListaParticipanteSeguimiento(this.listaParticipanteSeguimiento).subscribe({
                   next: async (response) => {
                     this.listarPuntajePorParticipante();
-                    this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
+                    //this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
                   },
                   error: (error) => {
                     this.mensajeService.mensajeError('Ha habido un problema al agregar el registro...');
@@ -343,7 +353,7 @@ export class PuntajePrincipalComponent implements OnInit {
                 });
               } else {
                 this.listarPuntajePorParticipante();
-                this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
+                //this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
               }
             },
             error: (error) => {
@@ -412,25 +422,18 @@ export class PuntajePrincipalComponent implements OnInit {
       // Estado de Competencia "En Escenario"
       this.codEstadoCompetencia = 4;
     }
-    /*
-    if (this.activarInput) {
-      this.editarPuntaje(this.participante, " ");
-      return;
-    }
-
-    this.idInput = '';
-    this.activarInput = false;
-    */
     await new Promise((resolve, rejects) => {
       //this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, this.codEstadoCompetencia).subscribe({
       this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
           for (const est of this.listaParticipantePresentacion) {
+            this.desCategoria = est?.desCategoria;
+            this.desSubcategoria = est?.desSubcategoria;
+            this.desInstancia = est?.desInstancia;
+
             await new Promise((resolve, rejects) => {
-              //this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
-              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(est.codigo, est.codSubcategoria, est.codInstancia).subscribe({
-                //this.puntajeService.listarPuntajePorSubcategoria(est.codSubcategoria, est.codInstancia).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
                 next: (respuesta) => {
                   let listaPuntajes: PuntajeAux[] = [];
                   let listaPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
@@ -477,6 +480,91 @@ export class PuntajePrincipalComponent implements OnInit {
     });
   }
 
+  async listarPuntajePorParticipanteJuezAdmin() {
+    this.esUsuarioJuezAdmin = false;
+    this.listaParticipantePresentacion = [];
+
+    // Receptar codCategoria, codSubcategoria y codInstancia de formPuntajeParametro.value
+    let puntajeParametroTemp = this.formPuntajeParametro.value;
+    this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
+    this.codInstancia = puntajeParametroTemp?.codInstancia;
+    this.buscarInstanciaPorCodigo();
+    this.codEstadoCompetencia = 0;
+
+    await new Promise((resolve, rejects) => {
+      this.puntajeService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, this.codEstadoCompetencia).subscribe({
+        //this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
+        next: async (respuesta) => {
+          this.listaParticipantePresentacion = respuesta['listado'];
+          let puntajeTotal: number = 0;
+          for (const est of this.listaParticipantePresentacion) {
+            // Adicionar puntaje total - jbrito-2024411
+            est.puntajeTotal = 0;
+            await new Promise((resolve, rejects) => {
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaRegSUMA(est.codSubcategoria, est.codInstancia, est.codigo).subscribe({
+                next: (respuesta) => {
+                  let listaPuntajeTotal: PuntajeAux[] = respuesta['listado'];
+                  puntajeTotal = listaPuntajeTotal[0]?.puntaje;
+                  est.puntajeTotal = puntajeTotal;
+                  resolve("OK");
+                }, error: (error) => {
+                  console.log(error);
+                  rejects("Error");
+                }
+              });
+            });
+            
+            await new Promise((resolve, rejects) => {
+              //this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(est.codigo, est.codSubcategoria, est.codInstancia).subscribe({
+                next: (respuesta) => {
+                  let listaPuntajes: PuntajeAux[] = [];
+                  let listaPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
+                  for (const modelo of this.listaModeloPuntaje) {
+                    let auxBusqueda = listaPuntajesConsulta.find(obj => obj.codModeloPuntaje == modelo.codigo)
+                    if (auxBusqueda) {
+                      auxBusqueda.porcentaje = modelo.porcentaje;
+                      listaPuntajes.push(auxBusqueda)
+                    } else {
+                      let nuevoPuntajeAux = new PuntajeAux();
+                      nuevoPuntajeAux = {
+                        codigo: 0,
+                        estado: 'A',
+                        puntaje: 0,
+                        codParticipante: est?.codigo,
+                        codInstancia: this.codInstancia,
+                        codSubcategoria: this.codSubcategoria,
+                        codModeloPuntaje: modelo?.codigo,
+                        porcentaje: modelo?.porcentaje,
+                        nombreParticipante: est?.nombreParticipante,
+                        codUsuarioJuez: 0,
+                      }
+                      listaPuntajes.push(nuevoPuntajeAux)
+                    }
+                  }
+                  est.listaPuntajes = listaPuntajes;
+                  this.esUsuarioJuezAdmin = true;
+                  resolve("OK");
+                }, error: (error) => {
+                  console.log(error);
+                  rejects("Error");
+                }
+              });
+            });
+          }
+          this.participante = this.listaParticipantePresentacion['0'];
+          // Recuperar datos de Seguimiento
+          await this.listarSeguimientoActivo(this.participante);
+          resolve("OK");
+        }, error: (error) => {
+          console.log(error);
+          rejects("Error");
+        }
+      });
+    });
+    this.listaParticipantePresentacion.sort((a, b) => (a.puntajeTotal < b.puntajeTotal ? 1 : -1));
+  }
+
   async guardarPuntajes(participante, indexSelec) {
     if (this.idInput === null) {
       // Guardar el primer registro en la misma fila
@@ -485,6 +573,9 @@ export class PuntajePrincipalComponent implements OnInit {
       return;
     }
     this.siActualizaNumJuez = true;
+    if (this.esUsuarioJuezAdmin) {
+      this.idInput = indexSelec;
+    }
     if (this.idInput != indexSelec) {
       await this.verificarGuardarPendiente();
       if (this.continuarGuardarPendiente) {
@@ -508,34 +599,38 @@ export class PuntajePrincipalComponent implements OnInit {
     let puntajeTotal = 0;
     let notaGuardada = 0;
     let errorGuardar = 0;
+    this.listaPuntajeGuardar = [];
     for (let puntajeAux of participante.listaPuntajes) {
-      puntajeAux.codSubcategoria = participante?.codSubcategoria
-      puntajeAux.codInstancia = participante?.codInstancia
-      this.codSubcategoria = participante?.codSubcategoria
-      this.codInstancia = participante?.codInstancia
+      puntajeAux.codSubcategoria = participante?.codSubcategoria;
+      puntajeAux.codInstancia = participante?.codInstancia;
+      this.codSubcategoria = participante?.codSubcategoria;
+      this.codInstancia = participante?.codInstancia;
+      puntajeAux.nombreParticipante = participante?.firstName;
       if (puntajeAux?.puntaje > 0 &&
         puntajeAux?.puntaje <= 10 &&
         puntajeAux?.puntaje != 0) {
         if (puntajeAux?.codigo != 0) {
-          //this.siActualizaNumJuez = false;
+          this.siActualizaNumJuez = false;
         }
         this.puntajeAuxTotal = puntajeAux;
         puntajeTotal = puntajeTotal + (puntajeAux?.porcentaje / 100) * Number(puntajeAux ? puntajeAux?.puntaje : 0);
-        await new Promise((resolve, rejects) => {
-          let puntaje = new Puntaje;
-          puntaje = this.moverDatosPuntaje(puntajeAux);
-          this.puntajeService.guardarPuntaje(puntaje).subscribe({
-            next: (respuesta) => {
-              puntaje.codigo = respuesta['objeto'].codigo;
-              notaGuardada = notaGuardada + 1;
-              resolve("OK");
-            }, error: (error) => {
-              this.mensajeService.mensajeError('Ha habido un problema al guardar el registro...' + error);
-              puntajeTotal = 0;
-              rejects("Error");
-            }
-          });
+        //await new Promise((resolve, rejects) => {
+        let puntaje = new Puntaje;
+        puntaje = this.moverDatosPuntaje(puntajeAux);
+        /*
+        this.puntajeService.guardarPuntaje(puntaje).subscribe({
+          next: (respuesta) => {
+            puntaje.codigo = respuesta['objeto'].codigo;
+            notaGuardada = notaGuardada + 1;
+            resolve("OK");
+          }, error: (error) => {
+            this.mensajeService.mensajeError('Ha habido un problema al guardar el registro...' + error);
+            puntajeTotal = 0;
+            rejects("Error");
+          }
         });
+        */
+        //});
       } else {
         errorGuardar = errorGuardar + 1;
         this.mensajeService.mensajeAdvertencia("El puntaje " + puntajeAux.puntaje + " no se encuentra en el rango de 1 a 10, vuelva a ingresar...  ");
@@ -544,34 +639,54 @@ export class PuntajePrincipalComponent implements OnInit {
       }
     }
     if (errorGuardar == 0) {
-      this.mensajeService.mensajeCorrecto('Se ha guardado las notas correctamente...');
+      //this.mensajeService.mensajeCorrecto('Se ha guardado las notas correctamente...');
 
       // Guardar el puntaje total de cada participante
       if (puntajeTotal > 0 && this.puntajeAuxTotal != null) {
         // Verificar si ya existe el total por participante, instancia y modelo puntaje = 99
-        await this.verificarExistenciaRegistroTotal();
+        //await this.verificarExistenciaRegistroTotal();
         this.puntajeAuxTotal.codigo = this.codPuntaje;
         this.puntajeAuxTotal.codModeloPuntaje = 99;
-        this.puntajeAuxTotal.puntaje = puntajeTotal;
+        this.puntajeAuxTotal.puntaje = puntajeTotal.toFixed(2);
         this.puntajeAuxTotal.codUsuarioJuez = this.currentUser?.codigoUsuario;
 
         let puntajeTotalEntidad = new Puntaje;
         puntajeTotalEntidad = this.moverDatosPuntaje(this.puntajeAuxTotal);
+        /*
         this.puntajeService.guardarPuntaje(puntajeTotalEntidad).subscribe({
           next: (response) => {
             if (this.siActualizaNumJuez) {
               this.actualizarNumPuntajeJuez(participante?.codigo);
             }
-            this.mensajeService.mensajeCorrecto('Se ha actualizado el registro de totales correctamente...');
+            //this.mensajeService.mensajeCorrecto('Se ha actualizado el registro de totales correctamente...');
+            this.mensajeService.mensajeCorrecto("Se registraron (" + notaGuardada + " PUNTAJES) correctamente ...... En caso de alguna novedad comunicarse con el ADMINISTRADOR ...");
           },
           error: (error) => {
             this.mensajeService.mensajeError('Ha habido un problema al actualizar el registro de totales...');
           }
         });
+        */
         this.activarInput = false;
       }
     }
-    this.listarPuntajePorParticipante();
+    notaGuardada = this.listaPuntajeGuardar?.length - 1;
+    await new Promise((resolve, rejects) => {
+      this.puntajeService.guardarListaPuntaje(this.listaPuntajeGuardar).subscribe({
+        next: (respuesta) => {
+          this.mensajeService.mensajeCorrecto("Se registraron (" + notaGuardada + " PUNTAJES) correctamente ...... En caso de alguna novedad comunicarse con el ADMINISTRADOR ...");
+          resolve("OK");
+        }, error: (error) => {
+          this.mensajeService.mensajeError('Ha habido un problema al guardar el registro...' + error);
+          puntajeTotal = 0;
+          rejects("Error");
+        }
+      });
+    });
+    if (this.esUsuarioJuezAdmin) {
+      this.listarPuntajePorParticipanteJuezAdmin();
+    } else {
+      this.listarPuntajePorParticipante();
+    }
   }
 
   siguienteParticipante() {
@@ -598,6 +713,7 @@ export class PuntajePrincipalComponent implements OnInit {
 
   moverDatosPuntaje(puntajeAux: PuntajeAux): Puntaje {
     let puntaje = new Puntaje();
+    //puntajeAux.codUsuarioJuez = puntajeAux?.codUsuarioJuez == 0 ? this.currentUser.codigoUsuario : puntajeAux?.codUsuarioJuez;
     puntaje = {
       codigo: puntajeAux?.codigo,
       estado: puntajeAux?.estado,
@@ -608,8 +724,10 @@ export class PuntajePrincipalComponent implements OnInit {
       codInstancia: puntajeAux?.codInstancia,
       nombreParticipante: puntajeAux?.nombreParticipante,
       codUsuarioJuez: this.currentUser.codigoUsuario,
+      //codUsuarioJuez: puntajeAux?.codUsuarioJuez,
       pathImagenTrofeo: "",
     }
+    this.listaPuntajeGuardar.push(puntaje);
 
     return puntaje;
   }
@@ -677,7 +795,7 @@ export class PuntajePrincipalComponent implements OnInit {
       Swal
         .fire({
           title: "Registrar Puntajes",
-          text: "¿Revisar, ya que no existe reversa...?'",
+          text: "Revisar puntajes! No existe REVERSA...",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: "Sí, guardar",
