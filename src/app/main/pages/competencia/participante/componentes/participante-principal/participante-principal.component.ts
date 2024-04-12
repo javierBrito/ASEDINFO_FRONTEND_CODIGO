@@ -330,6 +330,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
+        console.log("respuesta = ", respuesta)
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
           // Tratar nombre de Pariicipante

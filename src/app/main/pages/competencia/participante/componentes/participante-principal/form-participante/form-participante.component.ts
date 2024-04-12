@@ -4,13 +4,11 @@ import { MensajesIziToastService } from 'app/main/pages/compartidos/servicios/iz
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import { DetailComponent } from 'app/main/pages/competencia/participante/componentes/detail/detail.component';
 import dayjs from "dayjs";
-import { MyValidators } from 'app/utils/validators';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { ParticipanteService } from '../../../servicios/participante.service';
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { PersonaService } from 'app/main/pages/catalogo/persona/servicios/persona.service';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
-import { delay } from 'rxjs/operators';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
@@ -411,14 +409,6 @@ export class FormParticipanteComponent implements OnInit {
         if (this.personaEditar?.fechaNacimiento != "" && this.personaEditar?.fechaNacimiento != null) {
           this.fechaNacimiento = dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD");
         }
-        /*
-        this.formParticipante.controls.fechaNacimiento.setValue(dayjs(this.participante?.fechaNacimiento).format("YYYY-MM-DD"));
-        this.formParticipante.controls.nombres.setValue(this.participante?.nombres);
-        this.formParticipante.controls.apellidos.setValue(this.participante?.apellidos);
-        this.formParticipante.controls.country.setValue(this.participante?.country);
-        this.formParticipante.controls.correo.setValue(this.participante?.correo);
-        this.formParticipante.controls.celular.setValue(this.participante?.celular);
-        */
       },
       error: (error) => {
         console.log(error);
@@ -574,9 +564,6 @@ export class FormParticipanteComponent implements OnInit {
         username: participanteTemp.username,
         customerId: this.customerIdChild,
         userId: this.userIdChild,
-        //email: participanteTemp.identificacion,
-        //email: this.currentUser.identificacion,
-        //email: this.currentUser.correo,
         email: participanteTemp?.correo,
         codSubcategoria: this.codSubcategoriaChild,
         codInstancia: this.codInstanciaChild,
@@ -593,11 +580,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.firstName = this.participanteAux['data'].firstName;
       this.participante.lastName = this.participanteAux['data'].lastName;
       this.participante.username = this.participanteAux['data'].username;
-      //if (this.currentUser.cedula == "Suscriptor") {
       this.participante.email = this.participanteAux['data'].email;
-      //} else {
-      //  this.participante.email = this.participanteEditar?.email;
-      //}
       this.participante.codSubcategoria = this.codSubcategoriaChild;
       this.participante.codInstancia = this.codInstanciaChild;
       this.participante.country = this.participanteAux['data'].country;
@@ -639,16 +622,6 @@ export class FormParticipanteComponent implements OnInit {
     } else {
       // Si es nuevo el participante
       this.participanteAux['data'].codPersona = this.persona.codigo;
-      /*
-      if (this.currentUser.cedula == "Suscriptor") {
-        this.participanteAux['data'].email = this.currentUser?.identificacion;
-      } else {
-        this.participanteAux['data'].email = this.persona?.correo;
-      }
-      if (this.currentUser.cedula != "Suscriptor") {
-        this.participanteAux['data'].email = this.currentUser?.correo;
-      }
-      */
       this.participanteService.guardarParticipante(this.participanteAux['data']).subscribe({
         next: async (response) => {
           this.participante = response['objeto'];
@@ -718,7 +691,6 @@ export class FormParticipanteComponent implements OnInit {
   blurIdentificacion(event) {
     if (event.target.value.length != 0) {
       let participanteTemp = this.formParticipante.value;
-      //if (participanteTemp?.identificacion == "") {
       if (participanteTemp?.username == "") {
         this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
         // Verificar si ya existe la persona con esa identificacion
@@ -793,18 +765,23 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   cargarArchivo(index, file) {
+    let noCargaArchivo: boolean = false;
     // Receptar identificacion de formParticipante.value
     let participanteTemp = this.formParticipante.value;
-    this.nombreCancion = this.pathCancion + participanteTemp?.identificacion + "_" + file?.name;
-    this.participanteService.cargarArchivo(file, participanteTemp?.identificacion).subscribe(
+    this.nombreCancion = this.pathCancion + this.desCategoria + "_" + this.desSubcategoria + "_" + participanteTemp?.nombres + "_" + file?.name;
+    let nombreArchivo = this.desCategoria + "_" + this.desSubcategoria + "_" + participanteTemp?.nombres + "_" + file?.name;
+    this.participanteService.cargarArchivo(file, nombreArchivo).subscribe(
       async (respuesta) => {
-        //console.log("respuesta = ", respuesta);
+        console.log("respuesta = ", respuesta);
+        if (respuesta['status'] == 417) {
+          noCargaArchivo = true;
+        }
       }, err => {
         console.log("err = ", err);
-        if (err == "OK") {
-          this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta');
+        if (err == "OK" && !noCargaArchivo) {
+          this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta = '+ file.name);
         } else {
-          this.message = 'No se puede subir el archivo ' + file.name;
+          this.mensajeService.mensajeError('No se puede cargar el archivo = '+ file.name + '. Revise tipo archivo (audio/mp3/mp4), peso máximo 3.000 KB, nombres máximo 60 carácteres.');
         }
       }
     );
@@ -839,10 +816,8 @@ export class FormParticipanteComponent implements OnInit {
     );
   }
 
-  //métod temporal para vizualizar un pdf a partir de un código en base64
-  //nombreArchivoDescarga = "";
+  // Métod temporal para vizualizar un pdf a partir de un código en base64
   async verpdf() {
-    // this.nombreArchivoDescarga = this.amieRegex + ".pdf";
     this.participanteService.vizualizarArchivo("solista_salsa.mp3").subscribe(
       event => {
         this.resportProgress(event);

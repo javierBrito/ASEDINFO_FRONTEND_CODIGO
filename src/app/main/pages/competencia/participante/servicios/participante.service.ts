@@ -112,6 +112,7 @@ export class ParticipanteService {
       reportProgress: true,
       responseType: 'json'
     });
+    console.log("this.http.request(req) = ", this.http.request(req))
     return this.http.request(req);
   }
 
