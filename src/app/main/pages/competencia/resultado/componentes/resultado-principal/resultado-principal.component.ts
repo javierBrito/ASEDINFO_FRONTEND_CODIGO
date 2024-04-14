@@ -192,7 +192,6 @@ export class ResultadoPrincipalComponent implements OnInit {
         }
       }
     }
-
   }
 
   listarCategoriaActivo() {
@@ -267,6 +266,7 @@ export class ResultadoPrincipalComponent implements OnInit {
       this.resultadoService.listarPuntajePorSubcategoriaInstanciaRegSUMA(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
           this.listaPuntajeTotal = respuesta['listado'];
+          console.log("this.listaPuntajeTotal = ", this.listaPuntajeTotal)
           // Ordenar lista por puntaje
           this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
           // Asignar trofeo por posición
@@ -282,7 +282,6 @@ export class ResultadoPrincipalComponent implements OnInit {
             if (indice >= 1 && indice <= 5) {
               this.listaPuntajeTotalAux.push(ele);
             }
-
             this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(ele.codParticipante, ele.codSubcategoria, ele.codInstancia).subscribe(
               (respuesta) => {
                 let listaPuntajes: PuntajeAux[] = [];

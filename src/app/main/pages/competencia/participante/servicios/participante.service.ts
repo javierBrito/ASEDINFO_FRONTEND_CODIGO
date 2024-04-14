@@ -79,6 +79,9 @@ export class ParticipanteService {
   listarSubcategoriaActivo(): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSubcategoriaActivo`);
   }
+  listarParticipanteEnEscenario(): Observable<any> | undefined {
+    return this.http.get<any[]>(`${environment.url_seguridad}/competencia/listarParticipanteEnEscenario`);
+  }
   listarSubcategoriaPorCategoria(codCategoria: number): Observable<any> | undefined {
     return this.http.get<any[]>(`${environment.url_seguridad}/catalogo/listarSubcategoriaPorCategoria/${codCategoria}`);
   }

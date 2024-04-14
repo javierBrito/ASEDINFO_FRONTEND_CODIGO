@@ -367,9 +367,20 @@ export class ParticipantePrincipalComponent implements OnInit {
         break;
       }
       case 3: {
-        participante.codEstadoCompetencia = 4;
-        this.participante = participante;
-        this.actualizarParticipanteEstadoCompetencia();
+        let listaParticipante: Participante[];
+        this.participanteService.listarParticipanteEnEscenario().subscribe(
+          (respuesta) => {
+            listaParticipante = respuesta['listado'];
+            console.log(listaParticipante)
+            if (listaParticipante?.length > 0) {
+              this.mensajeService.mensajeError('ERROR: Existe(n) participante(s) en escenario, que no tienen puntuación...');
+            } else {
+              participante.codEstadoCompetencia = 4;
+              this.participante = participante;
+              this.actualizarParticipanteEstadoCompetencia();
+            }
+          }
+        )
         break;
       }
       case 4: {

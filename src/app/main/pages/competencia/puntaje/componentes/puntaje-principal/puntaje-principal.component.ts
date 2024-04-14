@@ -496,6 +496,7 @@ export class PuntajePrincipalComponent implements OnInit {
         //this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
+          this.listaParticipantePresentacion = this.listaParticipantePresentacion.filter((participante) => participante?.codEstadoCompetencia === 5);
           let puntajeTotal: number = 0;
           for (const est of this.listaParticipantePresentacion) {
             // Adicionar puntaje total - jbrito-2024411
