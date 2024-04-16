@@ -343,7 +343,7 @@ export class FormUsuarioComponent implements OnInit {
           indice1 = indice1 + 1;
         }
       }
-      this.listaUsuarioModeloPuntaje.splice(indice1, 1);
+      this.listaUsuarioModeloPuntajeOp.splice(indice1, 1);
     }
   }
 

@@ -63,7 +63,7 @@ export class ResultadoPrincipalComponent implements OnInit {
   public operacion: Operacion;
   public reporteDTO: ReporteDTO;
   public puntajeAux: Puntaje;
-  public participante: Participante;
+  public participante: any;
   public puntajeAuxTotal: any = null;
 
   /*DETAIL*/
@@ -176,7 +176,6 @@ export class ResultadoPrincipalComponent implements OnInit {
         fechaASumar = moment(this.dateLastActive);
         participante.dateLastActive = (fechaASumar.add(moment.duration(tiempo))).format('yyyy-MM-DD HH:mm:ss.SSS');
         this.dateLastActive = participante?.dateLastActive;
-
         this.participanteService.guardarParticipante(participante).subscribe({
           next: (response) => {
             //this.mensajeService.mensajeCorrecto('Se ha creado el registro correctamente...');
@@ -266,13 +265,12 @@ export class ResultadoPrincipalComponent implements OnInit {
       this.resultadoService.listarPuntajePorSubcategoriaInstanciaRegSUMA(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
           this.listaPuntajeTotal = respuesta['listado'];
-          console.log("this.listaPuntajeTotal = ", this.listaPuntajeTotal)
           // Ordenar lista por puntaje
           this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
-          // Asignar trofeo por posición
           let indice = 0;
           for (let ele of this.listaPuntajeTotal) {
             indice += 1;
+            // Asignar trofeo por posición
             if (indice >= 1 && indice <= 3) {
               ele.pathImagenTrofeo = this.pathImagenTrofeo + indice + ".png";
             }
@@ -312,6 +310,7 @@ export class ResultadoPrincipalComponent implements OnInit {
               }
             )
           }
+          await this.obtenerListaParticipante();
           resolve("OK");
         }, error: (error) => {
           console.log(error);
@@ -319,6 +318,22 @@ export class ResultadoPrincipalComponent implements OnInit {
         }
       });
     });
+  }
+
+  async obtenerListaParticipante() {
+    this.listaParticipante = [];
+    return new Promise((resolve, rejects) => {
+      for (let ele of this.listaPuntajeTotalAux) {
+        this.participanteService.buscarParticipantePorCodigo(ele?.codParticipante).subscribe(
+          (respuesta) => {
+            this.participante = respuesta['objeto'];
+            this.participante.numPuntajeJuez = ele?.puntaje;
+            this.listaParticipante.push(this.participante);
+          }
+        )
+      }
+      this.listaParticipante.sort((a, b) => (a.numPuntajeJuez < b.numPuntajeJuez ? -1 : 1));
+    })
   }
 
   numeroOrden(indice: number): string {

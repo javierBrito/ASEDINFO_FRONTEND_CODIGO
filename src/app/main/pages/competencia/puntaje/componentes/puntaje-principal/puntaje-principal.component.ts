@@ -514,7 +514,7 @@ export class PuntajePrincipalComponent implements OnInit {
                 }
               });
             });
-            
+
             await new Promise((resolve, rejects) => {
               //this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
               this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(est.codigo, est.codSubcategoria, est.codInstancia).subscribe({
@@ -553,7 +553,7 @@ export class PuntajePrincipalComponent implements OnInit {
               });
             });
           }
-          this.participante = this.listaParticipantePresentacion['0'];
+          //this.c = this.listaParticipantePresentacion['0'];
           // Recuperar datos de Seguimiento
           await this.listarSeguimientoActivo(this.participante);
           resolve("OK");
@@ -782,14 +782,12 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   async verificarGuardarPuntajes(participante, indexSelec) {
-    if (this.participante != null) {
-      if (this.participante['listaPuntajes']?.length > 0) {
-        for (let puntaje of this.participante['listaPuntajes']) {
-          if (puntaje?.puntaje < 1 || puntaje?.puntaje > 10) {
-            this.mensajeService.mensajeError('Puntaje incorrecto, ingresar valores en el rango de 1 a 10...');
-            return;
-          };
-        }
+    for (let puntaje of participante['listaPuntajes']) {
+      if (puntaje?.codParticipante == participante?.codigo) {
+        if (puntaje?.puntaje < 1 || puntaje?.puntaje > 10) {
+          this.mensajeService.mensajeError('Puntaje incorrecto, ingresar valores en el rango de 1 a 10...');
+          return;
+        };
       }
     }
     await new Promise((resolve, rejects) => {
@@ -815,7 +813,7 @@ export class PuntajePrincipalComponent implements OnInit {
     })
   }
 
-  // Contar los caracteres de la cedula para activar boton <Buscar>
+  // Validar si ingresa  en el rango de 1 a 10.
   outFocus(event) {
     if (event.target.value < 1 || event.target.value > 10) {
       event.target.value = 0;
