@@ -16,6 +16,9 @@ import { PuntajeAux } from 'app/main/pages/compartidos/modelos/PuntajeAux';
 import { ParticipanteService } from '../../../participante/servicios/participante.service';
 import { Seguimiento } from 'app/main/pages/compartidos/modelos/Seguimiento';
 import { ParticipanteSeguimiento } from 'app/main/pages/compartidos/modelos/ParticipanteSeguimiento';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-puntaje-principal',
@@ -553,7 +556,7 @@ export class PuntajePrincipalComponent implements OnInit {
               });
             });
           }
-          //this.c = this.listaParticipantePresentacion['0'];
+          //this.participante = this.listaParticipantePresentacion['0'];
           // Recuperar datos de Seguimiento
           await this.listarSeguimientoActivo(this.participante);
           resolve("OK");
@@ -844,6 +847,71 @@ export class PuntajePrincipalComponent implements OnInit {
 
   resetTheForm(): void {
     this.listaPuntaje = null;
+  }
+
+  generarPDFPuntaje() {
+    /*
+    console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion)
+    for (let participante of this.listaParticipantePresentacion) {
+      console.log("participante?.firstName = ", participante?.firstName);
+      console.log("participante?.puntajeTotal = ", participante?.puntajeTotal);
+      for (let puntaje of participante?.listaPuntajes) {
+        console.log("puntaje = ", puntaje?.puntaje)
+      }
+    }
+    */
+    const bodyData = this.listaParticipantePresentacion.map((item, index) => [index + 1, item?.firstName,
+          item?.listaPuntajes[0]?.puntaje == 0 ? "" : item?.listaPuntajes[0]?.puntaje,
+          item?.listaPuntajes[1]?.puntaje == 0 ? "" : item?.listaPuntajes[1]?.puntaje,
+          item?.listaPuntajes[2]?.puntaje == 0 ? "" : item?.listaPuntajes[2]?.puntaje,
+          item?.listaPuntajes[3]?.puntaje == 0 ? "" : item?.listaPuntajes[3]?.puntaje,
+          item?.listaPuntajes[4]?.puntaje == 0 ? "" : item?.listaPuntajes[4]?.puntaje,
+          item?.listaPuntajes[5]?.puntaje == 0 ? "" : item?.listaPuntajes[5]?.puntaje,
+          (item?.puntajeTotal == 0 || item?.puntajeTotal == undefined) ? "" : item?.puntajeTotal]);
+    const pdfDefinition: any = {
+      content: [
+        { text: 'Reporte Puntajes', style: 'datoTituloGeneral' },
+        { text: this.listaParticipantePresentacion['0']?.desCategoria + " / " + this.listaParticipantePresentacion['0']?.desSubcategoria, style: 'datoSubtitulo' },
+        {
+          table: {
+            body: [
+              ['#', 'PARTICIPANTE', 'TIEMPO', 'TÉC. SAL/BACH', 'COREOGRAFÍA', 'TÉC. (DANZA)', 'CONEXIÓN', 'PROFESIONAL', 'TOTAL'],
+              ...bodyData
+            ],
+          },
+          style: 'datosTabla'
+        },
+      ],
+      styles: {
+        datosTabla: {
+          fontSize: 8.5,
+          margin: [5, 5, 5, 5], // Margen inferior para separar la tabla de otros elementos
+          fillColor: '#F2F2F2', // Color de fondo de la tabla
+          alignment: 'center',
+          color: 'black',
+          bold: true,
+        },
+        datoTitulo: {
+          fontSize: 10,
+          fillColor: '#bada55',
+        },
+        datoTituloGeneral: {
+          fontSize: 14,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 0, 0, 10], // Puedes ajustar el margen según tus preferencias
+        },
+        datoSubtitulo: {
+          fontSize: 11,
+          color: 'blue',
+          bold: true,
+          alignment: 'center', // Alineado a la izquierda
+          margin: [0, 0, 0, 10], // Ajusta el margen según tus preferencias
+        }
+      },
+    }
+    const pdf = pdfMake.createPdf(pdfDefinition);
+    pdf.open();
   }
 
   /* Variables del html, para receptar datos y validaciones*/

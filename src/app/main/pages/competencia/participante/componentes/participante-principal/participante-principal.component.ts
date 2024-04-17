@@ -954,6 +954,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     const pdf = pdfMake.createPdf(pdfDefinition);
     pdf.open();
   }
+  
   /* Variables del html, para receptar datos y validaciones*/
   get identificacionField() {
     return this.formParticipanteParametro.get('identificacion');
