@@ -372,7 +372,6 @@ export class SorteoPrincipalComponent implements OnInit {
   }
 
   sinSortearParticipante() {
-    console.log("sinSortearParticipante()")
     this.displayBotonGuardar = "";
     this.habilitarSortearParticipante = true;
 

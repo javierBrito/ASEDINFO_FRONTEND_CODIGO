@@ -188,10 +188,6 @@ export class ParticipantePrincipalComponent implements OnInit {
     )
   }
 
-  cargarParticipantes() {
-    this.confirmarCargarParticipantes();
-  }
-
   listarEstadoCompetenciaActivo() {
     this.participanteService.listarEstadoCompetenciaActivo().subscribe(
       (respuesta) => {
@@ -272,6 +268,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEmail() {
+    this.listaParticipante = [];
     // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
@@ -283,6 +280,9 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length > 0) {
+          if (this.listaParticipante.length < this.itemsRegistros) {
+            this.page = 1;
+          }
           for (const ele of this.listaParticipante) {
             // Tratar nombre de Pariicipante
             if (ele?.lastName != "" && ele?.username == "") {
@@ -321,6 +321,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstancia() {
+    this.listaParticipante = [];
     this.listarPorInstancia = true;
     // Receptar la descripción de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
@@ -330,8 +331,10 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
-        console.log("respuesta = ", respuesta)
         this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length < this.itemsRegistros) {
+          this.page = 1;
+        }
         for (const ele of this.listaParticipante) {
           // Tratar nombre de Pariicipante
           if (ele?.lastName != "" && ele?.username == "") {
@@ -552,6 +555,37 @@ export class ParticipantePrincipalComponent implements OnInit {
               this.mensajeService.mensajeError('Ha habido un problema al cargar los participantes...');
             }
           });
+        } else {
+          // Hicieron click en "Cancelar"
+          console.log("*Se cancela el proceso...*");
+        }
+      });
+  }
+
+  confirmarEnviarNotificaciones() {
+    Swal
+      .fire({
+        title: "Enviar Notificaciones",
+        text: "¿Quieres enviar Notificaciones?'",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: "Sí, enviar",
+        cancelButtonText: "Cancelar",
+      })
+      .then(resultado => {
+        if (resultado.value) {
+          // Hicieron click en "Sí, cargar"
+          this.enviarNotificacionBoton();
+          /*
+          this.participanteService.migrarUsuarioWP().subscribe({
+            next: (response) => {
+              this.mensajeService.mensajeCorrecto('Se ha cargado los participantes...');
+            },
+            error: (error) => {
+              this.mensajeService.mensajeError('Ha habido un problema al cargar los participantes...');
+            }
+          });
+          */
         } else {
           // Hicieron click en "Cancelar"
           console.log("*Se cancela el proceso...*");
@@ -954,7 +988,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     const pdf = pdfMake.createPdf(pdfDefinition);
     pdf.open();
   }
-  
+
   /* Variables del html, para receptar datos y validaciones*/
   get identificacionField() {
     return this.formParticipanteParametro.get('identificacion');

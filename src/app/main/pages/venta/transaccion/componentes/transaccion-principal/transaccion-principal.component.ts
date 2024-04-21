@@ -62,6 +62,8 @@ export class TransaccionPrincipalComponent implements OnInit {
   public claveCuenta: string;
   public codCliente: number;
   public nombreProceso: string;
+  public procesoListarPor: string;
+  public displayNoneAcciones: string;
 
   /*LISTAS*/
   public listaTransaccion: Transaccion[] = [];
@@ -247,26 +249,31 @@ export class TransaccionPrincipalComponent implements OnInit {
     let transaccionDescripcionTemp = this.formTransaccion.value;
     this.claveCuenta = transaccionDescripcionTemp?.claveCuenta;
     this.codCliente = transaccionDescripcionTemp?.codCliente;
+    this.descripcion = transaccionDescripcionTemp?.descripcion;
     this.fechaInicio = transaccionDescripcionTemp?.fechaInicio;
     this.fechaFin = transaccionDescripcionTemp?.fechaFin;
-    this.descripcion = transaccionDescripcionTemp?.descripcion;
     if (this.claveCuenta?.length != 0) {
+      this.procesoListarPor = "ClaveCuenta";
       this.listarTransaccionPorClaveCuenta();
       return;
     }
     if (this.codCliente != 0 && Number(this.codCliente) + "" != "NaN") {
+      this.procesoListarPor = "Cliente";
       this.listarTransaccionPorCliente();
       return;
     }
     if (this.descripcion?.length != 0) {
+      this.procesoListarPor = "Descripcion";
       this.listarTransaccionPorDescripcion();
       return;
     }
+    /*
     if (this.fechaInicio?.length != 0 && this.fechaFin?.length != 0) {
+      this.procesoListarPor = "Fechas";
       this.listarTransaccionPorRangoFechas();
       return;
     }
-
+    */
     this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
@@ -311,10 +318,11 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   listarTransaccionPorRangoFechas() {
-    this.transaccionService.listarTransaccionPorRangoFechas('2023-09-21', this.fechaFin).subscribe(
+    this.transaccionService.listarTransaccionPorRangoFechas(this.fechaInicio, this.fechaFin).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
+          this.displayNoneAcciones = 'none';
           this.mostrarListaTransaccion();
         }
       }
@@ -323,6 +331,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   mostrarListaTransaccion = async () => {
     this.page = 1;
+    let montoTotal = 0;
     for (const ele of this.listaTransaccion) {
       ele.colorFila = "green";
       ele.visibleBoton = "none";
@@ -356,18 +365,48 @@ export class TransaccionPrincipalComponent implements OnInit {
         ele.prefijoTelefonico = '593';
       }
 
+      // Si transaccion tiene estado='A' sumar
+      if (ele?.estado == "A") {
+        montoTotal = montoTotal + ele?.monto;
+      }
+
       // Confirmar si se envia o no las Notificaciones
       if (this.enviarNotificacion) {
         this.enviarWhatsappApi(ele);
       }
     }
-
+    if (this.displayNoneAcciones == 'none' && montoTotal > 0) {
+      this.transaccion = new Transaccion({
+        nombreCliente: "Totales",
+        desProducto: "",
+        claveCuenta: "",
+        clave: "",
+        monto: montoTotal.toFixed(2),
+        numProducto: "",
+        numDiasRenovar: "",
+        displayNoneListaCuentaClave: "none",
+      });
+      this.listaTransaccion.push(this.transaccion);
+    }
     if (this.enviarNotificacion) {
       if (this.seEnvioWhatsapp) {
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
       } else {
         this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
       }
+    }
+  }
+  
+  obtenerTotalesPorFecha() {
+    this.listaTransaccion = [];
+    this.displayNoneAcciones = '';
+    // Receptar datos de formTransaccion.value
+    let transaccionDescripcionTemp = this.formTransaccion.value;
+    this.fechaInicio = transaccionDescripcionTemp?.fechaInicio;
+    this.fechaFin = transaccionDescripcionTemp?.fechaFin;
+    if (this.fechaInicio?.length != 0 && this.fechaFin?.length != 0) {
+      this.procesoListarPor = "Fechas";
+      this.listarTransaccionPorRangoFechas();
     }
   }
 
@@ -489,7 +528,6 @@ export class TransaccionPrincipalComponent implements OnInit {
   // Tomar el valor de numero de filas y reiniciar proceso
   blurNumeroFilas(event) {
     if (event.target.value.length != 0) {
-      console.log("event.target.value = ", event.target.value)
       this.itemsRegistros = event.target.value;
     }
   }
@@ -560,7 +598,6 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   async enviarWhatsappApi(transaccion: Transaccion) {
     let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
-    console.log("imageSrcString = ", imageSrcString)
 
     //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
     let dia = moment(transaccion?.fechaFin).format("D");

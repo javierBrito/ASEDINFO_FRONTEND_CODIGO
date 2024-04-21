@@ -37,9 +37,12 @@ export class FormTransaccionComponent implements OnInit {
   @Input() listaTransaccionChild: any;
   @Input() transaccionEditar: Transaccion;
   @Input() codigoChild: number;
+  @Input() claveCuentaChild: string;
+  @Input() codClienteChild: number;
   @Input() descripcionChild: string;
   @Input() nombreProcesoChild: string;
-
+  @Input() procesoListarPorChild: string;
+  
   /*MODALES*/
   @ViewChild("modal_success", { static: false }) modal_success: TemplateRef<any>;
   @ViewChild("modal_error", { static: false }) modal_error: TemplateRef<any>;
@@ -66,6 +69,7 @@ export class FormTransaccionComponent implements OnInit {
   public nombreCliente: string;
   public siActualizaCuentaClave: boolean;
   public codTransaccion: number = 0;
+  public fechaFinMensaje: string;
 
   /*FORMULARIOS*/
   public formTransaccion: FormGroup;
@@ -247,32 +251,69 @@ export class FormTransaccionComponent implements OnInit {
     );
   }
 
-  async listarTransaccionPorDescripcion() {
+  listarTransaccion() {
+    this.listaTransaccionChild = [];
+    // Receptar datos de Input
+    if (this.claveCuentaChild?.length != 0) {
+      this.listarTransaccionPorClaveCuenta();
+      return;
+    }
+    if (this.codClienteChild != 0 && Number(this.codClienteChild) + "" != "NaN") {
+      this.listarTransaccionPorCliente();
+      return;
+    }
     if (this.descripcionChild?.length != 0) {
-      this.transaccionService.listarTransaccionPorDescripcion(this.descripcionChild).subscribe(
-        (respuesta) => {
-          this.listaTransaccionChild = respuesta['listado'];
-          if (this.listaTransaccionChild?.length > 0) {
-            this.mostrarListaTransaccion();
-          }
+      this.listarTransaccionPorDescripcion();
+      return;
+    }
+
+    this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
+      (respuesta) => {
+        this.listaTransaccionChild = respuesta['listado'];
+        if (this.listaTransaccionChild?.length > 0) {
+          this.mostrarListaTransaccion();
         }
-      )
-    } else {
-      this.transaccionService.listarTransaccionActivo(this.modulo?.nemonico).subscribe(
-        (respuesta) => {
-          this.listaTransaccionChild = respuesta['listado'];
-          if (this.listaTransaccionChild?.length > 0) {
-            this.mostrarListaTransaccion();
-          }
-        }
-      )
-    };
-    this.listaTransaccion.emit(this.listaTransaccionChild);
+      }
+    )
   }
 
-  mostrarListaTransaccion() {
+  listarTransaccionPorClaveCuenta() {
+    this.transaccionService.listarTransaccionPorClaveCuenta(this.claveCuentaChild).subscribe(
+      (respuesta) => {
+        this.listaTransaccionChild = respuesta['listado'];
+        if (this.listaTransaccionChild?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorCliente() {
+    this.transaccionService.listarTransaccionPorCliente(this.codClienteChild).subscribe(
+      (respuesta) => {
+        this.listaTransaccionChild = respuesta['listado'];
+        if (this.listaTransaccionChild?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorDescripcion() {
+    this.transaccionService.listarTransaccionPorDescripcion(this.descripcionChild).subscribe(
+      (respuesta) => {
+        this.listaTransaccionChild = respuesta['listado'];
+        if (this.listaTransaccionChild?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  mostrarListaTransaccion = async () => {
     for (const ele of this.listaTransaccionChild) {
       ele.colorFila = "green";
+      ele.visibleBoton = "none";
       ele.colorColumna = "white";
       ele.fechaInicio = dayjs(ele.fechaInicio).format("YYYY-MM-DD");
       ele.fechaFin = dayjs(ele.fechaFin).format("YYYY-MM-DD");
@@ -286,39 +327,25 @@ export class FormTransaccionComponent implements OnInit {
           ele.colorColumna = "yellow";
         }
       }
+      this.fechaFinMensaje = dayjs(ele.fechaFin).format("YYYY-MM-DD");
+
       // Calcular la diferencia en días de la fecha actual y final de la transacción
       var diff = new Date(ele.fechaFin).getTime() - new Date(this.fechaHoy).getTime();
       var numDias = diff / (1000 * 60 * 60 * 24);
 
       // ele.fechaFin <= this.fechaHoy
+      ele.numDiasRenovar = numDias;
       if (!(numDias > 0 && numDias > 5)) {
         ele.colorFila = "red";
+        ele.visibleBoton = ""
       }
 
-      // Obtener cliente
-      this.clienteService.buscarClientePorCodigo(ele.codCliente).subscribe(
-        (respuesta) => {
-          this.cliente = respuesta['objeto'];
-          ele.cliente = this.cliente;
-          // Obtener persona
-          this.personaService.buscarPersonaPorCodigo(ele.cliente.codPersona).subscribe(
-            (respuesta) => {
-              this.persona = respuesta['objeto'];
-              ele.cliente.persona = this.persona;
-              this.listaTransaccion.emit(this.listaTransaccionChild);
-            }
-          )
-        }
-      )
-      // Obtener producto
-      this.productoService.buscarProductoPorCodigo(ele.codProducto).subscribe(
-        (respuesta) => {
-          this.producto = respuesta['objeto'];
-          ele.producto = this.producto;
-          this.listaTransaccion.emit(this.listaTransaccionChild);
-        }
-      )
+      if (ele?.prefijoTelefonico == null || ele?.prefijoTelefonico == "") {
+        ele.prefijoTelefonico = '593';
+      }
     }
+    this.listaTransaccion.emit(this.listaTransaccionChild);
+
   }
 
   patternAmie(amie: string) {
@@ -415,7 +442,7 @@ export class FormTransaccionComponent implements OnInit {
             this.transaccionService.guardarTransaccion(this.transaccionEditarAux).subscribe({
               next: async (response) => {
                 this.transaccion = response['objeto'];
-                this.listarTransaccionPorDescripcion();
+                this.listarTransaccion();
                 this.mensajeService.mensajeCorrecto('Se ha renovado el registro correctamente...');
                 this.parentDetail.closeDetail();
               },
@@ -426,7 +453,7 @@ export class FormTransaccionComponent implements OnInit {
             });
           }
           // Recargamos la lista
-          this.listarTransaccionPorDescripcion();
+          this.listarTransaccion();
           this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
           this.parentDetail.closeDetail();
           //}
@@ -457,7 +484,7 @@ export class FormTransaccionComponent implements OnInit {
           // Enviar Notificaciones
           this.enviarWhatsappApi(this.transaccion);
 
-          this.listarTransaccionPorDescripcion();
+          this.listarTransaccion();
           this.mensajeService.mensajeCorrecto('Se ha agregado el registro correctamente...');
           this.parentDetail.closeDetail();
         },

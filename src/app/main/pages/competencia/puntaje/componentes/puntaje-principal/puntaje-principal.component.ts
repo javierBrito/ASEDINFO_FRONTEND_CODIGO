@@ -391,11 +391,11 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   listarInstanciaActivo() {
+    this.listaParticipantePresentacion = [];
     // Receptar codCategoria de formPuntajeParametro.value
     let puntajeParametroTemp = this.formPuntajeParametro.value;
     this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
     this.buscarSubcategoriaPorCodigo();
-    this.listaParticipantePresentacion = [];
     this.puntajeService.listarInstanciaActivo().subscribe(
       (respuesta) => {
         this.listaInstancia = respuesta['listado'];
@@ -430,6 +430,9 @@ export class PuntajePrincipalComponent implements OnInit {
       this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
+          if (this.listaParticipantePresentacion.length < this.itemsRegistros) {
+            this.page = 1;
+          }
           for (const est of this.listaParticipantePresentacion) {
             this.desCategoria = est?.desCategoria;
             this.desSubcategoria = est?.desSubcategoria;
@@ -499,6 +502,9 @@ export class PuntajePrincipalComponent implements OnInit {
         //this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
+          if (this.listaParticipantePresentacion.length < this.itemsRegistros) {
+            this.page = 1;
+          }
           this.listaParticipantePresentacion = this.listaParticipantePresentacion.filter((participante) => participante?.codEstadoCompetencia === 5);
           let puntajeTotal: number = 0;
           for (const est of this.listaParticipantePresentacion) {
@@ -850,16 +856,6 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   generarPDFPuntaje() {
-    /*
-    console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion)
-    for (let participante of this.listaParticipantePresentacion) {
-      console.log("participante?.firstName = ", participante?.firstName);
-      console.log("participante?.puntajeTotal = ", participante?.puntajeTotal);
-      for (let puntaje of participante?.listaPuntajes) {
-        console.log("puntaje = ", puntaje?.puntaje)
-      }
-    }
-    */
     const bodyData = this.listaParticipantePresentacion.map((item, index) => [index + 1, item?.firstName,
           item?.listaPuntajes[0]?.puntaje == 0 ? "" : item?.listaPuntajes[0]?.puntaje,
           item?.listaPuntajes[1]?.puntaje == 0 ? "" : item?.listaPuntajes[1]?.puntaje,

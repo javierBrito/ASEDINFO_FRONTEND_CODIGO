@@ -2,7 +2,63 @@
     <div class="col-12">
         <div class="card box-shadow-sm">
             <div class="card-footer">
-                <form detail-content [formGroup]="formTransaccion" (ngSubmit)="listarTransaccion()">
+                <form detail-content [formGroup]="formTransaccion">
+                    <div class="row form-group">
+                        <div class="col-3">
+                            <label for="claveCuenta"><b>{{'Usuario/Cuenta: '}}</b></label>
+                            <input type="text" name="claveCuenta" id="claveCuenta" formControlName="claveCuenta"
+                                placeholder="Clave Cuenta" class="form-control" maxlength="50"
+                                [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors,'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
+                            <div class="valid-feedback">
+                                <span>{{ "Exito"}}</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label for="codCliente"><b>{{'Cliente: '}}</b></label>
+                            <select name="codCliente" formControlName="codCliente" required placeholder="Nombre Cliente"
+                                class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente">
+                                <option [value]="''" selected>Seleccionar cliente</option>
+                                <option *ngFor="let cliente of listaCliente" [value]="cliente.codigo">
+                                    <span>{{cliente?.persona?.nombres + " " + cliente?.persona?.apellidos + " - "
+                                        +cliente?.persona?.celular}}</span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+
+                        <div class="col-2">
+                            <label for="descripcion"><b>{{'Descripción(*): '}}</b></label>
+                            <input type="text" name="descripcion" id="descripcion" formControlName="descripcion"
+                                maxlength="50" placeholder="Por favor, ingrese la clave de la cuenta."
+                                class="form-control"
+                                [ngClass]="{'is-valid': descripcionField?.dirty && !descripcionField?.invalid && !descripcionField?.errors,'is-invalid': descripcionField?.dirty && descripcionField?.invalid && descripcionField?.errors}">
+                            <div class="valid-feedback">
+                                <span>{{ "Exito"}}</span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="my-2 text-left table-responsive">
+                                <button class="btn btn-info btn-rounded"
+                                (click)="listarTransaccion()">
+                                    <b>{{ "Buscar"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="my-2 text-left">
+                                <button [disabled]=""
+                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                    (click)="obtenerTransaccionACaducarse()">
+                                    <b>{{ "Enviar Notificaciones"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fab fa-whatsapp" style="font-size:14px;color:red"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row form-group">
                         <div class="col-2">
                             <label for="fechaInicio"><b>{{'Fecha Inicio(*): '}}</b></label>
@@ -28,70 +84,14 @@
                                 <span *ngIf="fechaFinField?.errors?.['required']">{{"Requerido"}}</span>
                             </div>
                         </div>
-                        <div class="col-md-4 col-3 form-group">
-                            <label for="descripcion"><b>{{'Descripción(*): '}}</b></label>
-                            <input type="text" name="descripcion" id="descripcion" formControlName="descripcion"
-                                maxlength="50" placeholder="Por favor, ingrese la clave de la cuenta."
-                                class="form-control"
-                                [ngClass]="{'is-valid': descripcionField?.dirty && !descripcionField?.invalid && !descripcionField?.errors,'is-invalid': descripcionField?.dirty && descripcionField?.invalid && descripcionField?.errors}">
-                            <div class="valid-feedback">
-                                <span>{{ "Exito"}}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-2 form-group">
+                        <div class="col-2">
                             <div class="my-2 text-left table-responsive">
-                                <button type="submit" class="btn btn-info btn-rounded">
-                                    <b>{{ "Buscar"}}</b>
+                                <button class="btn btn-info btn-rounded" (click)="obtenerTotalesPorFecha()">
+                                    <b>{{ "Totales Fecha"}}</b>
                                     <b>{{ " "}}</b>
-                                    <i class="fa fa-search"></i>
+                                    <i class="fa fa-list"></i>
                                 </button>
                             </div>
-                        </div>
-                        <div class="col-md-2 col-3 form-group">
-                            <div class="my-2 text-left">
-                                <button [disabled]=""
-                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                    (click)="obtenerTransaccionACaducarse()">
-                                    <b>{{ "Enviar Notificaciones"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fab fa-whatsapp" style="font-size:14px;color:red"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <!--
-                            <div class="col-12 form-group">
-                                <button [disabled]=""
-                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                    (click)="enviarCorreo()">
-                                    <b>{{ "Enviar Correo"}}</b>
-                                    <b>{{ " "}}</b>
-                                    <i class="fa fa-envelope" style="font-size:14px;color:red"></i>
-                                </button>
-                            </div>
-                            -->
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-4">
-                            <label for="claveCuenta"><b>{{'Usuario/Cuenta: '}}</b></label>
-                            <input type="text" name="claveCuenta" id="claveCuenta" formControlName="claveCuenta"
-                                placeholder="Clave Cuenta" class="form-control" maxlength="50"
-                                [ngClass]="{'is-valid': claveCuentaField?.dirty && !claveCuentaField?.invalid && !claveCuentaField?.errors,'is-invalid': claveCuentaField?.dirty && claveCuentaField?.invalid && claveCuentaField?.errors}">
-                            <div class="valid-feedback">
-                                <span>{{ "Exito"}}</span>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <label for="codCliente"><b>{{'Cliente: '}}</b></label>
-                            <select name="codCliente" formControlName="codCliente" required placeholder="Nombre Cliente"
-                                class="form-control mr-sm-2" id="codCliente" [compareWith]="compararCliente">
-                                <option [value]="''" selected>Seleccionar cliente</option>
-                                <option *ngFor="let cliente of listaCliente" [value]="cliente.codigo">
-                                    <span>{{cliente?.persona?.nombres + " " + cliente?.persona?.apellidos + " - "
-                                        +cliente?.persona?.celular}}</span>
-                                </option>
-                            </select>
-                            <div class="valid-feedback"></div>
-                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                     </div>
                 </form>
@@ -103,7 +103,6 @@
                                 <mat-tab>
                                     <section class="tab-container">
                                         <div>
-                                            <b>{{'Lista Transacción'}}</b>
                                             <button type="submit" (click)="openDetail(1)"
                                                 matTooltip="Agregar Nuevo Transaccion"
                                                 class="btn btn-block btn-primary form-control mt-2">
@@ -137,7 +136,7 @@
                                                             <div align="center">Días Renovar</div>
                                                         </th>
                                                         <th scope="col">Cambiar</th>
-                                                        <th scope="col">Acciones</th>
+                                                        <th scope="col" [ngStyle]="{'display': displayNoneAcciones}">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -165,7 +164,7 @@
                                                         <td align="center">{{transaccion?.numDiasRenovar}}</td>
                                                         <td [ngStyle]="{'background-color': transaccion?.colorColumna}">
                                                             {{transaccion?.fechaCambia}}</td>
-                                                        <td>
+                                                        <td [ngStyle]="{'display': displayNoneAcciones}">
                                                             <div class="btn-group" role="group"
                                                                 aria-label="Basic example">
                                                                 <button (click)="openClonarDetail(transaccion)"
@@ -240,9 +239,10 @@
 </div>
 
 <app-form-transaccion [transaccionEditar]="transaccionSeleccionado" [codigoChild]="codigo"
-    [descripcionChild]="descripcion" [listaTransaccionChild]="listaTransaccion"
-    (listaTransaccion)="listaTransaccionActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail"
-    [nombreProcesoChild]="nombreProceso">
+    [descripcionChild]="descripcion" [listaTransaccionChild]="listaTransaccion" [claveCuentaChild]="claveCuenta"
+    [codClienteChild]="codCliente" (listaTransaccion)="listaTransaccionActualizada($event)"
+    (close)="closeDetail($event)" *ngIf="showDetail" [nombreProcesoChild]="nombreProceso"
+    [procesoListarPorChild]="procesoListarPor">
 </app-form-transaccion>
 
 <ng-template #modal_confirm_delete let-modal>

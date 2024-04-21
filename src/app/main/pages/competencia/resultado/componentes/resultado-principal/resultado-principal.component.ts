@@ -122,10 +122,6 @@ export class ResultadoPrincipalComponent implements OnInit {
     )
   }
 
-  cargarInstancia() {
-    this.confirmarCargarInstancia();
-  }
-
   confirmarCargarInstancia() {
     Swal
       .fire({
@@ -203,6 +199,7 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   listarSubcategoriaPorCategoria() {
     this.listaParticipante = [];
+    this.listaPuntajeTotal = [];
     // Receptar codCategoria, codSubcategoria y codInstancia de formResultado.value
     let resultadoParametroTemp = this.formResultado.value;
     this.codCategoria = resultadoParametroTemp?.codCategoria;
@@ -240,6 +237,7 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   listarInstanciaActivo() {
     this.listaParticipante = [];
+    this.listaPuntajeTotal = [];
     // Receptar codCategoria de formResultado.value
     let puntajeParametroTemp = this.formResultado.value;
     this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
@@ -253,6 +251,7 @@ export class ResultadoPrincipalComponent implements OnInit {
 
   async listarPuntajeTotalPorParticipante() {
     this.listaParticipante = [];
+    this.listaPuntajeTotal = [];
     this.listaParticipanteAux = [];
     this.listaPuntajeTotalAux = [];
     // Receptar la descripción de formResultado.value
@@ -265,6 +264,9 @@ export class ResultadoPrincipalComponent implements OnInit {
       this.resultadoService.listarPuntajePorSubcategoriaInstanciaRegSUMA(this.codSubcategoria, this.codInstancia).subscribe({
         next: async (respuesta) => {
           this.listaPuntajeTotal = respuesta['listado'];
+          if (this.listaPuntajeTotal.length < this.itemsRegistros) {
+            this.page = 1;
+          }
           // Ordenar lista por puntaje
           this.listaPuntajeTotal.sort((firstItem, secondItem) => secondItem.puntaje - firstItem.puntaje);
           let indice = 0;
