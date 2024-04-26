@@ -391,11 +391,11 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   listarInstanciaActivo() {
-    this.listaParticipantePresentacion = [];
     // Receptar codCategoria de formPuntajeParametro.value
     let puntajeParametroTemp = this.formPuntajeParametro.value;
     this.codSubcategoria = puntajeParametroTemp?.codSubcategoria;
     this.buscarSubcategoriaPorCodigo();
+    this.listaParticipantePresentacion = [];
     this.puntajeService.listarInstanciaActivo().subscribe(
       (respuesta) => {
         this.listaInstancia = respuesta['listado'];
@@ -430,16 +430,17 @@ export class PuntajePrincipalComponent implements OnInit {
       this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
-          if (this.listaParticipantePresentacion.length < this.itemsRegistros) {
-            this.page = 1;
-          }
-          for (const est of this.listaParticipantePresentacion) {
-            this.desCategoria = est?.desCategoria;
-            this.desSubcategoria = est?.desSubcategoria;
-            this.desInstancia = est?.desInstancia;
+          for (const par of this.listaParticipantePresentacion) {
+            // Tratar nombre de Pariicipante
+            if (par?.nombrePareja != "" && par?.nombrePareja != null) {
+              par.nombrePersona = par?.nombrePersona + " - " + par?.nombrePareja;
+            }
+            this.desCategoria = par?.desCategoria;
+            this.desSubcategoria = par?.desSubcategoria;
+            this.desInstancia = par?.desInstancia;
 
             await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(par.codigo, par.codSubcategoria, par.codInstancia, this.currentUser.codigoUsuario).subscribe({
                 next: (respuesta) => {
                   let listaPuntajes: PuntajeAux[] = [];
                   let listaPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
@@ -454,18 +455,18 @@ export class PuntajePrincipalComponent implements OnInit {
                         codigo: 0,
                         estado: 'A',
                         puntaje: 0,
-                        codParticipante: est?.codigo,
+                        codParticipante: par?.codigo,
                         codInstancia: this.codInstancia,
                         codSubcategoria: this.codSubcategoria,
                         codModeloPuntaje: modelo?.codigo,
                         porcentaje: modelo?.porcentaje,
-                        nombreParticipante: est?.nombreParticipante,
+                        nombreParticipante: par?.nombreParticipante,
                         codUsuarioJuez: 0,
                       }
                       listaPuntajes.push(nuevoPuntajeAux)
                     }
                   }
-                  est.listaPuntajes = listaPuntajes;
+                  par.listaPuntajes = listaPuntajes;
                   resolve("OK");
                 }, error: (error) => {
                   console.log(error);
@@ -502,20 +503,21 @@ export class PuntajePrincipalComponent implements OnInit {
         //this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
-          if (this.listaParticipantePresentacion.length < this.itemsRegistros) {
-            this.page = 1;
-          }
           this.listaParticipantePresentacion = this.listaParticipantePresentacion.filter((participante) => participante?.codEstadoCompetencia === 5);
           let puntajeTotal: number = 0;
-          for (const est of this.listaParticipantePresentacion) {
+          for (const par of this.listaParticipantePresentacion) {
+            // Tratar nombre de Pariicipante
+            if (par?.nombrePareja != "" && par?.nombrePareja != null) {
+              par.nombrePersona = par?.nombrePersona + " - " + par?.nombrePareja;
+            }
             // Adicionar puntaje total - jbrito-2024411
-            est.puntajeTotal = 0;
+            par.puntajeTotal = 0;
             await new Promise((resolve, rejects) => {
-              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaRegSUMA(est.codSubcategoria, est.codInstancia, est.codigo).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaRegSUMA(par.codSubcategoria, par.codInstancia, par.codigo).subscribe({
                 next: (respuesta) => {
                   let listaPuntajeTotal: PuntajeAux[] = respuesta['listado'];
                   puntajeTotal = listaPuntajeTotal[0]?.puntaje;
-                  est.puntajeTotal = puntajeTotal;
+                  par.puntajeTotal = puntajeTotal;
                   resolve("OK");
                 }, error: (error) => {
                   console.log(error);
@@ -525,8 +527,8 @@ export class PuntajePrincipalComponent implements OnInit {
             });
 
             await new Promise((resolve, rejects) => {
-              //this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, est.codSubcategoria, est.codInstancia, this.currentUser.codigoUsuario).subscribe({
-              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(est.codigo, est.codSubcategoria, est.codInstancia).subscribe({
+              //this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstancia(est.codigo, par.codSubcategoria, par.codInstancia, this.currentUser.codigoUsuario).subscribe({
+              this.puntajeService.listarPuntajePorParticipanteSubcategoriaInstanciaCriterios(par.codigo, par.codSubcategoria, par.codInstancia).subscribe({
                 next: (respuesta) => {
                   let listaPuntajes: PuntajeAux[] = [];
                   let listaPuntajesConsulta: PuntajeAux[] = respuesta['listado'];
@@ -541,18 +543,18 @@ export class PuntajePrincipalComponent implements OnInit {
                         codigo: 0,
                         estado: 'A',
                         puntaje: 0,
-                        codParticipante: est?.codigo,
+                        codParticipante: par?.codigo,
                         codInstancia: this.codInstancia,
                         codSubcategoria: this.codSubcategoria,
                         codModeloPuntaje: modelo?.codigo,
                         porcentaje: modelo?.porcentaje,
-                        nombreParticipante: est?.nombreParticipante,
+                        nombreParticipante: par?.nombreParticipante,
                         codUsuarioJuez: 0,
                       }
                       listaPuntajes.push(nuevoPuntajeAux)
                     }
                   }
-                  est.listaPuntajes = listaPuntajes;
+                  par.listaPuntajes = listaPuntajes;
                   this.esUsuarioJuezAdmin = true;
                   resolve("OK");
                 }, error: (error) => {
@@ -856,14 +858,24 @@ export class PuntajePrincipalComponent implements OnInit {
   }
 
   generarPDFPuntaje() {
+    /*
+    console.log("this.listaParticipantePresentacion = ", this.listaParticipantePresentacion)
+    for (let participante of this.listaParticipantePresentacion) {
+      console.log("participante?.firstName = ", participante?.firstName);
+      console.log("participante?.puntajeTotal = ", participante?.puntajeTotal);
+      for (let puntaje of participante?.listaPuntajes) {
+        console.log("puntaje = ", puntaje?.puntaje)
+      }
+    }
+    */
     const bodyData = this.listaParticipantePresentacion.map((item, index) => [index + 1, item?.firstName,
-          item?.listaPuntajes[0]?.puntaje == 0 ? "" : item?.listaPuntajes[0]?.puntaje,
-          item?.listaPuntajes[1]?.puntaje == 0 ? "" : item?.listaPuntajes[1]?.puntaje,
-          item?.listaPuntajes[2]?.puntaje == 0 ? "" : item?.listaPuntajes[2]?.puntaje,
-          item?.listaPuntajes[3]?.puntaje == 0 ? "" : item?.listaPuntajes[3]?.puntaje,
-          item?.listaPuntajes[4]?.puntaje == 0 ? "" : item?.listaPuntajes[4]?.puntaje,
-          item?.listaPuntajes[5]?.puntaje == 0 ? "" : item?.listaPuntajes[5]?.puntaje,
-          (item?.puntajeTotal == 0 || item?.puntajeTotal == undefined) ? "" : item?.puntajeTotal]);
+    item?.listaPuntajes[0]?.puntaje == 0 ? "" : item?.listaPuntajes[0]?.puntaje,
+    item?.listaPuntajes[1]?.puntaje == 0 ? "" : item?.listaPuntajes[1]?.puntaje,
+    item?.listaPuntajes[2]?.puntaje == 0 ? "" : item?.listaPuntajes[2]?.puntaje,
+    item?.listaPuntajes[3]?.puntaje == 0 ? "" : item?.listaPuntajes[3]?.puntaje,
+    item?.listaPuntajes[4]?.puntaje == 0 ? "" : item?.listaPuntajes[4]?.puntaje,
+    item?.listaPuntajes[5]?.puntaje == 0 ? "" : item?.listaPuntajes[5]?.puntaje,
+    (item?.puntajeTotal == 0 || item?.puntajeTotal == undefined) ? "" : item?.puntajeTotal]);
     const pdfDefinition: any = {
       content: [
         { text: 'Reporte Puntajes', style: 'datoTituloGeneral' },

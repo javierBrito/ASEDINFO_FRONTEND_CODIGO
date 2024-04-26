@@ -69,11 +69,11 @@
                     </div>
                 </div>
                 <div class="col-6" [ngStyle]="{'display': displayIntegrante2}">
-                    <label for="apellidos">
+                    <label for="nombrePareja">
                         <h4><b>{{'Integrante(*): '}}</b></h4>
                     </label>
-                    <input type="text" name="apellidos" formControlName="apellidos" class="form-control" id="apellidos"
-                        oninput="apellidos.value = apellidos.value.toUpperCase()" placeholder="Nombre integrante"
+                    <input type="text" name="nombrePareja" formControlName="nombrePareja" class="form-control" id="nombrePareja"
+                        oninput="nombrePareja.value = nombrePareja.value.toUpperCase()" placeholder="Nombre integrante"
                         [disabled]="disabledApellidos" autocomplete="off">
                     <button [ngStyle]="{'display': displayIntegranteGrupo}" matTooltip="Adicionar Integrante"
                         type="button" class="btn btn-primary" rippleEffect round><i class="fa fa-plus"
@@ -286,7 +286,7 @@
     </form>
 </app-detail>
 <div class="col-6">
-    <label for="apellidos">
+    <label for="nombrePareja">
         <h4><b>{{'Integrante(*): '}}</b></h4>
     </label>
     <p><button (click)="mostrarModalConf()">Ingresar integrante</button></p>

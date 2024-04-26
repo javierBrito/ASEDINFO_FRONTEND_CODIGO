@@ -260,4 +260,18 @@ export class Participante implements Iparticipante {
     set prefijoTelefonico(value: string) {
         set(this, 'data.prefijoTelefonico', value);
     }
+
+    get estado(): string {
+        return get(this, 'data.estado');
+    }
+    set estado(value: string) {
+        set(this, 'data.estado', value);
+    }
+
+    get nombrePareja(): string {
+        return get(this, 'data.nombrePareja');
+    }
+    set nombrePareja(value: string) {
+        set(this, 'data.nombrePareja', value);
+    }
 }

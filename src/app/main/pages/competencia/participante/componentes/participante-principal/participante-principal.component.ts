@@ -5,7 +5,6 @@ import { Sede } from 'app/auth/models/sede';
 import { Participante } from 'app/main/pages/compartidos/modelos/Participante';
 import { MensajeService } from 'app/main/pages/compartidos/servicios/mensaje/mensaje.service';
 import Swal from 'sweetalert2';
-import { Aplicacion } from 'app/main/pages/compartidos/modelos/Aplicacion';
 import dayjs from "dayjs";
 import { Persona } from 'app/main/pages/compartidos/modelos/Persona';
 import { empty } from 'rxjs';
@@ -15,7 +14,6 @@ import { Instancia } from 'app/main/pages/compartidos/modelos/Instancia';
 import { Subcategoria } from 'app/main/pages/compartidos/modelos/Subcategoria';
 import { Categoria } from 'app/main/pages/compartidos/modelos/Categoria';
 import { EstadoCompetencia } from 'app/main/pages/compartidos/modelos/EstadoCompetencia';
-import { userInfo } from 'os';
 import { CargarArchivoModelo } from 'app/main/pages/compartidos/modelos/CargarArchivoModelo';
 import { HttpErrorResponse, HttpEvent, HttpEventType, HttpUrlEncodingCodec } from '@angular/common/http';
 import { saveAs } from 'file-saver';
@@ -25,7 +23,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Integrante } from 'app/main/pages/compartidos/modelos/Integrante';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { UsuarioWPDTO } from 'app/main/pages/compartidos/modelos/UsuarioWPDTO';
 import { TransaccionService } from 'app/main/pages/venta/transaccion/servicios/transaccion.service';
 import moment from 'moment';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -50,7 +47,6 @@ export class ParticipantePrincipalComponent implements OnInit {
   public codigo: number;
   public institucion: any;
   public codigoSede = null;
-  public identificacion: string;
   public codCategoria: number;
   public codSubcategoria: number;
   public codInstancia: number;
@@ -163,7 +159,6 @@ export class ParticipantePrincipalComponent implements OnInit {
       codCategoria: new FormControl('', Validators.required),
       codSubcategoria: new FormControl('', Validators.required),
       codInstancia: new FormControl('', Validators.required),
-      identificacion: new FormControl(''),
     })
     this.listarCategoriaActivo();
     this.listarEstadoCompetenciaActivo();
@@ -175,9 +170,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     } else {
       this.disabledEstado = false;
       this.displayNone1 = 'none';
-      //this.listarParticipantePorEstado();
     }
-    //this.listarIntegranteActivo();
   }
 
   listarIntegranteActivo() {
@@ -186,6 +179,10 @@ export class ParticipantePrincipalComponent implements OnInit {
         this.listaIntegrante = respuesta['listado'];
       }
     )
+  }
+
+  cargarParticipantes() {
+    this.confirmarCargarParticipantes();
   }
 
   listarEstadoCompetenciaActivo() {
@@ -259,6 +256,14 @@ export class ParticipantePrincipalComponent implements OnInit {
     )
   }
 
+  recargarParticipante() {
+    if (this.currentUser.cedula == "Suscriptor") {
+      this.listarParticipantePorEmailAux();
+    } else {
+      this.listarParticipantePorSubcategoriaInstanciaAux();
+    }
+  }
+
   listarParticipanteGeneral() {
     if (this.currentUser.cedula == "Suscriptor") {
       this.listarParticipantePorEmail();
@@ -280,21 +285,14 @@ export class ParticipantePrincipalComponent implements OnInit {
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
         if (this.listaParticipante.length > 0) {
-          if (this.listaParticipante.length < this.itemsRegistros) {
-            this.page = 1;
-          }
           for (const ele of this.listaParticipante) {
             // Tratar nombre de Pariicipante
-            if (ele?.lastName != "" && ele?.username == "") {
-              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
-            } else {
-              ele.nombrePersona = ele?.firstName;
+            if (ele?.nombrePareja != "" && ele?.nombrePareja != null) {
+              ele.nombrePersona = ele?.nombrePersona + " - " + ele?.nombrePareja;
             }
-
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
-            //if (ele?.identificacion == this.currentUser.identificacion) {
             if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
@@ -321,7 +319,6 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstancia() {
-    this.listaParticipante = [];
     this.listarPorInstancia = true;
     // Receptar la descripción de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
@@ -332,15 +329,10 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
-        if (this.listaParticipante.length < this.itemsRegistros) {
-          this.page = 1;
-        }
         for (const ele of this.listaParticipante) {
           // Tratar nombre de Pariicipante
-          if (ele?.lastName != "" && ele?.username == "") {
-            ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
-          } else {
-            ele.nombrePersona = ele?.firstName;
+          if (ele?.nombrePareja != "" && ele?.nombrePareja != null) {
+            ele.nombrePersona = ele?.nombrePersona + " - " + ele?.nombrePareja;
           }
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
@@ -374,7 +366,6 @@ export class ParticipantePrincipalComponent implements OnInit {
         this.participanteService.listarParticipanteEnEscenario().subscribe(
           (respuesta) => {
             listaParticipante = respuesta['listado'];
-            console.log(listaParticipante)
             if (listaParticipante?.length > 0) {
               this.mensajeService.mensajeError('ERROR: Existe(n) participante(s) en escenario, que no tienen puntuación...');
             } else {
@@ -393,12 +384,10 @@ export class ParticipantePrincipalComponent implements OnInit {
         break;
       }
       case 5: {
-        //participante.codEstadoCompetencia = 4;
         this.mensajeService.mensajeError('Su participación ha sido completada...');
         break;
       }
       default: {
-        //participante.codEstadoCompetencia = 1;
         this.mensajeService.mensajeError('Defina un estado para el participante...');
         break;
       }
@@ -420,6 +409,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstanciaAux() {
+    this.listaParticipante = [];
     this.buscarInstanciaPorCodigo();
     this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
@@ -427,10 +417,8 @@ export class ParticipantePrincipalComponent implements OnInit {
         this.listaParticipante = respuesta['listado'];
         for (const ele of this.listaParticipante) {
           // Tratar nombre de Pariicipante
-          if (ele?.lastName != "" && ele?.username == "") {
-            ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
-          } else {
-            ele.nombrePersona = ele?.firstName;
+          if (ele?.nombrePareja != "" && ele?.nombrePareja != null) {
+            ele.nombrePersona = ele?.nombrePersona + " - " + ele?.nombrePareja;
           }
           ele.displayNoneGrupo = "none";
           ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
@@ -454,16 +442,12 @@ export class ParticipantePrincipalComponent implements OnInit {
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             // Tratar nombre de Pariicipante
-            if (ele?.lastName != "" && ele?.username == "") {
-              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
-            } else {
-              ele.nombrePersona = ele?.firstName;
+            if (ele?.nombrePareja != "" && ele?.nombrePareja != null) {
+              ele.nombrePersona = ele?.nombrePersona + " - " + ele?.nombrePareja;
             }
-
             ele.displayNoneGrupo = "none";
             this.customerId = ele.customerId;
             this.userId = ele.userId;
-            //if (ele?.identificacion == this.currentUser.identificacion) {
             if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
@@ -513,13 +497,13 @@ export class ParticipantePrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, eliminar"
-          this.personaService.eliminarPersonaPorId(participante?.codPersona).subscribe({
+          //this.personaService.eliminarPersonaPorId(participante?.codPersona).subscribe({
+          this.participanteService.eliminarParticipantePorId(participante?.codigo).subscribe({
             next: (response) => {
               if (this.currentUser?.cedula == "Suscriptor") {
                 this.listarParticipantePorEmail();
               } else {
                 this.listarParticipantePorSubcategoriaInstanciaAux();
-                //this.listarParticipantePorEstado();
               }
               this.mensajeService.mensajeCorrecto('El registro ha sido borrada con éxito...');
             },
@@ -566,7 +550,7 @@ export class ParticipantePrincipalComponent implements OnInit {
     Swal
       .fire({
         title: "Enviar Notificaciones",
-        text: "¿Quieres enviar Notificaciones?'",
+        text: "¿Quieres enviar las notificaciones?'",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: "Sí, enviar",
@@ -575,19 +559,11 @@ export class ParticipantePrincipalComponent implements OnInit {
       .then(resultado => {
         if (resultado.value) {
           // Hicieron click en "Sí, cargar"
-          this.enviarNotificacionBoton();
-          /*
-          this.participanteService.migrarUsuarioWP().subscribe({
-            next: (response) => {
-              this.mensajeService.mensajeCorrecto('Se ha cargado los participantes...');
-            },
-            error: (error) => {
-              this.mensajeService.mensajeError('Ha habido un problema al cargar los participantes...');
-            }
-          });
-          */
+          this.enviarNotificacion = true;
+          this.listarParticipantePorEstado();
         } else {
           // Hicieron click en "Cancelar"
+          this.enviarNotificacion = false;
           console.log("*Se cancela el proceso...*");
         }
       });
@@ -766,7 +742,6 @@ export class ParticipantePrincipalComponent implements OnInit {
           this.listaParticipantePDF = this.listaParticipanteUsuario;
           this.generarPDF();
           this.crearPDF = false;
-          //this.listarParticipantePorEstado();
         }
       }
     );
@@ -787,6 +762,7 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   listarParticipantePorEstadoBoton() {
     this.listarPorInstancia = false;
+    this.enviarNotificacion = false;
     this.listarParticipantePorEstado();
   }
 
@@ -800,14 +776,10 @@ export class ParticipantePrincipalComponent implements OnInit {
           this.numeroEnvioNotificacion = 0;
           for (const ele of this.listaParticipantePDF) {
             // Tratar nombre de Pariicipante
-            if (ele?.lastName != "" && ele?.username == "") {
-              ele.nombrePersona = ele?.firstName + " - " + ele?.lastName;
-            } else {
-              ele.nombrePersona = ele?.firstName;
+            if (ele?.nombrePareja != "" && ele?.nombrePareja != null) {
+              ele.nombrePersona = ele?.nombrePersona + " - " + ele?.nombrePareja;
             }
-
             ele.dateLastActive = dayjs(ele.dateLastActive).format("YYYY-MM-DD HH:mm")
-            //if (ele?.identificacion == this.currentUser.identificacion) {
             if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
@@ -973,7 +945,7 @@ export class ParticipantePrincipalComponent implements OnInit {
         },
         datoTituloGeneral: {
           fontSize: 16,
-          bold: true,
+          fbold: true,
           alignment: 'center',
           margin: [0, 0, 0, 10], // Puedes ajustar el margen según tus preferencias
         },
@@ -990,9 +962,6 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   /* Variables del html, para receptar datos y validaciones*/
-  get identificacionField() {
-    return this.formParticipanteParametro.get('identificacion');
-  }
   get codCategoriaField() {
     return this.formParticipanteParametro.get('codCategoria');
   }

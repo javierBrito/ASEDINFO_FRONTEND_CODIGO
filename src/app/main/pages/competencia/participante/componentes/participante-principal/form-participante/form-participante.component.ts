@@ -37,7 +37,6 @@ export class FormParticipanteComponent implements OnInit {
   @Input() listaParticipanteChild: any;
   @Input() participanteEditar: Participante;
   @Input() codigoChild: number;
-  @Input() identificacionChild: string;
   @Input() codSubcategoriaChild: number;
   @Input() codInstanciaChild: number;
   @Input() customerIdChild: number;
@@ -78,6 +77,7 @@ export class FormParticipanteComponent implements OnInit {
   public disabledApellidos: boolean;
   public codParticipante: number = 0;
   public siActualizaIntegrante: boolean;
+  public codPersona: number = 0;
 
   /*FORMULARIOS*/
   public formParticipante: FormGroup;
@@ -143,10 +143,7 @@ export class FormParticipanteComponent implements OnInit {
         this.participanteEditar.prefijoTelefonico = '593';
       }
       this.codParticipante = this.participanteEditar?.codigo;
-      // S identificacion de usuario == identificacion de participante NO MODIFICA
-      //if (this.currentUser?.identificacion == this.participanteEditar?.identificacion) {
       this.disabledIdentificacion = true;
-      //}
       this.desSubcategoria = this.participanteEditar?.desSubcategoria;
       if (this.participanteEditar?.fechaNacimiento != "" && this.participanteEditar?.fechaNacimiento != null) {
         this.fechaNacimiento = dayjs(this.participanteEditar?.fechaNacimiento).format("YYYY-MM-DD");
@@ -158,10 +155,8 @@ export class FormParticipanteComponent implements OnInit {
       this.formParticipante = this.formBuilder.group({
         identificacion: new FormControl(this.participanteEditar?.identificacion, Validators.required),
         nombres: new FormControl(this.participanteEditar?.nombres, Validators.required),
-        apellidos: new FormControl(this.participanteEditar?.apellidos),
-        //fechaNacimiento: new FormControl(dayjs(this.personaEditar?.fechaNacimiento).format("YYYY-MM-DD")),
+        nombrePareja: new FormControl(this.participanteEditar?.nombrePareja),
         fechaNacimiento: new FormControl(this.fechaNacimiento),
-        //country: new FormControl(this.participanteEditar?.country),
         codigo: new FormControl(this.participanteEditar?.prefijoTelefonico),
         celular: new FormControl(this.participanteEditar?.celular),
         correo: new FormControl(this.participanteEditar?.correo),
@@ -181,9 +176,8 @@ export class FormParticipanteComponent implements OnInit {
       this.formParticipante = this.formBuilder.group({
         identificacion: new FormControl('', Validators.required),
         nombres: new FormControl('', Validators.required),
-        apellidos: new FormControl(''),
+        nombrePareja: new FormControl(''),
         fechaNacimiento: new FormControl(''),
-        //country: new FormControl('ECUADOR'),
         codigo: new FormControl('593', Validators.required),
         celular: new FormControl(''),
         correo: new FormControl(this.currentUser?.correo),
@@ -210,14 +204,10 @@ export class FormParticipanteComponent implements OnInit {
       this.displayParticipante = 'none';
       this.displayCategoria = '';
       this.listarCategoriaActivo();
-      //this.listarSubcategoriaPorCategoria();
       this.listarInstanciaActivo();
     } else {
       this.displayCategoria = 'none';
-      //this.codSubcategoria = this.codSubcategoriaChild;
-      //this.buscarSubcategoriaPorCodigo();
     }
-    //this.verpdf();
     this.listarPrefijoTelefonico();
   }
 
@@ -232,7 +222,7 @@ export class FormParticipanteComponent implements OnInit {
   adicionarIntegrante() {
     // Receptar la codSubcategoria y codInstancia de formParticipante.value
     let participanteTemp = this.formParticipante.value;
-    this.nombreIntegrante = participanteTemp?.apellidos;
+    this.nombreIntegrante = participanteTemp?.nombrePareja;
     let auxBusqueda: any;
     if (this.listaIntegrante.length > 0) {
       auxBusqueda = this.listaIntegrante.find(obj => obj.nombre == this.nombreIntegrante)
@@ -246,7 +236,7 @@ export class FormParticipanteComponent implements OnInit {
         estado: "A",
       }
       this.listaIntegrante.push(this.integrante);
-      this.formParticipante.controls.apellidos.setValue("");
+      this.formParticipante.controls.nombrePareja.setValue("");
     } else {
       this.mensajeService.mensajeError('Ingrese nombre integrante, no repita...');
     }
@@ -271,7 +261,27 @@ export class FormParticipanteComponent implements OnInit {
   }
 
   listarSubcategoriaActivo() {
+    this.listaSubcategoria = [];
+    let listaSubcategoriaAux: Subcategoria[] = [];
     this.participanteService.listarSubcategoriaActivo().subscribe(
+      (respuesta) => {
+        listaSubcategoriaAux = respuesta['listado'];
+        let codCategoria = 0;
+        if (this.participanteEditar) {
+          codCategoria = this.participanteEditar?.codCategoria;
+        }
+        for (let ele of listaSubcategoriaAux) {
+          if (ele?.codCategoria == codCategoria) {
+            this.listaSubcategoria.push(ele);
+          }
+          
+        }
+      }
+    )
+  }
+
+  listarSubcategoriaPorCategoriaEditar(codCategoria: number) {
+    this.participanteService.listarSubcategoriaPorCategoria(codCategoria).subscribe(
       (respuesta) => {
         this.listaSubcategoria = respuesta['listado'];
       }
@@ -351,7 +361,7 @@ export class FormParticipanteComponent implements OnInit {
 
   listarParticipantePorSubcategoriaInstancia = async () => {
     if (this.currentUser.cedula == "Suscriptor") {
-      this.listarParticipantePorEmail();
+      await this.listarParticipantePorEmail();
     } else {
       await this.obtenerListaParticipante();
     }
@@ -381,11 +391,9 @@ export class FormParticipanteComponent implements OnInit {
     this.participanteService.listarParticipantePorEmail(this.currentUser.identificacion).subscribe(
       (respuesta) => {
         this.listaParticipanteChild = respuesta['listado'];
-        //this.listaParticipante.emit(this.listaParticipanteChild);
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipanteChild) {
             ele.displayNoneGrupo = "none";
-            //if (ele?.identificacion == this.currentUser.identificacion) {
             if (ele?.username != "" && ele.desCategoria == "PRE INFANTIL") {
               ele.desCategoria = "DIRECTOR";
               ele.desSubcategoria = "ACADEMIA";
@@ -423,8 +431,22 @@ export class FormParticipanteComponent implements OnInit {
         this.listaPersona = respuesta['listado'];
         if (this.listaPersona?.length > 0) {
           this.existeIdentificacion = true;
-          this.mensajeService.mensajeError('El Usuario ya existe, modifique...');
-          return;
+          this.persona = this.listaPersona['0'];
+          this.codPersona = this.persona?.codigo;
+          this.formParticipante.controls.fechaNacimiento.setValue(dayjs(this.persona?.fechaNacimiento).format("YYYY-MM-DD"));
+          this.formParticipante.controls.nombres.setValue(this.persona?.nombres);
+          if (this.currentUser?.cedula == "Suscriptor") {
+            this.formParticipante.controls.correo.setValue(this.currentUser?.correo);
+          } else {
+            this.formParticipante.controls.correo.setValue(this.persona?.correo);
+          }
+          this.formParticipante.controls.celular.setValue(this.persona?.celular);
+          if (!this.disabledIdentificacion) {
+            this.mensajeService.mensajeAdvertencia('El Usuario ' + identificacion + ' ya existe, modifique su nombre o continue con el mismo...');
+          }
+        } else {
+          this.formParticipante.controls.fechaNacimiento.setValue(dayjs(new Date()).format("YYYY-MM-DD"));
+          this.formParticipante.controls.celular.setValue('');
         }
       }
     );
@@ -497,17 +519,10 @@ export class FormParticipanteComponent implements OnInit {
           return;
         }
       }
-      let apellidos = "";
-      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO")) {
-        apellidos = participanteTemp?.apellidos;
-      }
       this.persona = new Persona({
         codigo: 0,
         identificacion: participanteTemp?.identificacion,
         nombres: participanteTemp?.nombres,
-        //apellidos: participanteTemp?.apellidos,
-        apellidos: apellidos,
-        //fechaNacimiento: dayjs(participanteTemp?.fechaNacimiento).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaNacimiento: participanteTemp?.fechaNacimiento,
         celular: participanteTemp?.celular,
         prefijoTelefonico: participanteTemp?.codigo,
@@ -529,13 +544,7 @@ export class FormParticipanteComponent implements OnInit {
         }
       });
     } else {
-      // Validar si ya existe participante con esa identificacion
-      if (this.persona['data']?.identificacion != "" && this.persona['data']?.identificacion != null) {
-        this.listarPersonaPorIdentificacion(this.persona['data']?.identificacion);
-      }
-      if (this.existeIdentificacion) {
-        return;
-      }
+      this.persona['data'].codigo = this.codPersona;
       this.personaService.guardarPersona(this.persona['data']).subscribe({
         next: async (response) => {
           this.persona = response['objeto'];
@@ -552,15 +561,13 @@ export class FormParticipanteComponent implements OnInit {
 
   addRegistroParticipante() {
     if (this.formParticipante?.valid) {
-      let participanteTemp = this.formParticipante.value;
-      let lastName = "";
-      if (this.desSubcategoria.includes("PAREJA") || this.desSubcategoria.includes("DUO")) {
-        lastName = participanteTemp?.apellidos;
+      if (this.displayIntegrante2 == "none") {
+        this.formParticipante.controls.nombrePareja.setValue(null);
       }
+      let participanteTemp = this.formParticipante.value;
       this.participanteAux = new Participante({
         codigo: 0,
-        firstName: participanteTemp?.nombres,
-        lastName: lastName,
+        nombrePareja: participanteTemp?.nombrePareja,
         username: participanteTemp.username,
         customerId: this.customerIdChild,
         userId: this.userIdChild,
@@ -573,12 +580,12 @@ export class FormParticipanteComponent implements OnInit {
         nombreCancion: this.nombreCancion,
         nombreEscuela: participanteTemp?.nombreEscuela,
         numParticipante: participanteTemp?.numParticipante,
+        estado: 'A',
       });
     }
     if (this.participanteEditar) {
       this.participante = this.participanteEditar;
-      this.participante.firstName = this.participanteAux['data'].firstName;
-      this.participante.lastName = this.participanteAux['data'].lastName;
+      this.participante.nombrePareja = this.participanteAux['data'].nombrePareja;
       this.participante.username = this.participanteAux['data'].username;
       this.participante.email = this.participanteAux['data'].email;
       this.participante.codSubcategoria = this.codSubcategoriaChild;
@@ -589,6 +596,7 @@ export class FormParticipanteComponent implements OnInit {
       this.participante.nombreCancion = this.participanteAux['data'].nombreCancion;
       this.participante.nombreEscuela = this.participanteAux['data'].nombreEscuela;
       this.participante.numParticipante = this.participanteAux['data'].numParticipante;
+      this.participante.estado = this.participanteAux['data'].estado;
       this.participanteService.guardarParticipante(this.participante).subscribe({
         next: (response) => {
           this.participante = response['objeto'];
@@ -689,12 +697,14 @@ export class FormParticipanteComponent implements OnInit {
 
   // Tomar el valor nombres y convertirlo en identificacion
   blurIdentificacion(event) {
-    if (event.target.value.length != 0) {
-      let participanteTemp = this.formParticipante.value;
-      if (participanteTemp?.username == "") {
-        this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
-        // Verificar si ya existe la persona con esa identificacion
-        this.listarPersonaPorIdentificacion(event.target.value.replaceAll(" ", "."));
+    if (!this.disabledIdentificacion) {
+      if (event.target.value.length != 0) {
+        let participanteTemp = this.formParticipante.value;
+        if (participanteTemp?.username == "") {
+          this.formParticipante.controls.identificacion.setValue((event.target.value.replaceAll(" ", ".")).toLowerCase());
+          // Verificar si ya existe la persona con esa identificacion
+          this.listarPersonaPorIdentificacion(event.target.value.replaceAll(" ", "."));
+        }
       }
     }
   }
@@ -779,9 +789,9 @@ export class FormParticipanteComponent implements OnInit {
       }, err => {
         console.log("err = ", err);
         if (err == "OK" && !noCargaArchivo) {
-          this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta = '+ file.name);
+          this.mensajeService.mensajeCorrecto('Se cargo el archivo a la carpeta = ' + file.name);
         } else {
-          this.mensajeService.mensajeError('No se puede cargar el archivo = '+ file.name + '. Revise tipo archivo (audio/mp3/mp4), peso máximo 3.000 KB, nombres máximo 60 carácteres.');
+          this.mensajeService.mensajeError('No se puede cargar el archivo = ' + file.name + '. Revise tipo archivo (audio/mp3/mp4), peso máximo 3.000 KB, nombres máximo 60 carácteres.');
         }
       }
     );
@@ -937,8 +947,8 @@ export class FormParticipanteComponent implements OnInit {
   get nombresField() {
     return this.formParticipante.get('nombres');
   }
-  get apellidosField() {
-    return this.formParticipante.get('apellidos');
+  get nombreParejaField() {
+    return this.formParticipante.get('nombrePareja');
   }
   get fechaNacimientoField() {
     return this.formParticipante.get('fechaNacimiento');

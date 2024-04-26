@@ -43,8 +43,8 @@
                             <select name="codInstancia" formControlName="codInstancia" required required
                                 [compareWith]="compararInstancia" placeholder="Seleccione instancia..."
                                 class="form-control mr-sm-2 custom-select" id="codInstancia"
-                                (change)="listarParticipanteGeneral()">
-                                <option [value]="''" selected>Seleccionar subcategoría</option>
+                                (change)="listarParticipantePorSubcategoriaInstancia()">
+                                <option [value]="''" selected>Seleccionar instancia</option>
                                 <option *ngFor="let instancia of listaInstancia" [value]="instancia.codigo">
                                     <span><b>{{instancia?.denominacion}}</b></span>
                                 </option>
@@ -53,30 +53,30 @@
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
                         <div class="col-md-2 col-1 form-group">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="listarParticipantePDF()">
-                                <b>{{ "Lista Participantes"}}</b>
+                                <b>{{ "Participantes"}}</b>
                                 <b>{{ " "}}</b>
-                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                                <i class="fas fa-file-pdf" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': displayNone}">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="listarParticipanteUsuario()">
                                 <b>{{ "Lista WordPress"}}</b>
                                 <b>{{ " "}}</b>
-                                <i class="fas fa-copy" style="font-size:14px;color:red"></i>
+                                <i class="fas fa-list" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': 'none'}">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
-                                (click)="confirmarCargarParticipantes()">
+                                (click)="cargarParticipantes()">
                                 <b>{{ "Cargar Participantes"}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fa fa-plus" style="font-size:14px;color:red"></i>
@@ -85,34 +85,42 @@
                     </div>
                     <div class="row form-group">
                         <div class="col-md-2 col-1 form-group">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="listarParticipantePDFCancion()">
-                                <b>{{ "Participante Canción"}}</b>
+                                <b>{{ "Lista música"}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fa-solid fa-music" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="listarParticipantePorEstadoBoton()">
                                 <b>{{ "Minuto a Minuto"}}</b>
                                 <b>{{ " "}}</b>
-                                <i class="fa-solid fa-copy" style="font-size:14px;color:red"></i>
+                                <i class="fa-solid fa-list" style="font-size:14px;color:red"></i>
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
-                            <br/>
-                            <br/>
+                            <br />
+                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="confirmarEnviarNotificaciones()">
-                                <b>{{ "Enviar Notificación"}}</b>
+                                <b>{{ "Notificaciones"}}</b>
                                 <b>{{ " "}}</b>
                                 <i class="fab fa-whatsapp" style="font-size:14px;color:red"></i>
                             </button>
+                        </div>
+                        <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
+                            <br />
+                            <br />
+                            <button [ngStyle]="{'display': ''}" (click)="recargarParticipante()" type=" button"
+                                class="btn btn-primary" rippleEffect round><b>{{ "Recargar..."}}</b><i
+                                    class="fa-solid fa-rotate"></i></button>
+
                         </div>
                     </div>
                 </form>
@@ -186,19 +194,24 @@
                                                         <td>{{index+1}}</td>
                                                         <td>{{participante?.nombreEscuela}}</td>
                                                         <td>{{participante?.nombrePersona}}
-                                                        <!--
+                                                            <!--
                                                         </td>
                                                         <td>
                                                         -->
                                                             <button type="button"
                                                                 [ngStyle]="{'display': participante?.displayNoneGrupo}"
                                                                 matTooltip="Ver Integrantes" class="btn btn-rounded"
-                                                                rippleEffect round><i class="fa fa-search" style="font-size:14px; color:rgb(74, 157, 157)"
+                                                                rippleEffect round><i class="fa fa-search"
+                                                                    style="font-size:14px; color:rgb(74, 157, 157)"
                                                                     (click)="verListaIntegrante(participante?.codigo)"></i></button>
                                                         </td>
                                                         <td>{{participante?.desCategoria + ' / ' +
-                                                            participante?.desSubcategoria + ' - '}} <span style="font-size:14px; color:rgb(74, 157, 157)"><b>{{participante?.numParticipante}}</b></span></td>
-                                                        <td align="center" style="font-size:14px; color:rgb(74, 157, 157)"><b>{{participante?.dateLastActive}}</b></td>
+                                                            participante?.desSubcategoria + ' - '}} <span
+                                                                style="font-size:14px; color:rgb(74, 157, 157)"><b>{{participante?.numParticipante}}</b></span>
+                                                        </td>
+                                                        <td align="center"
+                                                            style="font-size:14px; color:rgb(74, 157, 157)">
+                                                            <b>{{participante?.dateLastActive}}</b></td>
                                                         <!--<td>{{participante?.desEstadoCompetencia}}</td>-->
                                                         <td>
                                                             <!--style="{'background-color': participante?.dateLastActive}"-->
@@ -206,7 +219,8 @@
                                                             <button type="button" (click)="cambiarEstado(participante)"
                                                                 [disabled]="disabledEstado"
                                                                 [ngStyle]="{'background-color': participante?.colorBoton}"
-                                                                style="color: black; font-size:11px" class="btn btn-rounded">
+                                                                style="color: black; font-size:11px"
+                                                                class="btn btn-rounded">
                                                                 <b>{{participante?.desEstadoCompetencia}}</b>
                                                                 <b>{{ " "}}</b>
                                                                 <i class="fa fa-pencil"></i>
@@ -282,8 +296,8 @@
 
 <app-form-participante [participanteEditar]="participanteSeleccionado" [codigoChild]="codigo"
     [codSubcategoriaChild]="codSubcategoria" [codInstanciaChild]="codInstancia" [customerIdChild]="customerId"
-    [userIdChild]="userId" [identificacionChild]="identificacion"
-    (listaParticipante)="listarParticipanteActivoActualizada($event)" (close)="closeDetail($event)" *ngIf="showDetail">
+    [userIdChild]="userId" (listaParticipante)="listarParticipanteActivoActualizada($event)"
+    (close)="closeDetail($event)" *ngIf="showDetail">
 </app-form-participante>
 
 <ng-template #modal_confirm_delete let-modal>

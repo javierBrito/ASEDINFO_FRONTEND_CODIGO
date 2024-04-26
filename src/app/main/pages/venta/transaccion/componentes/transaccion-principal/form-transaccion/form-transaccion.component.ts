@@ -70,6 +70,7 @@ export class FormTransaccionComponent implements OnInit {
   public siActualizaCuentaClave: boolean;
   public codTransaccion: number = 0;
   public fechaFinMensaje: string;
+  public fechaRegistra: string = "";
 
   /*FORMULARIOS*/
   public formTransaccion: FormGroup;
@@ -376,6 +377,17 @@ export class FormTransaccionComponent implements OnInit {
       if (transaccionTemp?.fechaCambia != null && transaccionTemp?.fechaCambia != "" && transaccionTemp?.fechaCambia != 'Invalid Date') {
         fechaCambia = dayjs(transaccionTemp?.fechaCambia).format("YYYY-MM-DD HH:mm:ss.SSS");
       }
+      // No modifica la fecha de registro cuando es EDITAR
+      let fechaRegistra = "";
+      console.log("this.nombreProceso = ", this.nombreProceso)
+      console.log("this.transaccionEditar?.fechaRegistra = ", this.transaccionEditar?.fechaRegistra)
+      if (this.nombreProceso.includes("EDITAR")) {
+        console.log("Por EDITAR")
+        fechaRegistra = dayjs(this.transaccionEditar?.fechaRegistra).format("YYYY-MM-DD HH:mm:ss.SSS");
+      } else {
+        fechaRegistra = dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS");
+      }
+      console.log("fechaRegistra = ", fechaRegistra)
       this.transaccion = new Transaccion({
         codigo: 0,
         codCliente: transaccionTemp?.codCliente,
@@ -393,7 +405,8 @@ export class FormTransaccionComponent implements OnInit {
         fechaInicio: dayjs(transaccionTemp?.fechaInicio).format("YYYY-MM-DD HH:mm:ss.SSS"),
         fechaCambia: fechaCambia,
         fechaFin: dayjs(fechaFinString).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        fechaRegistra: dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        //fechaRegistra: dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        fechaRegistra: fechaRegistra,
         numDiasRenovar: 0,
         estado: 'A',
         prefijoTelefonico: this.prefijoTelefonico,
@@ -774,9 +787,6 @@ export class FormTransaccionComponent implements OnInit {
   }
   get numExistenciaActualField() {
     return this.formTransaccion.get('numExistenciaActual');
-  }
-  get fechaRegistraField() {
-    return this.formTransaccion.get('fechaRegistra');
   }
   get fechaInicioField() {
     return this.formTransaccion.get('fechaInicio');

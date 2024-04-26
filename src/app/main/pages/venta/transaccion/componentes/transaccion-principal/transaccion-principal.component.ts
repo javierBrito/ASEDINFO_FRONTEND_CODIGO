@@ -387,6 +387,7 @@ export class TransaccionPrincipalComponent implements OnInit {
         displayNoneListaCuentaClave: "none",
       });
       this.listaTransaccion.push(this.transaccion);
+      this.displayNoneAcciones = '';
     }
     if (this.enviarNotificacion) {
       if (this.seEnvioWhatsapp) {
