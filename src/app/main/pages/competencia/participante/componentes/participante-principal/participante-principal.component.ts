@@ -169,7 +169,7 @@ export class ParticipantePrincipalComponent implements OnInit {
       this.listarParticipantePorEmail();
     } else {
       this.disabledEstado = false;
-      this.displayNone1 = 'none';
+      //this.displayNone1 = 'none';
     }
   }
 
@@ -194,6 +194,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarCategoriaActivo() {
+    this.disabledEstado = false;
     this.participanteService.listarCategoriaActivo().subscribe(
       (respuesta) => {
         this.listaCategoria = respuesta['listado'];
@@ -202,6 +203,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarSubcategoriaPorCategoria() {
+    this.disabledEstado = false;
     this.habilitarAgregarParticipante = true;
     this.listaParticipante = [];
     // Receptar la descripción de formParticipanteParametro.value
@@ -224,6 +226,8 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarInstanciaActivo() {
+    this.page = 1;
+    this.disabledEstado = false;
     this.habilitarAgregarParticipante = true;
     this.listaParticipante = [];
     // Receptar codCategoria de formParticipanteParametro.value
@@ -273,6 +277,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEmail() {
+    this.displayNone1 = "";
     this.listaParticipante = [];
     // Receptar la codSubcategoria y codInstancia de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
@@ -284,6 +289,9 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorEmail(this.currentUser.correo).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length < this.itemsRegistros) {
+          this.page = 1;
+        }
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             // Tratar nombre de Pariicipante
@@ -319,7 +327,8 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstancia() {
-    this.listarPorInstancia = true;
+    this.displayNone1 = "";
+    this.listarPorInstancia = false;
     // Receptar la descripción de formParticipanteParametro.value
     let participanteParametroTemp = this.formParticipanteParametro.value;
     this.codSubcategoria = participanteParametroTemp?.codSubcategoria;
@@ -329,6 +338,10 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        this.listarPorInstancia = true;
+        if (this.listaParticipante.length < this.itemsRegistros) {
+          this.page = 1;
+        }
         for (const ele of this.listaParticipante) {
           // Tratar nombre de Pariicipante
           if (ele?.nombrePareja != "" && ele?.nombrePareja != null) {
@@ -399,7 +412,6 @@ export class ParticipantePrincipalComponent implements OnInit {
     this.participanteService.guardarParticipante(this.participante).subscribe({
       next: (response) => {
         this.listarParticipantePorSubcategoriaInstancia();
-        //this.listarParticipantePorEstado();
         this.mensajeService.mensajeCorrecto('Se ha actualizado el registro correctamente...');
       },
       error: (error) => {
@@ -409,12 +421,16 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorSubcategoriaInstanciaAux() {
+    this.displayNone1 = "";
     this.listaParticipante = [];
     this.buscarInstanciaPorCodigo();
     this.habilitarAgregarParticipante = false;
     this.participanteService.listarParticipantePorSubcategoriaInstancia(this.codSubcategoria, this.codInstancia, 0).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length < this.itemsRegistros) {
+          this.page = 1;
+        }
         for (const ele of this.listaParticipante) {
           // Tratar nombre de Pariicipante
           if (ele?.nombrePareja != "" && ele?.nombrePareja != null) {
@@ -434,11 +450,15 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarParticipantePorEmailAux() {
+    this.displayNone1 = "";
     this.habilitarAgregarParticipante = false;
     // Trabajar con el correo del Participante migrado
     this.participanteService.listarParticipantePorEmail(this.currentUser.correo).subscribe(
       (respuesta) => {
         this.listaParticipante = respuesta['listado'];
+        if (this.listaParticipante.length < this.itemsRegistros) {
+          this.page = 1;
+        }
         if (this.listaParticipante.length > 0) {
           for (const ele of this.listaParticipante) {
             // Tratar nombre de Pariicipante
@@ -758,18 +778,24 @@ export class ParticipantePrincipalComponent implements OnInit {
   enviarNotificacionBoton() {
     this.enviarNotificacion = true;
     this.listarParticipantePorEstado();
+    this.enviarNotificacion = false;
   }
 
   listarParticipantePorEstadoBoton() {
     this.listarPorInstancia = false;
     this.enviarNotificacion = false;
+    this.disabledEstado = true;
     this.listarParticipantePorEstado();
   }
 
   listarParticipantePorEstado() {
+    this.displayNone1 = "none";
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
         this.listaParticipantePDF = respuesta['listado'];
+        if (this.listaParticipantePDF.length < this.itemsRegistros) {
+          this.page = 1;
+        }
         // Ordenar lista por numParticipante
         this.listaParticipantePDF.sort((firstItem, secondItem) => firstItem.numParticipante - secondItem.numParticipante);
         if (this.listaParticipantePDF.length > 0) {

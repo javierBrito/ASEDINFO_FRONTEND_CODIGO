@@ -85,8 +85,6 @@
                     </div>
                     <div class="row form-group">
                         <div class="col-md-2 col-1 form-group">
-                            <br />
-                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="listarParticipantePDFCancion()">
                                 <b>{{ "Lista música"}}</b>
@@ -95,8 +93,6 @@
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
-                            <br />
-                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="listarParticipantePorEstadoBoton()">
                                 <b>{{ "Minuto a Minuto"}}</b>
@@ -105,8 +101,6 @@
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
-                            <br />
-                            <br />
                             <button class="btn btn-success btn-submit waves-effect waves-float waves-light"
                                 (click)="confirmarEnviarNotificaciones()">
                                 <b>{{ "Notificaciones"}}</b>
@@ -115,8 +109,6 @@
                             </button>
                         </div>
                         <div class="col-md-2 col-1 form-group" [ngStyle]="{'display': this.displayNone}">
-                            <br />
-                            <br />
                             <button [ngStyle]="{'display': ''}" (click)="recargarParticipante()" type=" button"
                                 class="btn btn-primary" rippleEffect round><b>{{ "Recargar..."}}</b><i
                                     class="fa-solid fa-rotate"></i></button>
@@ -181,10 +173,10 @@
                                                         <th scope="col">
                                                             <div align="center">Estado Competencia</div>
                                                         </th>
-                                                        <th scope="col">
+                                                        <th scope="col" [ngStyle]="{'display': displayNone1}">
                                                             <div align="center">Pista / Canción</div>
                                                         </th>
-                                                        <th scope="col">Acciones
+                                                        <th scope="col" [ngStyle]="{'display': displayNone1}"><div align="center" >Acciones</div>
                                                         </th>
                                                     </tr>
                                                 </thead>
@@ -226,14 +218,14 @@
                                                                 <i class="fa fa-pencil"></i>
                                                             </button>
                                                         </td>
-                                                        <td>
+                                                        <td [ngStyle]="{'display': displayNone1}">
                                                             <audio #ref src="{{participante?.nombreCancion}}"
                                                                 type="audio/mpeg"></audio>
                                                             <button (click)="ref.play()">▶️ play</button>
                                                             <button (click)="ref.pause()">⏸ pause</button>
                                                         </td>
                                                         <td>
-                                                            <div class="btn-group" role="group"
+                                                            <div class="btn-group" role="group" [ngStyle]="{'display': displayNone1}"
                                                                 aria-label="Basic example">
                                                                 <button (click)="openEditarDetail(participante)"
                                                                     matTooltip="Editar Participante" type="button"
