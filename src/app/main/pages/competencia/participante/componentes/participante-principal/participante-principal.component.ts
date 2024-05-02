@@ -203,6 +203,7 @@ export class ParticipantePrincipalComponent implements OnInit {
   }
 
   listarSubcategoriaPorCategoria() {
+    this.page = 1;
     this.disabledEstado = false;
     this.habilitarAgregarParticipante = true;
     this.listaParticipante = [];
@@ -264,6 +265,8 @@ export class ParticipantePrincipalComponent implements OnInit {
     if (this.currentUser.cedula == "Suscriptor") {
       this.listarParticipantePorEmailAux();
     } else {
+      this.disabledEstado = false;
+      this.page = 1;
       this.listarParticipantePorSubcategoriaInstanciaAux();
     }
   }
@@ -783,13 +786,14 @@ export class ParticipantePrincipalComponent implements OnInit {
 
   listarParticipantePorEstadoBoton() {
     this.listarPorInstancia = false;
+    this.crearPDF = false;
+    this.crearPDFCancion = false;
     this.enviarNotificacion = false;
     this.disabledEstado = true;
     this.listarParticipantePorEstado();
   }
 
   listarParticipantePorEstado() {
-    this.displayNone1 = "none";
     this.participanteService.listarParticipantePorEstado("A").subscribe(
       (respuesta) => {
         this.listaParticipantePDF = respuesta['listado'];
@@ -839,8 +843,11 @@ export class ParticipantePrincipalComponent implements OnInit {
             }
           }
         }
-        if (!this.listarPorInstancia) {
+        if (!this.listarPorInstancia && !this.crearPDF && !this.crearPDFCancion) {
+          this.displayNone1 = "none";
           this.listaParticipante = this.listaParticipantePDF;
+        } else {
+          this.displayNone1 = "";
         }
       }
     );

@@ -430,6 +430,9 @@ export class PuntajePrincipalComponent implements OnInit {
       this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
+          if (this.listaParticipantePresentacion.length < this.itemsRegistros) {
+            this.page = 1;
+          }
           for (const par of this.listaParticipantePresentacion) {
             // Tratar nombre de Pariicipante
             if (par?.nombrePareja != "" && par?.nombrePareja != null) {
@@ -503,6 +506,9 @@ export class PuntajePrincipalComponent implements OnInit {
         //this.puntajeService.listarParticipantePorEstadoCompetencia(this.codEstadoCompetencia).subscribe({
         next: async (respuesta) => {
           this.listaParticipantePresentacion = respuesta['listado'];
+          if (this.listaParticipantePresentacion.length < this.itemsRegistros) {
+            this.page = 1;
+          }
           this.listaParticipantePresentacion = this.listaParticipantePresentacion.filter((participante) => participante?.codEstadoCompetencia === 5);
           let puntajeTotal: number = 0;
           for (const par of this.listaParticipantePresentacion) {
