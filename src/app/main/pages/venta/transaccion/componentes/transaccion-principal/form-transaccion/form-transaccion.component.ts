@@ -254,6 +254,10 @@ export class FormTransaccionComponent implements OnInit {
 
   listarTransaccion() {
     this.listaTransaccionChild = [];
+    if (this.procesoListarPorChild === "ACaducarse") {
+      this.listarTransaccionACaducarse();
+      return;
+    }
     // Receptar datos de Input
     if (this.claveCuentaChild?.length != 0) {
       this.listarTransaccionPorClaveCuenta();
@@ -309,6 +313,23 @@ export class FormTransaccionComponent implements OnInit {
         }
       }
     )
+  }
+
+  listarTransaccionACaducarse() {
+    return new Promise((resolve, rejects) => {
+      this.transaccionService.listarTransaccionACaducarse(5).subscribe({
+        next: (respuesta) => {
+          this.listaTransaccionChild = respuesta['listado'];
+          if (this.listaTransaccionChild?.length > 0) {
+            this.mostrarListaTransaccion();
+          }
+          resolve(respuesta);
+        }, error: (error) => {
+          rejects("Error");
+          console.log("Error =", error);
+        }
+      })
+    })
   }
 
   mostrarListaTransaccion = async () => {

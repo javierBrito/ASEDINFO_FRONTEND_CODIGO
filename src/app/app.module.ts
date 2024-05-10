@@ -43,7 +43,8 @@ const appRoutes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/pages/miscellaneous/error' //Error 404 - Page not found
+    //redirectTo: '/pages/miscellaneous/error' //Error 404 - Page not found
+    redirectTo: '/pages/authentication/login-v2' // Retorna a la página de inicio
   }
 ];
 //console.log("appRoutes = ", appRoutes)

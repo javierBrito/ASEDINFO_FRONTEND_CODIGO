@@ -26,7 +26,6 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-
                         <div class="col-2">
                             <label for="descripcion"><b>{{'Descripción(*): '}}</b></label>
                             <input type="text" name="descripcion" id="descripcion" formControlName="descripcion"
@@ -93,6 +92,18 @@
                                 </button>
                             </div>
                         </div>
+                        <div class="col-2">
+                        </div>
+                        <div class="col-2">
+                            <div class="my-2 text-left table-responsive">
+                                <button class="btn btn-info btn-rounded" (click)="listarTransaccionACaducarse()">
+                                    <b>{{ "Caducadas"}}</b>
+                                    <b>{{ " "}}</b>
+                                    <i class="fa fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
                 <div class="row">
