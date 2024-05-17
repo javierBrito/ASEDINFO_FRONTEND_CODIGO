@@ -39,6 +39,7 @@ export class FormTransaccionComponent implements OnInit {
   @Input() codigoChild: number;
   @Input() claveCuentaChild: string;
   @Input() codClienteChild: number;
+  @Input() codProductoChild: number;
   @Input() descripcionChild: string;
   @Input() nombreProcesoChild: string;
   @Input() procesoListarPorChild: string;
@@ -263,6 +264,11 @@ export class FormTransaccionComponent implements OnInit {
       this.listarTransaccionPorClaveCuenta();
       return;
     }
+    if (this.codClienteChild != 0 && Number(this.codClienteChild) + "" != "NaN" &&
+        this.codProductoChild != 0 && Number(this.codProductoChild) + "" != "NaN") {
+      this.listarTransaccionPorClienteYProducto();
+      return;
+    }
     if (this.codClienteChild != 0 && Number(this.codClienteChild) + "" != "NaN") {
       this.listarTransaccionPorCliente();
       return;
@@ -295,6 +301,17 @@ export class FormTransaccionComponent implements OnInit {
 
   listarTransaccionPorCliente() {
     this.transaccionService.listarTransaccionPorCliente(this.codClienteChild).subscribe(
+      (respuesta) => {
+        this.listaTransaccionChild = respuesta['listado'];
+        if (this.listaTransaccionChild?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorClienteYProducto() {
+    this.transaccionService.listarTransaccionPorClienteYProducto(this.codClienteChild, this.codProductoChild).subscribe(
       (respuesta) => {
         this.listaTransaccionChild = respuesta['listado'];
         if (this.listaTransaccionChild?.length > 0) {

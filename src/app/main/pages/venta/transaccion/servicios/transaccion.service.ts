@@ -30,6 +30,9 @@ export class TransaccionService {
   listarTransaccionPorCliente(codCliente: number) {
     return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorCliente/${codCliente}`);
   }
+  listarTransaccionPorClienteYProducto(codCliente: number, codProducto: number) {
+    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorClienteYProducto/${codCliente}/${codProducto}`);
+  }
   listarTransaccionACaducarse(numDias: number) {
     return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionACaducarse/${numDias}`);
   }

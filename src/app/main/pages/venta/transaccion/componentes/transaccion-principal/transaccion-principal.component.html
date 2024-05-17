@@ -26,7 +26,8 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        <div class="col-2">
+
+                        <div class="col-2" [ngStyle]="{'display': 'none'}">
                             <label for="descripcion"><b>{{'Descripción(*): '}}</b></label>
                             <input type="text" name="descripcion" id="descripcion" formControlName="descripcion"
                                 maxlength="50" placeholder="Por favor, ingrese la clave de la cuenta."
@@ -36,6 +37,20 @@
                                 <span>{{ "Exito"}}</span>
                             </div>
                         </div>
+
+                        <div class="col-2">
+                            <label for="codProducto"><b>{{'Producto(*): '}}</b></label>
+                            <select name="codProducto" formControlName="codProducto" required [compareWith]="compararProducto"
+                                placeholder="Seleccione producto..." class="form-control mr-sm-2" id="codProducto">
+                                <option [value]="''" selected>Seleccionar producto</option>
+                                <option *ngFor="let producto of listaProducto" [value]="producto.codigo">
+                                    <span>{{producto?.descripcion}}</span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                        
                         <div class="col-2">
                             <div class="my-2 text-left table-responsive">
                                 <button class="btn btn-info btn-rounded"
@@ -253,7 +268,7 @@
     [descripcionChild]="descripcion" [listaTransaccionChild]="listaTransaccion" [claveCuentaChild]="claveCuenta"
     [codClienteChild]="codCliente" (listaTransaccion)="listaTransaccionActualizada($event)"
     (close)="closeDetail($event)" *ngIf="showDetail" [nombreProcesoChild]="nombreProceso"
-    [procesoListarPorChild]="procesoListarPor">
+    [codProductoChild]="codProducto" [procesoListarPorChild]="procesoListarPor">
 </app-form-transaccion>
 
 <ng-template #modal_confirm_delete let-modal>

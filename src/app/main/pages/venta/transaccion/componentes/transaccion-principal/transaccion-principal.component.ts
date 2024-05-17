@@ -20,6 +20,8 @@ import moment from 'moment';
 import { HttpParameterCodec, HttpUrlEncodingCodec } from "@angular/common/http";
 import { CuentaClave } from 'app/main/pages/compartidos/modelos/CuentaClave';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Producto } from 'app/main/pages/compartidos/modelos/Producto';
+import { ProductoService } from 'app/main/pages/catalogo/producto/servicios/producto.service';
 
 @Component({
   selector: 'app-transaccion-principal',
@@ -61,6 +63,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public celular: string;
   public claveCuenta: string;
   public codCliente: number;
+  public codProducto : number;
   public nombreProceso: string;
   public procesoListarPor: string;
   public displayNoneAcciones: string;
@@ -72,6 +75,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   public listaPeriodoRegAniLec: any[];
   public listaCliente: Cliente[];
   public listaCuentaClave: CuentaClave[];
+  public listaProducto: Producto[];
 
   /*TABS*/
   public selectedTab: number;
@@ -104,6 +108,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     /*Servicios*/
     private readonly transaccionService: TransaccionService,
     private readonly clienteService: ClienteService,
+    private readonly productoService: ProductoService,
     private readonly personaService: PersonaService,
     private mensajeService: MensajeService,
     private formBuilder: FormBuilder,
@@ -119,6 +124,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     /*LISTAS*/
     this.listarClienteActivoOrdenNombre();
     moment.locale("es");
+    this.listarProducto();
   }
 
   ngOnInit() {
@@ -130,6 +136,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.formTransaccion = this.formBuilder.group({
       descripcion: new FormControl('', Validators.required),
       codCliente: new FormControl('', Validators.required),
+      codProducto: new FormControl('', Validators.required),
       claveCuenta: new FormControl('', Validators.required),
       fechaInicio: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
       fechaFin: new FormControl(dayjs(new Date).format("YYYY-MM-DD"), Validators.required),
@@ -159,6 +166,14 @@ export class TransaccionPrincipalComponent implements OnInit {
         }
       })
     })
+  }
+
+  listarProducto() {
+    this.productoService.listarProductoActivo(this.nemonicoModulo).subscribe(
+      (respuesta) => {
+        this.listaProducto = respuesta['listado'];
+      }
+    );
   }
 
   async verModalCuentaClave() {
@@ -244,12 +259,14 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   listarTransaccion() {
     this.codCliente = 0;
+    this.codProducto = 0;
     this.enviarNotificacion = false;
     this.listaTransaccion = [];
     // Receptar datos de formTransaccion.value
     let transaccionDescripcionTemp = this.formTransaccion.value;
     this.claveCuenta = transaccionDescripcionTemp?.claveCuenta;
     this.codCliente = transaccionDescripcionTemp?.codCliente;
+    this.codProducto = transaccionDescripcionTemp?.codProducto;
     this.descripcion = transaccionDescripcionTemp?.descripcion;
     this.fechaInicio = transaccionDescripcionTemp?.fechaInicio;
     this.fechaFin = transaccionDescripcionTemp?.fechaFin;
@@ -258,8 +275,19 @@ export class TransaccionPrincipalComponent implements OnInit {
       this.listarTransaccionPorClaveCuenta();
       return;
     }
+    if (this.codCliente != 0 && Number(this.codCliente) + "" != "NaN" &&
+        this.codProducto != 0 && Number(this.codProducto) + "" != "NaN") {
+      this.procesoListarPor = "ClienteProducto";
+      this.listarTransaccionPorClienteYProducto();
+      return;
+    }
     if (this.codCliente != 0 && Number(this.codCliente) + "" != "NaN") {
       this.procesoListarPor = "Cliente";
+      this.listarTransaccionPorCliente();
+      return;
+    }
+    if (this.codProducto != 0 && Number(this.codProducto) + "" != "NaN") {
+      this.procesoListarPor = "Producto";
       this.listarTransaccionPorCliente();
       return;
     }
@@ -298,6 +326,17 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   listarTransaccionPorCliente() {
     this.transaccionService.listarTransaccionPorCliente(this.codCliente).subscribe(
+      (respuesta) => {
+        this.listaTransaccion = respuesta['listado'];
+        if (this.listaTransaccion?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorClienteYProducto() {
+    this.transaccionService.listarTransaccionPorClienteYProducto(this.codCliente, this.codProducto).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
@@ -650,6 +689,9 @@ export class TransaccionPrincipalComponent implements OnInit {
   compararCliente(o1, o2) {
     return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
   }
+  compararProducto(o1, o2) {
+    return o1 === undefined || o2 === undefined || o2 === null ? false : o1.codigo === o2.codigo;
+  }
   /* Variables del html, para receptar datos y validaciones*/
   get descripcionField() {
     return this.formTransaccion.get('descripcion');
@@ -666,7 +708,9 @@ export class TransaccionPrincipalComponent implements OnInit {
   get codClienteField() {
     return this.formTransaccion.get('codCliente');
   }
-  get itemsRegistrosNFField() {
+  get codProductoField() {
+    return this.formTransaccion.get('codProducto');
+  }  get itemsRegistrosNFField() {
     return this.formTransaccion.get('itemsRegistrosNF');
   }
 }
