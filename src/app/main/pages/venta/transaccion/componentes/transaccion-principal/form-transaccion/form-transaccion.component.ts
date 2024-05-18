@@ -273,6 +273,10 @@ export class FormTransaccionComponent implements OnInit {
       this.listarTransaccionPorCliente();
       return;
     }
+    if (this.codProductoChild != 0 && Number(this.codProductoChild) + "" != "NaN") {
+      this.listarTransaccionPorProducto();
+      return;
+    }
     if (this.descripcionChild?.length != 0) {
       this.listarTransaccionPorDescripcion();
       return;
@@ -301,6 +305,17 @@ export class FormTransaccionComponent implements OnInit {
 
   listarTransaccionPorCliente() {
     this.transaccionService.listarTransaccionPorCliente(this.codClienteChild).subscribe(
+      (respuesta) => {
+        this.listaTransaccionChild = respuesta['listado'];
+        if (this.listaTransaccionChild?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorProducto() {
+    this.transaccionService.listarTransaccionPorProducto(this.codProducto).subscribe(
       (respuesta) => {
         this.listaTransaccionChild = respuesta['listado'];
         if (this.listaTransaccionChild?.length > 0) {
@@ -417,15 +432,11 @@ export class FormTransaccionComponent implements OnInit {
       }
       // No modifica la fecha de registro cuando es EDITAR
       let fechaRegistra = "";
-      console.log("this.nombreProceso = ", this.nombreProceso)
-      console.log("this.transaccionEditar?.fechaRegistra = ", this.transaccionEditar?.fechaRegistra)
       if (this.nombreProceso.includes("EDITAR")) {
-        console.log("Por EDITAR")
         fechaRegistra = dayjs(this.transaccionEditar?.fechaRegistra).format("YYYY-MM-DD HH:mm:ss.SSS");
       } else {
         fechaRegistra = dayjs(new Date).format("YYYY-MM-DD HH:mm:ss.SSS");
       }
-      console.log("fechaRegistra = ", fechaRegistra)
       this.transaccion = new Transaccion({
         codigo: 0,
         codCliente: transaccionTemp?.codCliente,

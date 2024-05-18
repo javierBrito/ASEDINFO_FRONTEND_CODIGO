@@ -30,6 +30,9 @@ export class TransaccionService {
   listarTransaccionPorCliente(codCliente: number) {
     return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorCliente/${codCliente}`);
   }
+  listarTransaccionPorProducto(codProducto: number) {
+    return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorProducto/${codProducto}`);
+  }
   listarTransaccionPorClienteYProducto(codCliente: number, codProducto: number) {
     return this.http.get<Transaccion[]>(`${environment.url_seguridad}/catalogo/listarTransaccionPorClienteYProducto/${codCliente}/${codProducto}`);
   }
@@ -131,13 +134,11 @@ export class TransaccionService {
 
   enviarMensajeWhatsappAI(celular: string, mensaje: string) {
     let objeto = { message: mensaje, mode: 'no-cors' };
-    console.log("objeto 1 = ", objeto)
     return this.http.post(`${environment.url_wspAI}/chat/sendmessage/${celular}`, objeto);
   }
 
   enviarImagenWhatsappAI(celular: string, tituloImagen: string, imagen: any) {
     let objeto = { image: imagen, caption: tituloImagen, mode: 'no-cors' };
-    console.log("objeto 2 = ", objeto)
     return this.http.post(`${environment.url_wspAI}/chat/sendimage/${celular}`, objeto);
   }
 

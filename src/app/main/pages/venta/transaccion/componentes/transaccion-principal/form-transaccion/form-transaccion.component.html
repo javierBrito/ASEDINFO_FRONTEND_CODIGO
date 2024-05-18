@@ -18,7 +18,7 @@
                     <div class="invalid-feedback">Por favor seleccione una opción.</div>
                 </div>
                 <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
-                    <label for="codProducto"><b>{{'Producto(*): '}}</b></label>
+                    <label for="codProducto"><b>{{'Servicio(*): '}}</b></label>
                     <select name="codProducto" formControlName="codProducto" required [compareWith]="compararProducto"
                         placeholder="Seleccione producto..." class="form-control mr-sm-2" id="codProducto"
                         (change)="buscarProductoPorCodigo()">

@@ -288,7 +288,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     }
     if (this.codProducto != 0 && Number(this.codProducto) + "" != "NaN") {
       this.procesoListarPor = "Producto";
-      this.listarTransaccionPorCliente();
+      this.listarTransaccionPorProducto();
       return;
     }
     if (this.descripcion?.length != 0) {
@@ -326,6 +326,17 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   listarTransaccionPorCliente() {
     this.transaccionService.listarTransaccionPorCliente(this.codCliente).subscribe(
+      (respuesta) => {
+        this.listaTransaccion = respuesta['listado'];
+        if (this.listaTransaccion?.length > 0) {
+          this.mostrarListaTransaccion();
+        }
+      }
+    )
+  }
+
+  listarTransaccionPorProducto() {
+    this.transaccionService.listarTransaccionPorProducto(this.codProducto).subscribe(
       (respuesta) => {
         this.listaTransaccion = respuesta['listado'];
         if (this.listaTransaccion?.length > 0) {
