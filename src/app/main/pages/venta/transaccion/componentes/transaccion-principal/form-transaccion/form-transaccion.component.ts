@@ -488,7 +488,7 @@ export class FormTransaccionComponent implements OnInit {
             });
           };
           // Enviar notificaciones respectivas cuando es R o C
-          if (this.nombreProceso == "RENOVAR" || this.nombreProceso == "CLONAR") {
+          if (this.nombreProceso == "RENOVAR" || this.nombreProceso == "CLONAR" || this.nombreProceso == "CREAR") {
             // Enviar Notificaciones
             this.enviarWhatsappApi(this.transaccion);
           }

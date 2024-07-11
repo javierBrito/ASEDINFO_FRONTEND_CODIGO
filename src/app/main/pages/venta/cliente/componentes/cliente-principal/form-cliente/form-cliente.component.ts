@@ -85,8 +85,8 @@ export class FormClienteComponent implements OnInit {
         */
         nombres: new FormControl(this.clienteEditar?.nombres, Validators.required),
         apellidos: new FormControl(this.clienteEditar?.apellidos, Validators.required),
-        fechaNacimiento: new FormControl(dayjs(this.clienteEditar?.persona?.fechaNacimiento).format("YYYY-MM-DD")),
-        direccion: new FormControl(this.clienteEditar?.persona?.direccion),
+        fechaNacimiento: new FormControl(dayjs(this.clienteEditar?.fechaNacimiento).format("YYYY-MM-DD")),
+        direccion: new FormControl(this.clienteEditar?.direccion),
         codigo: new FormControl(this.clienteEditar?.prefijoTelefonico, Validators.required),
         celular: new FormControl(this.clienteEditar?.celular, Validators.required),
         correo: new FormControl(this.clienteEditar?.correo, Validators.required),

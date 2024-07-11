@@ -466,7 +466,8 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.listaTransaccion = event;
   }
 
-  openDetail(codjornada) {
+  openDetail() {
+    this.nombreProceso = "CREAR";
     this.showDetail = true;
   }
 
