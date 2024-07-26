@@ -684,7 +684,7 @@ export class FormTransaccionComponent implements OnInit {
     let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
     console.log("imageSrcString = ", imageSrcString)
 
-    // Obtener las n cuentas con su clave de la lista si los ahy
+    // Obtener las n cuentas con su clave de la lista si los hay
     let cuentaClaveNotifica = "";
     if (this.listaCuentaClave?.length > 0) {
       for (let cuentaClave of this.listaCuentaClave) {
@@ -704,13 +704,23 @@ export class FormTransaccionComponent implements OnInit {
       mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: "
         + "%0a" + ((transaccion?.claveCuenta == null) || (transaccion?.claveCuenta == "") ? " " : "*" + transaccion?.claveCuenta + "*") + "  " + ((transaccion?.clave == null) || (transaccion?.clave == "") ? " " : "*" + transaccion?.clave + "*") + cuentaClaveNotifica;
     }
-    let mensajeNotificacion = "*Notificación Automática*%0aEstimado(a) " + transaccion?.nombreCliente
+
+    // Segun nombreProceso el encabezado de la notificación - jbrito-20240726
+    let mensajeCabecera = "";
+    if (this.nombreProceso == "CLONAR" || this.nombreProceso == "CREAR") {
+      mensajeCabecera = "*Notificación de Servicio adquirido*%0aEstimado(a) "; 
+    } else {
+      if (this.nombreProceso == "RENOVAR") {
+        mensajeCabecera = "*Notificación de Renovación*%0aEstimado(a) ";
+      }
+    }
+      
+    let mensajeNotificacion = mensajeCabecera + transaccion?.nombreCliente
       + " el servicio de " + transaccion?.descripcion
       + mensajeRenovaCaduca
       + dia + " de " + mes + " de " + año
       + ", favor su ayuda en el caso de presentar inconvenientes notificarlos oportunamente por este medio... Un excelente dia, tarde o noche...."
       + mensajeClaveCuenta;
-
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();
     //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'

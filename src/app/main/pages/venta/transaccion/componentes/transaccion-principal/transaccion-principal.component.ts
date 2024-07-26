@@ -658,12 +658,12 @@ export class TransaccionPrincipalComponent implements OnInit {
     let año = moment(transaccion?.fechaFin).format("YYYY");
     //transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
     //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
-    this.mensajeCaduca = "*Notificación Automática*%0aEstimado(a) " + transaccion.nombreCliente
+    this.mensajeCaduca = "*Notificación Automática*%0a*Tu servicio Caducó o Caducará pronto*%0aEstimado(a) " + transaccion.nombreCliente
       + " el servicio de " + transaccion.descripcion
       + " que tiene contratado con nosotros está por caducar en "
       + transaccion?.numDiasRenovar + " día(s) el " + dia + " de " + mes + " de " + año
       + ", favor su ayuda confirmando la renovación con el pago correspondiente para poder registrarlo, caso contrario el día de corte procederemos con la suspención del servicio... Un excelente dia, tarde o noche....";
-
+    
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();
     //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
