@@ -148,15 +148,15 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.enviarNotificacionIndividual = false;
   }
 
-  verListaCuentaClave = async (codParticipante: number) => {
+  verListaCuentaClave = async (codTransaccion: number) => {
     //this.listaCuentaClave = [];
-    await this.listarCuentaClavePorTransaccion(codParticipante);
+    await this.listarCuentaClavePorTransaccion(codTransaccion);
     await this.verModalCuentaClave();
   }
 
-  listarCuentaClavePorTransaccion(codParticipante: number) {
+  listarCuentaClavePorTransaccion(codTransaccion: number) {
     return new Promise((resolve, rejects) => {
-      this.transaccionService.listarCuentaClavePorTransaccion(codParticipante).subscribe({
+      this.transaccionService.listarCuentaClavePorTransaccion(codTransaccion).subscribe({
         next: (respuesta) => {
           this.listaCuentaClave = respuesta['listado'];
           resolve(respuesta);
@@ -384,6 +384,14 @@ export class TransaccionPrincipalComponent implements OnInit {
     this.page = 1;
     let montoTotal = 0;
     for (const ele of this.listaTransaccion) {
+      // Se adiciona para verificar si tiene lists de cuenta clave - jbrito-20240802
+      ele.displayNoneListaCuentaClave = "none";
+      await this.listarCuentaClavePorTransaccion(ele?.codigo);
+      if (this.listaCuentaClave?.length != 0) {
+        ele.displayNoneListaCuentaClave = "";
+      }
+      // Fin
+
       ele.colorFila = "green";
       ele.visibleBoton = "none";
       ele.colorColumna = "white";

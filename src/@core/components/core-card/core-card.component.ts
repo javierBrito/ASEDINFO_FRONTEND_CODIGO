@@ -36,7 +36,9 @@ export class CoreCardComponent implements OnInit {
   @Input() isReload = false;
   //@Input() reloadTime: number = 2500;
   // Tiempo de recarga al doble especialmente para New Dance - jbrito-20240419
-  @Input() reloadTime: number = 5000;
+  //@Input() reloadTime: number = 5000;
+  // Tiempo de recarga 1 hora especialmente para Asedinfo - jbrito-20240802
+  @Input() reloadTime: number = 960000;
   @Output() events: EventEmitter<any>;
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     // on press of esc card will return to normal from full screen

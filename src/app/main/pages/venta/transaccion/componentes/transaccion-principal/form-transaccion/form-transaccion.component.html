@@ -228,7 +228,7 @@
             <table class="table" *ngIf="listaCuentaClave?.length > 0" id="tablaCuentaClave">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
+                        <!--<th scope="col">#</th>-->
                         <th scope="col">
                             <div align="center">Usuario/Cuenta</div>
                         </th>
@@ -239,13 +239,13 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let cuentaClave of listaCuentaClave ; let index=index">
-                        <td style="width:1%">{{index+1}}</td>
+                        <!--<td style="width:1%">{{index+1}}</td>-->
                         <td>
-                            <input type="text" name="cuenta" style="width:135%" [(ngModel)]="cuentaClave.cuenta"
+                            <input type="text" name="cuenta" style="width:145%" [(ngModel)]="cuentaClave.cuenta"
                                 id="cuenta">
                         </td>
                         <td>
-                            <input type="text" name="clave" style="width:120%" [(ngModel)]="cuentaClave.clave"
+                            <input type="text" name="clave" style="width:115%" [(ngModel)]="cuentaClave.clave"
                                 id="clave">
                         </td>
                     </tr>

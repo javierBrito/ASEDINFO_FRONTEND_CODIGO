@@ -473,7 +473,7 @@ export class FormTransaccionComponent implements OnInit {
         next: async (response) => {
           this.transaccion = response['objeto'];
           // Tratar listaCuentaClave
-          if (this.listaCuentaClave.length > 0 && this.siActualizaCuentaClave) {
+          if (this.listaCuentaClave.length > 0 && this.siActualizaCuentaClave && this.transaccionEditar?.estado != "C") {
             for (let ele of this.listaCuentaClave) {
               ele.codigo = 0;
               ele.codTransaccion = this.transaccion?.codigo;
@@ -688,7 +688,7 @@ export class FormTransaccionComponent implements OnInit {
     let cuentaClaveNotifica = "";
     if (this.listaCuentaClave?.length > 0) {
       for (let cuentaClave of this.listaCuentaClave) {
-        cuentaClaveNotifica += "%0a" + ((cuentaClave?.cuenta == null) || (cuentaClave?.cuenta == "") ? "" : "*" + cuentaClave?.cuenta + "*") + "  " + ((cuentaClave?.clave == null) || (cuentaClave?.clave == "") ? "" : "*" + cuentaClave?.clave + "*")
+        cuentaClaveNotifica = cuentaClaveNotifica + "%0a" + ((cuentaClave?.cuenta == null) || (cuentaClave?.cuenta == "") ? " " : "*(" + cuentaClave?.cuenta + ")*") + "  " + ((cuentaClave?.clave == null) || (cuentaClave?.clave == "") ? " " : "*" + cuentaClave?.clave + "*");
       }
     }
 
@@ -697,12 +697,19 @@ export class FormTransaccionComponent implements OnInit {
     let año = moment(transaccion?.fechaFin).format("YYYY");
     let mensajeRenovaCaduca = "";
     let mensajeClaveCuenta = "";
+    let mensajeClaveCuentaNormal = "";
     if (this.nombreProceso == "RENOVAR") {
       mensajeRenovaCaduca = " se ha renovado exitosamente hasta el ";
     } else {
       mensajeRenovaCaduca = " se ha registrado exitosamente hasta el ";
-      mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: "
-        + "%0a" + ((transaccion?.claveCuenta == null) || (transaccion?.claveCuenta == "") ? " " : "*" + transaccion?.claveCuenta + "*") + "  " + ((transaccion?.clave == null) || (transaccion?.clave == "") ? " " : "*" + transaccion?.clave + "*") + cuentaClaveNotifica;
+      mensajeClaveCuenta = "%0aRecuerde que su licencia/código o credenciales son las siguientes: ";
+      mensajeClaveCuentaNormal = "%0a" + ((transaccion?.claveCuenta == null) || (transaccion?.claveCuenta == "") ? " " : "*(" + transaccion?.claveCuenta + ")*") + "  " + ((transaccion?.clave == null) || (transaccion?.clave == "") ? " " : "*" + transaccion?.clave + "*");
+      //console.log("mensajeClaveCuentaNormal = ", mensajeClaveCuentaNormal)
+      if (mensajeClaveCuentaNormal == "%0a    ") {
+        mensajeClaveCuenta = mensajeClaveCuenta + cuentaClaveNotifica;
+      } else {
+        mensajeClaveCuenta = mensajeClaveCuenta + mensajeClaveCuentaNormal + cuentaClaveNotifica;
+      }
     }
 
     // Segun nombreProceso el encabezado de la notificación - jbrito-20240726
@@ -721,15 +728,18 @@ export class FormTransaccionComponent implements OnInit {
       + dia + " de " + mes + " de " + año
       + ", favor su ayuda en el caso de presentar inconvenientes notificarlos oportunamente por este medio... Un excelente dia, tarde o noche...."
       + mensajeClaveCuenta;
+    //console.log("mensajeNotificacion = ", mensajeNotificacion)
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();
     //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
     const decodedValue = codec.decodeValue(mensajeNotificacion); // Decodes the value as 'Hello World!'
+    //console.log("decodedValue = ", decodedValue)
     // Validar prefijo telefonico
     if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
       transaccion.prefijoTelefonico = "593";
     }
     let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
+    //let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + "992752367";
     // Enviar mensaje
     this.transaccionService.enviarMensajeWhatsappAI(celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
