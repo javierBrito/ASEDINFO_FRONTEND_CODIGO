@@ -787,8 +787,8 @@ export class TransaccionPrincipalComponent implements OnInit {
     if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
       transaccion.prefijoTelefonico = "593";
     }
-    //let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
-    let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + "992752367";
+    let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
+    //let celularEnvioWhatsapp = transaccion?.prefijoTelefonico + "992752367";
     // Enviar mensaje
     this.transaccionService.enviarMensajeWhatsappAI(celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
