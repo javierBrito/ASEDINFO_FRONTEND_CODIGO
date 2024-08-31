@@ -40,8 +40,9 @@
 
                         <div class="col-2">
                             <label for="codProducto"><b>{{'Servicio(*): '}}</b></label>
-                            <select name="codProducto" formControlName="codProducto" required [compareWith]="compararProducto"
-                                placeholder="Seleccione producto..." class="form-control mr-sm-2" id="codProducto">
+                            <select name="codProducto" formControlName="codProducto" required
+                                [compareWith]="compararProducto" placeholder="Seleccione producto..."
+                                class="form-control mr-sm-2" id="codProducto">
                                 <option [value]="''" selected>Seleccionar producto</option>
                                 <option *ngFor="let producto of listaProducto" [value]="producto.codigo">
                                     <span>{{producto?.descripcion}}</span>
@@ -50,11 +51,10 @@
                             <div class="valid-feedback"></div>
                             <div class="invalid-feedback">Por favor seleccione una opción.</div>
                         </div>
-                        
+
                         <div class="col-2">
                             <div class="my-2 text-left table-responsive">
-                                <button class="btn btn-info btn-rounded"
-                                (click)="listarTransaccion()">
+                                <button class="btn btn-info btn-rounded" (click)="listarTransaccion()">
                                     <b>{{ "Buscar"}}</b>
                                     <b>{{ " "}}</b>
                                     <i class="fa fa-search"></i>
@@ -162,7 +162,8 @@
                                                             <div align="center">Días Renovar</div>
                                                         </th>
                                                         <th scope="col">Cambiar</th>
-                                                        <th scope="col" [ngStyle]="{'display': displayNoneAcciones}">Acciones</th>
+                                                        <th scope="col" [ngStyle]="{'display': displayNoneAcciones}">
+                                                            Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -220,6 +221,12 @@
                                                                     rippleEffect><i class="fab fa-whatsapp"
                                                                         style="font-size:14px; color:red"
                                                                         (click)="openNotificarDetail(transaccion)"></i></button>
+                                                                <button (click)="enviarCredenciales(transaccion)"
+                                                                    matTooltip="Enviar Credenciales" type="button"
+                                                                    class="btn btn-success btn-submit waves-effect waves-float waves-light"
+                                                                    rippleEffect><i class="fa fa-key"
+                                                                        style="font-size:14px; color:red"
+                                                                        (click)="enviarCredenciales(transaccion)"></i></button>
                                                             </div>
                                                         </td>
                                                     </tr>
