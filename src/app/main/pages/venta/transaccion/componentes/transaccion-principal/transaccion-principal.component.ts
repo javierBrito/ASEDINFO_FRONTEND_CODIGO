@@ -236,6 +236,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
   obtenerTransaccionACaducarse = async () => {
     this.enviarNotificacion = false;
+    this.enviarNotificacionIndividual = false;
     await this.confirmarEnviarNotificacion(null);
   }
 
@@ -454,7 +455,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       if (this.seEnvioWhatsapp) {
         this.mensajeService.mensajeCorrecto('Las notificaciones se enviaron con éxito...');
       } else {
-        this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
+        //this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
       }
     }
   }
@@ -540,8 +541,6 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   enviarCredenciales = async (transaccion: Transaccion) => {
-    this.enviarNotificacion = false;
-    this.enviarNotificacionIndividual = true;
     await this.confirmarEnviarNotificacionCredenciales(transaccion);
   }
 
@@ -568,7 +567,7 @@ export class TransaccionPrincipalComponent implements OnInit {
     Swal
       .fire({
         title: "Continuar envío Whatsapp...",
-        text: "¿Quiere enviar las notificación?'",
+        text: "¿Quiere enviar la notificación?'",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: "Sí, enviar",
@@ -582,9 +581,10 @@ export class TransaccionPrincipalComponent implements OnInit {
             if (this.seEnvioWhatsapp) {
               this.mensajeService.mensajeCorrecto('La notificación se envió con éxito...');
             } else {
-              this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
+              //this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
             }
           } else {
+            console.log("Hola")
             this.enviarNotificacion = true;
             this.listarTransaccionACaducarse();
           }
@@ -595,7 +595,6 @@ export class TransaccionPrincipalComponent implements OnInit {
   }
 
   async confirmarEnviarNotificacionCredenciales(transaccion: Transaccion) {
-    this.enviarNotificacion = false;
     Swal
       .fire({
         title: "Continuar envío Whatsapp...",
@@ -611,12 +610,11 @@ export class TransaccionPrincipalComponent implements OnInit {
           if (this.seEnvioWhatsapp) {
             this.mensajeService.mensajeCorrecto('Las credenciales se enviaron con éxito...');
           } else {
-            console.log("No envió la notificación...");
-            this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
+            //console.log("No envió la notificación...");
+            //this.mensajeService.mensajeError('Error... ' + this.respuestaEnvioWhatsapp + ' ingrese nuevo token');
           }
-        } else {
-          this.enviarNotificacion = true;
-          this.listarTransaccionACaducarse();
+        } else if (resultado.isDismissed) {
+          console.log("No envió la notificación...");
         }
       });
   }
@@ -717,6 +715,7 @@ export class TransaccionPrincipalComponent implements OnInit {
       transaccion.prefijoTelefonico = "593";
     }
     this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
+    //this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + "992752367";
     // Enviar mensaje
     this.transaccionService.enviarMensajeWhatsappAI(this.celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
@@ -772,17 +771,15 @@ export class TransaccionPrincipalComponent implements OnInit {
 
     // Segun nombreProceso el encabezado de la notificación - jbrito-20240726
     let mensajeCabecera = "";
-    mensajeCabecera = "*Credenciales del Servicio (" + transaccion?.descripcionProducto + ")*%0aEstimado(a) ";
+    mensajeCabecera = "*Credenciales del Servicio (" + transaccion?.descripcion + ")*%0aEstimado(a) ";
 
     let mensajeNotificacion = mensajeCabecera + transaccion?.nombreCliente
       + " hemos actualizado las credenciales o bajo su solicitud las enviamos nuevamente: "
       + mensajeClaveCuenta;
-    //console.log("mensajeNotificacion = ", mensajeNotificacion)
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();
     //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
     const decodedValue = codec.decodeValue(mensajeNotificacion); // Decodes the value as 'Hello World!'
-    //console.log("decodedValue = ", decodedValue)
     // Validar prefijo telefonico
     if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
       transaccion.prefijoTelefonico = "593";
