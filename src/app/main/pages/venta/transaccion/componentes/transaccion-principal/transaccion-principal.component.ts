@@ -771,7 +771,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
     // Segun nombreProceso el encabezado de la notificación - jbrito-20240726
     let mensajeCabecera = "";
-    mensajeCabecera = "*Credenciales del Servicio (" + transaccion?.descripcion + ")*%0aEstimado(a) ";
+    mensajeCabecera = "*Credenciales del Servicio* " + transaccion?.descripcion + "%0aEstimado(a) ";
 
     let mensajeNotificacion = mensajeCabecera + transaccion?.nombreCliente
       + " hemos actualizado las credenciales o bajo su solicitud las enviamos nuevamente: "
