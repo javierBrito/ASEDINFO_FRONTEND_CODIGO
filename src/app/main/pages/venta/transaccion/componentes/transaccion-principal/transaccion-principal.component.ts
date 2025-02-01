@@ -418,7 +418,7 @@ export class TransaccionPrincipalComponent implements OnInit {
 
       // ele.fechaFin <= this.fechaHoy
       ele.numDiasRenovar = numDias;
-      if (!(numDias > 0 && numDias > 5)) {
+      if (!(numDias > 0 && numDias > 3)) {
         ele.colorFila = "red";
         ele.visibleBoton = ""
       }

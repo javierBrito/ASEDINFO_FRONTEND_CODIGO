@@ -291,7 +291,7 @@ export class FormTransaccionConsultaComponent implements OnInit {
       var numDias = diff / (1000 * 60 * 60 * 24);
 
       // ele.fechaFin <= this.fechaHoy
-      if (!(numDias > 0 && numDias > 5)) {
+      if (!(numDias > 0 && numDias > 3)) {
         ele.colorFila = "red";
       }
 
