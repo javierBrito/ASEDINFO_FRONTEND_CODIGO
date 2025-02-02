@@ -349,7 +349,7 @@ export class FormTransaccionComponent implements OnInit {
 
   listarTransaccionACaducarse() {
     return new Promise((resolve, rejects) => {
-      this.transaccionService.listarTransaccionACaducarse(5).subscribe({
+      this.transaccionService.listarTransaccionACaducarse(3).subscribe({
         next: (respuesta) => {
           this.listaTransaccionChild = respuesta['listado'];
           if (this.listaTransaccionChild?.length > 0) {

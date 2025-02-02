@@ -243,7 +243,7 @@ export class TransaccionPrincipalComponent implements OnInit {
   listarTransaccionACaducarse() {
     this.procesoListarPor = "ACaducarse";
     return new Promise((resolve, rejects) => {
-      this.transaccionService.listarTransaccionACaducarse(5).subscribe({
+      this.transaccionService.listarTransaccionACaducarse(3).subscribe({
         next: (respuesta) => {
           this.listaTransaccion = respuesta['listado'];
           if (this.listaTransaccion?.length > 0) {

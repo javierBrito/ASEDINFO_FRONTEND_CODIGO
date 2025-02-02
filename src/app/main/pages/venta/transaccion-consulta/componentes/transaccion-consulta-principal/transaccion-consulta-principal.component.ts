@@ -239,7 +239,7 @@ export class TransaccionConsultaPrincipalComponent implements OnInit {
 
   listarTransaccionACaducarse() {
     return new Promise((resolve, rejects) => {
-      this.transaccionConsultaService.listarTransaccionACaducarse(5).subscribe({
+      this.transaccionConsultaService.listarTransaccionACaducarse(3).subscribe({
         next: (respuesta) => {
           this.listaTransaccion = respuesta['listado'];
           if (this.listaTransaccion?.length > 0) {
