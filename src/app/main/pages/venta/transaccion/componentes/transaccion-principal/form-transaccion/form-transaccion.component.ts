@@ -682,7 +682,7 @@ export class FormTransaccionComponent implements OnInit {
 
   async enviarWhatsappApi(transaccion: Transaccion) {
     let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
-    console.log("imageSrcString = ", imageSrcString)
+    //console.log("imageSrcString = ", imageSrcString)
 
     // Obtener las n cuentas con su clave de la lista si los hay
     let cuentaClaveNotifica = "";

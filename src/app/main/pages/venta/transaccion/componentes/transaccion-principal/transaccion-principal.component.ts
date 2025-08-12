@@ -691,6 +691,24 @@ export class TransaccionPrincipalComponent implements OnInit {
   };
 
   async enviarWhatsappApi(transaccion: Transaccion) {
+    let montoTransaccion: number = transaccion?.monto; //123.456;
+    let parteEntera: number;
+    let parteDecimal: number;
+    parteEntera = Math.trunc(montoTransaccion);
+    //console.log("Entero = ", parteEntera)
+    parteDecimal = parseFloat((montoTransaccion % 1).toFixed(2)); // Limitar decimales
+    //console.log("Decimal = ", parteDecimal)
+    if (parteDecimal < 0.099) {
+      montoTransaccion = Math.trunc(transaccion?.monto);
+    } else {
+      montoTransaccion = parseFloat(transaccion?.monto?.toFixed(2));
+    }
+    console.log("montoTransaccion = ", montoTransaccion)
+
+    let numDiasRenovar = transaccion?.numDiasRenovar;
+    if (numDiasRenovar < 0) {
+      numDiasRenovar = numDiasRenovar * (-1);
+    }
     let imageSrcString = this.toDataURL('./assets/images/trofeo/trofeo1.png/')
 
     //let fechaFin = dayjs(transaccion.fechaFin).format("DD-MM-YYYY");
@@ -700,11 +718,20 @@ export class TransaccionPrincipalComponent implements OnInit {
     //transaccion.numDiasRenovar = transaccion?.numDiasRenovar == 0 ? 1 :transaccion?.numDiasRenovar; 
     //this.mensajeCaduca = "*Mensaje Automático* Estimado(a) " + transaccion.nombreCliente + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros está por caducar el " + fechaFin + ", favor su ayuda confirmando si desea renovarlo, caso contrario el día de corte procederemos con la suspención del mismo... Un excelente dia, tarde o noche....";
     this.mensajeCaduca = "*Notificación Automática*%0a*Tu servicio Caducó o Caducará pronto*%0aEstimado(a) " + transaccion.nombreCliente
-      + " el servicio de " + transaccion.descripcion
-      + " que tiene contratado con nosotros está por caducar en "
-      + transaccion?.numDiasRenovar + " día(s) el " + dia + " de " + mes + " de " + año
-      + ", favor su ayuda confirmando la renovación con el pago correspondiente para poder registrarlo, caso contrario el día de corte procederemos con la suspención del servicio... Un excelente dia, tarde o noche....";
-
+    + " el servicio de " + transaccion.descripcion + " que tiene contratado con nosotros ";
+    if (transaccion?.numDiasRenovar > 0) {
+      this.mensajeCaduca = this.mensajeCaduca + " está por caducar en ";
+    } else {
+      this.mensajeCaduca = this.mensajeCaduca + " caducó hace ";
+    }
+    this.mensajeCaduca = this.mensajeCaduca
+    + "*" + numDiasRenovar + " día(s) el " + dia + " de " + mes + " de " + año + "*"
+    + ", favor su ayuda confirmando la renovación con el pago correspondiente para poder registrarlo, caso contrario el día de corte procederemos con la suspención del servicio... Un excelente dia, tarde o noche...."
+    //Adicionar jbrito-20250805
+    + "%0a " 
+    + "%0aCosto de renovación: *$" + montoTransaccion + "*"
+    + "%0aTiempo: *" + transaccion?.numMes + " Mes(es)*";
+    
     // Codificar el mensaje para asegurar que los caracteres especiales se manejen correctamente
     const codec = new HttpUrlEncodingCodec();
     //const encodedValue = codec.encodeValue(mensajeNotificacion); // Encodes the value as 'Hello%20World%21'
@@ -714,8 +741,9 @@ export class TransaccionPrincipalComponent implements OnInit {
     if (transaccion?.prefijoTelefonico == "" || transaccion?.prefijoTelefonico == null) {
       transaccion.prefijoTelefonico = "593";
     }
-    this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
-    //this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + "992752367";
+    //this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + transaccion?.celular.substring(1, 15).trim();
+    this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + "992752367";
+    //this.celularEnvioWhatsapp = transaccion?.prefijoTelefonico + "995038551";
     // Enviar mensaje
     this.transaccionService.enviarMensajeWhatsappAI(this.celularEnvioWhatsapp, decodedValue).subscribe({
       next: async (response) => {
